@@ -65,3 +65,4 @@ powershell -ExecutionPolicy Bypass -File .\scripts\signet_smoke.ps1 -WalletName 
 The signet artifact is written to:
 
 `artifacts/signet_txids.json`
+
