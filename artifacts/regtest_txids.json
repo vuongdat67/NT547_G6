@@ -1,0 +1,15 @@
+﻿{
+    "network":  "regtest",
+    "wallet":  "test",
+    "startHeight":  101,
+    "endHeight":  102,
+    "destinationAddress":  "bcrt1qe406kj3j5yfkwy5yvzud84kad0x8ehaz3wzt6g",
+    "minedBlockHash":  "51c0cf5c0a501cddc8aa23f373ac956f07537fa9e70c5d4f72195d649e357d4a",
+    "txid":  "9f7f95a7f618feab0b0580d4eafca9e4b7d1faa49946e336cb88fdde6d9421a2",
+    "amountBtc":  0.01,
+    "feeRateSatVb":  1,
+    "confirmations":  1,
+    "blockhash":  "51c0cf5c0a501cddc8aa23f373ac956f07537fa9e70c5d4f72195d649e357d4a",
+    "trusted":  null,
+    "generatedAtUtc":  "2026-03-22T14:58:00.3647088Z"
+}

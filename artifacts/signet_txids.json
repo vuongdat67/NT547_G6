@@ -1,0 +1,15 @@
+﻿{
+    "network":  "signet",
+    "wallet":  "hehtlc_research",
+    "startHeight":  296844,
+    "endHeight":  296844,
+    "destinationAddress":  "tb1q9vkd5pnvz6wzpav5whqvet78allrlgv5jtgfvs",
+    "txid":  "b042394fd7bcb78299e295821cce1ad696118f6694385fd84d167d83c114846c",
+    "amountBtc":  0.0002,
+    "feeRateSatVb":  1,
+    "targetConfirmations":  0,
+    "confirmations":  0,
+    "blockhash":  null,
+    "trusted":  true,
+    "generatedAtUtc":  "2026-03-23T16:21:38.9039945Z"
+}
