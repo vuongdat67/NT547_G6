@@ -94,3 +94,9 @@ Artifact output:
 
 `artifacts/linked_acs_regtest.json` or `artifacts/linked_acs_signet.json`
 
+``` go 
+go build ./... 
+go vet ./...
+go build ./scripts/deploy_linked_acs.go
+go run ./scripts/deploy_linked_acs.go -h
+```
