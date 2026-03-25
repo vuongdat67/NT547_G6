@@ -168,7 +168,7 @@ func MakeRevokeACSLinked(j int, rjA *RevocationSecret, htlc *HTLCSecrets, cStar 
 		}},
 		Note: fmt.Sprintf(
 			"CRAB-He linked ACS j=%d\n"+
-				"  witness: <r^%d_a> <pre_b>\n"+
+				"  witness: <pre_b> <r^%d_a>\n"+
 				"  trigger: Bob broadcasts dep-B on-chain\n"+
 				"  r^%d_a from: PBB or Alice revoke tx\n"+
 				"  auto-collects c*=%d sat -> CLBA self-defeating",

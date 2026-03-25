@@ -74,14 +74,15 @@ func main() {
 	fmt.Println("--- Step 5: Channel Open ---")
 	ch := channel.NewChannel(params, sat(v), 0, revA0, revB0, alicePK, bobPK)
 	fmt.Print(channel.MakeFunding(params, alicePK, bobPK))
-	fmt.Print(ch.GenerateCommitA())
+	commitA0NoHTLC := ch.GenerateCommitA()
+	fmt.Print(commitA0NoHTLC)
 	fmt.Println()
 
 	fmt.Println("--- Step 6: Attach He-HTLC to Channel ---")
 	ch.AttachHTLC(htlcSecrets)
 	commitA0HTLC := ch.GenerateCommitA()
 	fmt.Print(commitA0HTLC)
-	sizeNoHTLC := 457
+	sizeNoHTLC := commitA0NoHTLC.SizeVB
 	fmt.Printf("Overhead vs CRAB: +%d vB (+%d%%)\n", commitA0HTLC.SizeVB-sizeNoHTLC, (commitA0HTLC.SizeVB-sizeNoHTLC)*100/sizeNoHTLC)
 	fmt.Println()
 
@@ -105,6 +106,7 @@ func main() {
 	}
 	fmt.Print(htlc.DepB(he.Dep, preB))
 	fmt.Println(he.DepBTriggerNote())
+	ch.DetachHTLC()
 	fmt.Println()
 
 	fmt.Println("--- Step 10: Linked ACS Execution ---")
@@ -115,10 +117,10 @@ func main() {
 	fmt.Println()
 
 	fmt.Println("--- Step 11: Evaluation Summary ---")
-	printEvaluationTable(params)
+	printEvaluationTable(params, commitA0NoHTLC.SizeVB, commitA0HTLC.SizeVB)
 }
 
-func printEvaluationTable(p *channel.Params) {
+func printEvaluationTable(p *channel.Params, commitNoHTLCSize, commitWithHTLCSize int) {
 	fmt.Printf("\n%-30s %6s %8s\n", "Transaction", "vBytes", "USD@7sat/vB")
 	fmt.Println(strings.Repeat("-", 50))
 
@@ -128,8 +130,8 @@ func printEvaluationTable(p *channel.Params) {
 	}
 	rows := []row{
 		{"tx_fund (open)", 338},
-		{"tx_commit_A (no HTLC)", 457},
-		{"tx_commit_A (HTLC+linked ACS)", 489},
+		{"tx_commit_A (no HTLC)", commitNoHTLCSize},
+		{"tx_commit_A (HTLC+linked ACS)", commitWithHTLCSize},
 		{"tx_spend_A (honest close)", 418},
 		{"tx_revoke_B (punishment B)", 192},
 		{"tx_revoke_ACS_std (punishment miner)", 192},

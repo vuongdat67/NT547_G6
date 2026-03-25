@@ -38,6 +38,9 @@ func NewParams(v, vDep, vCol, delta *big.Int, t, absT, ell int64, kappa int) (*P
 	if absT <= t {
 		return nil, fmt.Errorf("absolute HTLC timeout %d must exceed channel revocation window %d", absT, t)
 	}
+	if ell < 1 {
+		return nil, fmt.Errorf("ell must be >= 1, got %d", ell)
+	}
 
 	cStar := new(big.Int).Add(v, vDep)
 	cStar.Sub(cStar, vCol)

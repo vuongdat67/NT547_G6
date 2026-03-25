@@ -30,6 +30,7 @@ type HeCol struct {
 func HeDepScript(alicePK, bobPK string, hashPreA, hashPreB []byte, absT int64) string {
 	return fmt.Sprintf(`
 He-Dep Script (UTXOdep):
+	Note: He-HTLC path keeps HASH160 checks; linked ACS path is modeled separately with SHA256.
   2 %s %s 2 OP_CHECKMULTISIGVERIFY
   OP_HASH160 %s OP_EQUAL
   OP_IF
@@ -47,6 +48,7 @@ He-Dep Script (UTXOdep):
 func HeColScript(alicePK, bobPK string, hashPreA, hashPreB []byte, ell int64) string {
 	return fmt.Sprintf(`
 He-Col Script (UTXOcol):
+	Note: He-HTLC path keeps HASH160 checks; linked ACS path is modeled separately with SHA256.
   2 %s %s 2 OP_CHECKMULTISIGVERIFY
   OP_HASH160 %s OP_EQUAL
   OP_IF
