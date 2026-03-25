@@ -66,3 +66,24 @@ The signet artifact is written to:
 
 `artifacts/signet_txids.json`
 
+## Linked ACS Deploy Script (Actual Script Spend)
+
+This script creates a linked ACS P2WSH output and spends it using witness
+`<pre_b> <r^j_a> <redeemScript>` with corrected stack order.
+
+Run on regtest (auto-mines fund/spend blocks):
+
+```powershell
+go run ./scripts/deploy_linked_acs.go -network regtest -wallet test
+```
+
+Run on signet (no auto-mining):
+
+```powershell
+go run ./scripts/deploy_linked_acs.go -network signet -wallet hehtlc_research -fund-sat 10000 -fee-sat 1000
+```
+
+Artifact output:
+
+`artifacts/linked_acs_regtest.json` or `artifacts/linked_acs_signet.json`
+

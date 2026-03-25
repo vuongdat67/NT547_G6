@@ -5,7 +5,6 @@ package channel
 
 import (
 	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"math/big"
 )
@@ -224,9 +223,3 @@ func (a *CLBAAnalysis) ReportLinked() string {
 	)
 }
 
-func HashHex(data []byte) string {
-	h := sha256.Sum256(data)
-	return hex.EncodeToString(h[:])
-}
-
-func sat(v *big.Int) int64 { return v.Int64() }
