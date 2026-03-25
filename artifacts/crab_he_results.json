@@ -1,0 +1,162 @@
+{
+  "generatedAtUtc": "2026-03-25T07:36:07Z",
+  "source": "crab-he local implementation and deployment artifacts",
+  "txTable": [
+    {
+      "name": "tx_fund",
+      "objectType": "channel_tx",
+      "vbytes": 338,
+      "feeUsdBySatPerVB": {
+        "10": 0.90922,
+        "2": 0.181844,
+        "20": 1.81844,
+        "7": 0.636454
+      }
+    },
+    {
+      "name": "tx_commit_A (no HTLC)",
+      "objectType": "channel_tx",
+      "vbytes": 457,
+      "feeUsdBySatPerVB": {
+        "10": 1.22933,
+        "2": 0.245866,
+        "20": 2.45866,
+        "7": 0.860531
+      }
+    },
+    {
+      "name": "tx_commit_A (HTLC+linked ACS)",
+      "objectType": "channel_tx",
+      "vbytes": 489,
+      "feeUsdBySatPerVB": {
+        "10": 1.31541,
+        "2": 0.263082,
+        "20": 2.63082,
+        "7": 0.920787
+      }
+    },
+    {
+      "name": "tx_spend_A",
+      "objectType": "channel_tx",
+      "vbytes": 418,
+      "feeUsdBySatPerVB": {
+        "10": 1.12442,
+        "2": 0.224884,
+        "20": 2.24884,
+        "7": 0.787094
+      }
+    },
+    {
+      "name": "tx_revoke_B",
+      "objectType": "channel_tx",
+      "vbytes": 192,
+      "feeUsdBySatPerVB": {
+        "10": 0.51648,
+        "2": 0.103296,
+        "20": 1.03296,
+        "7": 0.361536
+      }
+    },
+    {
+      "name": "tx_revoke_ACS_std",
+      "objectType": "channel_tx",
+      "vbytes": 192,
+      "feeUsdBySatPerVB": {
+        "10": 0.51648,
+        "2": 0.103296,
+        "20": 1.03296,
+        "7": 0.361536
+      }
+    },
+    {
+      "name": "tx_revoke_ACS_linked",
+      "objectType": "channel_tx",
+      "vbytes": 224,
+      "feeUsdBySatPerVB": {
+        "10": 0.60256,
+        "2": 0.120512,
+        "20": 1.20512,
+        "7": 0.421792
+      }
+    },
+    {
+      "name": "tx_dep_A",
+      "objectType": "htlc_tx",
+      "vbytes": 190,
+      "feeUsdBySatPerVB": {
+        "10": 0.5111,
+        "2": 0.10222,
+        "20": 1.0222,
+        "7": 0.35777
+      }
+    },
+    {
+      "name": "tx_dep_B",
+      "objectType": "htlc_tx",
+      "vbytes": 172,
+      "feeUsdBySatPerVB": {
+        "10": 0.46268,
+        "2": 0.092536,
+        "20": 0.92536,
+        "7": 0.323876
+      }
+    },
+    {
+      "name": "tx_col_B",
+      "objectType": "htlc_tx",
+      "vbytes": 152,
+      "feeUsdBySatPerVB": {
+        "10": 0.40888,
+        "2": 0.081776,
+        "20": 0.81776,
+        "7": 0.286216
+      }
+    },
+    {
+      "name": "tx_col_M",
+      "objectType": "htlc_tx",
+      "vbytes": 168,
+      "feeUsdBySatPerVB": {
+        "10": 0.45192,
+        "2": 0.090384,
+        "20": 0.90384,
+        "7": 0.316344
+      }
+    }
+  ],
+  "linkedDeployments": [
+    {
+      "network": "regtest",
+      "wallet": "test",
+      "linkedACSAddress": "bcrt1qflnxz8y6vdmgnddhrsmxh7upv5yfhc5mjgar8hdffn27c9m4h4cqe4uk30",
+      "fundTxid": "b1bf01a8e60dd9864652460af0b17ec10d8a5c6246b052d77d108c12d9e9c40c",
+      "fundVout": 0,
+      "fundValueSat": 10000,
+      "spendTxid": "9c793e227b99a167c30b845f3b4a09de761899c03ad79df0b2e96e4258f0983d",
+      "spendValueSat": 9000,
+      "feeSat": 1000,
+      "witnessOrder": "\u003cpre_b\u003e \u003cr^j_a\u003e \u003credeemScript\u003e",
+      "createdAtUtc": "2026-03-25T02:33:22Z"
+    },
+    {
+      "network": "signet",
+      "wallet": "test",
+      "linkedACSAddress": "tb1qkf9c6ksssndxte45qed39w7el674z0m036fs4s7g4l2yztz7qgtsgn7dnj",
+      "fundTxid": "37bcd54fe81bfcb39a6212a6e9372cf03b024288d207f4e4fbd8df62102625d4",
+      "fundVout": 0,
+      "fundValueSat": 10000,
+      "spendTxid": "bb425bdfac48e420e1e0711ed5def96a7fc98850609561a84518542a239b4b27",
+      "spendValueSat": 8000,
+      "feeSat": 2000,
+      "witnessOrder": "\u003cpre_b\u003e \u003cr^j_a\u003e \u003credeemScript\u003e",
+      "createdAtUtc": "2026-03-25T02:53:40Z"
+    }
+  ],
+  "clbaSummary": {
+    "crabRationalWidthSat": "2500000",
+    "crabByzantineWidthSat": "2500000",
+    "crabHeWidthSat": "0",
+    "crabHeInfeasible": true,
+    "cStarSat": "2500000"
+  }
+}
