@@ -1,0 +1,16 @@
+{
+  "network": "regtest",
+  "wallet": "test",
+  "linkedACSAddress": "bcrt1qflnxz8y6vdmgnddhrsmxh7upv5yfhc5mjgar8hdffn27c9m4h4cqe4uk30",
+  "linkedACSScriptHex": "a820812869a540ecb0728f796039ce9c3a73ee2cff40d957f3217a7b2602156a5e7688a820901695285e10acd215091e6843c315abe5f6cb925311662a5b4b55295e1daa978851",
+  "fundTxid": "b1bf01a8e60dd9864652460af0b17ec10d8a5c6246b052d77d108c12d9e9c40c",
+  "fundVout": 0,
+  "fundValueSat": 10000,
+  "spendTxid": "9c793e227b99a167c30b845f3b4a09de761899c03ad79df0b2e96e4258f0983d",
+  "spendValueSat": 9000,
+  "feeSat": 1000,
+  "witnessOrder": "\u003cpre_b\u003e \u003cr^j_a\u003e \u003credeemScript\u003e",
+  "hashRjA": "812869a540ecb0728f796039ce9c3a73ee2cff40d957f3217a7b2602156a5e76",
+  "hashPreB": "901695285e10acd215091e6843c315abe5f6cb925311662a5b4b55295e1daa97",
+  "createdAtUtc": "2026-03-25T02:33:22Z"
+}

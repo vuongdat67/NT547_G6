@@ -77,6 +77,13 @@ Run on regtest (auto-mines fund/spend blocks):
 go run ./scripts/deploy_linked_acs.go -network regtest -wallet test
 ```
 
+If wallet exists but is not loaded, the script auto-loads it by default.
+If wallet may not exist yet, add:
+
+```powershell
+go run ./scripts/deploy_linked_acs.go -network regtest -wallet test -create-wallet-if-missing
+```
+
 Run on signet (no auto-mining):
 
 ```powershell

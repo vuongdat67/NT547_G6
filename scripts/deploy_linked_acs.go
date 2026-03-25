@@ -62,6 +62,14 @@ type chainInfo struct {
 	Blocks int64  `json:"blocks"`
 }
 
+type walletDirEntry struct {
+	Name string `json:"name"`
+}
+
+type walletDirResult struct {
+	Wallets []walletDirEntry `json:"wallets"`
+}
+
 type outputInfo struct {
 	Value        float64 `json:"value"`
 	ScriptPubKey struct {
@@ -71,6 +79,18 @@ type outputInfo struct {
 
 type rawTxVerbose struct {
 	Vout []outputInfo `json:"vout"`
+}
+
+type walletTxDetail struct {
+	Address  string  `json:"address"`
+	Category string  `json:"category"`
+	Amount   float64 `json:"amount"`
+	Vout     uint32  `json:"vout"`
+}
+
+type walletTxResult struct {
+	Hex     string           `json:"hex"`
+	Details []walletTxDetail `json:"details"`
 }
 
 type addressInfo struct {
@@ -104,6 +124,8 @@ func main() {
 		bitcoinCLI   = flag.String("bitcoin-cli", "bitcoin-cli", "Path to bitcoin-cli executable")
 		network      = flag.String("network", "regtest", "Network to use: regtest or signet")
 		wallet       = flag.String("wallet", "hehtlc_research", "Wallet name")
+		tryLoad      = flag.Bool("try-load-wallet", true, "Try loading wallet before wallet-scoped RPC calls")
+		createWallet = flag.Bool("create-wallet-if-missing", false, "Create wallet if missing when try-load-wallet is enabled")
 		fundSat      = flag.Int64("fund-sat", 10000, "Funding amount in satoshis sent to linked ACS output")
 		feeSat       = flag.Int64("fee-sat", 1000, "Fee in satoshis for spending linked ACS output")
 		autoMine     = flag.Bool("auto-mine-regtest", true, "Mine 1 block automatically on regtest after fund and spend")
@@ -135,6 +157,19 @@ func main() {
 	must(json.Unmarshal([]byte(ciRaw), &ci))
 	if ci.Chain != *network {
 		die("connected chain is %q, expected %q", ci.Chain, *network)
+	}
+
+	if *tryLoad {
+		fmt.Println("[1.5/9] Ensuring wallet is loaded...")
+		must(ensureWalletReady(cli, *wallet, *createWallet))
+	}
+
+	fmt.Println("[1.6/9] Checking wallet balance...")
+	balanceSat, err := walletBalanceSat(cli)
+	must(err)
+	requiredSat := *fundSat + *feeSat
+	if balanceSat < requiredSat {
+		die("insufficient funds in wallet %q on %s: balance=%d sat, required>=%d sat (fund-sat + fee-sat)", *wallet, *network, balanceSat, requiredSat)
 	}
 
 	fmt.Println("[2/9] Generating secrets and linked ACS script...")
@@ -187,7 +222,7 @@ func main() {
 	destAddr, err := cli.run(true, "getnewaddress", "linked_acs_test")
 	must(err)
 	destAddr = strings.TrimSpace(destAddr)
-	aiRaw, err := cli.run(false, "getaddressinfo", destAddr)
+	aiRaw, err := cli.run(true, "getaddressinfo", destAddr)
 	must(err)
 	var ai addressInfo
 	must(json.Unmarshal([]byte(aiRaw), &ai))
@@ -312,7 +347,28 @@ func waitForFundOutput(cli *rpcCLI, txID, expectedAddr string, poll, timeout tim
 }
 
 func findOutput(cli *rpcCLI, txID, expectedAddr string) (uint32, int64, bool, error) {
-	raw, err := cli.run(false, "getrawtransaction", txID, "true")
+	// Prefer wallet-aware lookup so txindex is not required.
+	txRaw, err := cli.run(true, "gettransaction", txID, "true")
+	if err != nil {
+		return 0, 0, false, err
+	}
+	var wtx walletTxResult
+	if err := json.Unmarshal([]byte(txRaw), &wtx); err != nil {
+		return 0, 0, false, err
+	}
+	for _, d := range wtx.Details {
+		if d.Address == expectedAddr && d.Category == "send" {
+			// Wallet "send" amount is negative; convert to positive sat value.
+			sat := int64(math.Round(math.Abs(d.Amount) * 1e8))
+			return d.Vout, sat, true, nil
+		}
+	}
+
+	// Fallback: decode tx hex and match address in outputs.
+	if strings.TrimSpace(wtx.Hex) == "" {
+		return 0, 0, false, nil
+	}
+	raw, err := cli.run(false, "decoderawtransaction", wtx.Hex)
 	if err != nil {
 		return 0, 0, false, err
 	}
@@ -333,6 +389,76 @@ func satsToBTC(sat int64) string {
 	r := new(big.Rat).SetFrac(big.NewInt(sat), big.NewInt(100_000_000))
 	f, _ := r.Float64()
 	return strconv.FormatFloat(f, 'f', 8, 64)
+}
+
+func walletBalanceSat(cli *rpcCLI) (int64, error) {
+	raw, err := cli.run(true, "getbalance")
+	if err != nil {
+		return 0, err
+	}
+	v, err := strconv.ParseFloat(strings.TrimSpace(raw), 64)
+	if err != nil {
+		return 0, fmt.Errorf("parse getbalance output %q: %w", raw, err)
+	}
+	return int64(math.Round(v * 1e8)), nil
+}
+
+func ensureWalletReady(cli *rpcCLI, wallet string, createIfMissing bool) error {
+	wallet = strings.TrimSpace(wallet)
+	if wallet == "" {
+		return errors.New("wallet name is empty")
+	}
+
+	loadedRaw, err := cli.run(false, "listwallets")
+	if err != nil {
+		return err
+	}
+	var loaded []string
+	if err := json.Unmarshal([]byte(loadedRaw), &loaded); err != nil {
+		return fmt.Errorf("parse listwallets: %w", err)
+	}
+	for _, w := range loaded {
+		if w == wallet {
+			return nil
+		}
+	}
+
+	dirRaw, err := cli.run(false, "listwalletdir")
+	if err != nil {
+		return err
+	}
+	var dir walletDirResult
+	if err := json.Unmarshal([]byte(dirRaw), &dir); err != nil {
+		return fmt.Errorf("parse listwalletdir: %w", err)
+	}
+
+	exists := false
+	for _, w := range dir.Wallets {
+		if w.Name == wallet {
+			exists = true
+			break
+		}
+	}
+
+	if !exists {
+		if !createIfMissing {
+			return fmt.Errorf("wallet %q not found. Use -create-wallet-if-missing or create it manually", wallet)
+		}
+		if _, err := cli.run(false, "createwallet", wallet); err != nil {
+			return fmt.Errorf("createwallet %q failed: %w", wallet, err)
+		}
+		return nil
+	}
+
+	if _, err := cli.run(false, "loadwallet", wallet); err != nil {
+		msg := err.Error()
+		if strings.Contains(msg, "already loaded") {
+			return nil
+		}
+		return fmt.Errorf("loadwallet %q failed: %w", wallet, err)
+	}
+
+	return nil
 }
 
 func random32() []byte {
