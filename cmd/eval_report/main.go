@@ -13,10 +13,10 @@ import (
 )
 
 type txRow struct {
-	Name                string             `json:"name"`
-	ObjectType          string             `json:"objectType"`
-	VBytes              int                `json:"vbytes"`
-	FeeUSDBySatPerVB    map[string]float64 `json:"feeUsdBySatPerVB"`
+	Name             string             `json:"name"`
+	ObjectType       string             `json:"objectType"`
+	VBytes           int                `json:"vbytes"`
+	FeeUSDBySatPerVB map[string]float64 `json:"feeUsdBySatPerVB"`
 }
 
 type linkedArtifact struct {
@@ -33,6 +33,24 @@ type linkedArtifact struct {
 	CreatedAtUTC     string `json:"createdAtUtc"`
 }
 
+type coalitionRow struct {
+	K        int    `json:"k"`
+	BobUB    string `json:"bobUbSat"`
+	MinerLB  string `json:"minerLbSat"`
+	Width    string `json:"widthSat"`
+	CStarK   string `json:"cStarKSat"`
+	Feasible bool   `json:"clbaFeasible"`
+}
+
+type coalitionSummary struct {
+	KMax                 int            `json:"kMax"`
+	SingleMinerCStar     string         `json:"singleMinerCStar"`
+	CoalitionRows        []coalitionRow `json:"coalitionRows"`
+	SingleMinerDominates bool           `json:"singleMinerDominates"`
+	FeeSat               int64          `json:"feeSat"`
+	ModelNote            string         `json:"modelNote"`
+}
+
 type clbaSummary struct {
 	CRABRationalWidthSat  string `json:"crabRationalWidthSat"`
 	CRABByzantineWidthSat string `json:"crabByzantineWidthSat"`
@@ -47,10 +65,16 @@ type report struct {
 	TxTable           []txRow          `json:"txTable"`
 	LinkedDeployments []linkedArtifact `json:"linkedDeployments"`
 	CLBASummary       clbaSummary      `json:"clbaSummary"`
+	CoalitionSummary  coalitionSummary `json:"coalitionSummary"`
 }
 
 func main() {
-	txRows, clba, err := computeCRABHeData()
+	params, err := defaultParams()
+	must(err)
+
+	txRows, clba, err := computeCRABHeData(params)
+	must(err)
+	coalition, err := computeCoalitionData(params, 1_000)
 	must(err)
 
 	artifacts := []linkedArtifact{}
@@ -67,6 +91,7 @@ func main() {
 		TxTable:           txRows,
 		LinkedDeployments: artifacts,
 		CLBASummary:       clba,
+		CoalitionSummary:  coalition,
 	}
 
 	must(os.MkdirAll("artifacts", 0o755))
@@ -83,20 +108,20 @@ func main() {
 	fmt.Println(" -", mdPath)
 }
 
-func computeCRABHeData() ([]txRow, clbaSummary, error) {
+func defaultParams() (*channel.Params, error) {
 	v := big.NewInt(2_000_000)
 	vDep := big.NewInt(1_000_000)
 	vCol := big.NewInt(500_000)
 	delta := big.NewInt(1_000)
 
-	params, err := channel.NewParams(v, vDep, vCol, delta, 144, 288, 6, 3)
-	if err != nil {
-		return nil, clbaSummary{}, err
-	}
+	return channel.NewParams(v, vDep, vCol, delta, 144, 288, 6, 3)
+}
 
+func computeCRABHeData(params *channel.Params) ([]txRow, clbaSummary, error) {
 	rev := channel.NewRevocationSecret([]byte("0123456789abcdef0123456789abcdef"), 0)
 	h := channel.NewHTLCSecrets([]byte("prea-prea-prea-prea-prea-prea-0000"), []byte("preb-preb-preb-preb-preb-preb-1111"))
 
+	v := new(big.Int).Set(params.V)
 	commitNoHTLC := channel.MakeCommitA(params, 0, sat(v), 0, rev, nil, "alice_pk_sample", "bob_pk_sample")
 	commitHTLC := channel.MakeCommitA(params, 0, sat(v), 0, rev, h, "alice_pk_sample", "bob_pk_sample")
 
@@ -136,6 +161,57 @@ func computeCRABHeData() ([]txRow, clbaSummary, error) {
 	}
 
 	return rows, sum, nil
+}
+
+func computeCoalitionData(params *channel.Params, feeSat int64) (coalitionSummary, error) {
+	kMax := channel.KMax(params, feeSat)
+	rows := make([]coalitionRow, 0, min(10, kMax+1))
+	minFee := feeSat
+	for k := 1; k <= min(10, kMax+1); k++ {
+		lambdaK := float64(k) * 0.05
+		if lambdaK >= 0.5 {
+			lambdaK = 0.49
+		}
+		ca, err := channel.NewCoalitionAnalysis(params, k, lambdaK, minFee)
+		if err != nil {
+			return coalitionSummary{}, err
+		}
+		rows = append(rows, coalitionRow{
+			K:        k,
+			BobUB:    ca.BobUBLinked().String(),
+			MinerLB:  ca.MinerLBCoalition().String(),
+			Width:    ca.WidthCoalition().String(),
+			CStarK:   ca.CStarForCoalition().String(),
+			Feasible: ca.IsCLBAFeasibleCoalition(),
+		})
+	}
+
+	singleMinerDominates := true
+	if len(rows) > 0 {
+		single := new(big.Int)
+		if _, ok := single.SetString(rows[0].CStarK, 10); !ok {
+			return coalitionSummary{}, fmt.Errorf("invalid coalition c* value %q", rows[0].CStarK)
+		}
+		for _, row := range rows[1:] {
+			candidate := new(big.Int)
+			if _, ok := candidate.SetString(row.CStarK, 10); !ok {
+				return coalitionSummary{}, fmt.Errorf("invalid coalition c* value %q", row.CStarK)
+			}
+			if candidate.Cmp(single) > 0 {
+				singleMinerDominates = false
+				break
+			}
+		}
+	}
+
+	return coalitionSummary{
+		KMax:                 kMax,
+		SingleMinerCStar:     params.CStar.String(),
+		CoalitionRows:        rows,
+		SingleMinerDominates: singleMinerDominates,
+		FeeSat:               feeSat,
+		ModelNote:            "coalition threshold uses k*v_col (fee-independent SDRBA convention); feeSat retained for compatibility metadata",
+	}, nil
 }
 
 func newTxRow(name, objectType string, vb int) txRow {
@@ -201,11 +277,31 @@ func toMarkdown(r report) string {
 	sb.WriteString(fmt.Sprintf("- crab_he_infeasible: %t\n", r.CLBASummary.CRABHeInfeasible))
 	sb.WriteString(fmt.Sprintf("- c_star_sat: %s\n", r.CLBASummary.CStarSat))
 
+	sb.WriteString("\n## 4) Coalition Summary\n\n")
+	sb.WriteString(fmt.Sprintf("- fee_sat: %d\n", r.CoalitionSummary.FeeSat))
+	sb.WriteString(fmt.Sprintf("- model_note: %s\n", r.CoalitionSummary.ModelNote))
+	sb.WriteString(fmt.Sprintf("- k_max: %d\n", r.CoalitionSummary.KMax))
+	sb.WriteString(fmt.Sprintf("- single_miner_c_star_sat: %s\n", r.CoalitionSummary.SingleMinerCStar))
+	sb.WriteString(fmt.Sprintf("- single_miner_dominates: %t\n", r.CoalitionSummary.SingleMinerDominates))
+	sb.WriteString("\n| k | bob_ub_sat | miner_lb_sat | width_sat | c_star_k_sat | feasible |\n")
+	sb.WriteString("|---|---:|---:|---:|---:|---|\n")
+	for _, row := range r.CoalitionSummary.CoalitionRows {
+		sb.WriteString(fmt.Sprintf("| %d | %s | %s | %s | %s | %t |\n",
+			row.K, row.BobUB, row.MinerLB, row.Width, row.CStarK, row.Feasible))
+	}
+
 	return sb.String()
 }
 
 func sat(v *big.Int) int64 {
 	return v.Int64()
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
 
 func must(err error) {

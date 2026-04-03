@@ -1,6 +1,6 @@
 # CRAB-He Evaluation Results (Generated)
 
-Generated at: 2026-03-25T07:36:07Z
+Generated at: 2026-04-03T15:56:23Z
 
 Reference BTC price for fee conversion: $26,900/BTC (aligned with CRAB).
 
@@ -34,3 +34,21 @@ Reference BTC price for fee conversion: $26,900/BTC (aligned with CRAB).
 - crab_he_width_sat: 0
 - crab_he_infeasible: true
 - c_star_sat: 2500000
+
+## 4) Coalition Summary
+
+- fee_sat: 1000
+- model_note: coalition threshold uses k*v_col (fee-independent SDRBA convention); feeSat retained for compatibility metadata
+- k_max: 6
+- single_miner_c_star_sat: 2500000
+- single_miner_dominates: true
+
+| k | bob_ub_sat | miner_lb_sat | width_sat | c_star_k_sat | feasible |
+|---|---:|---:|---:|---:|---|
+| 1 | 500000 | 500000 | 0 | 2500000 | false |
+| 2 | 500000 | 1000000 | -500000 | 2000000 | false |
+| 3 | 500000 | 1500000 | -1000000 | 1500000 | false |
+| 4 | 500000 | 2000000 | -1500000 | 1000000 | false |
+| 5 | 500000 | 2500000 | -2000000 | 500000 | false |
+| 6 | 500000 | 3000000 | -2500000 | 0 | false |
+| 7 | 500000 | 3500000 | -3000000 | 0 | false |

@@ -94,6 +94,39 @@ Artifact output:
 
 `artifacts/linked_acs_regtest.json` or `artifacts/linked_acs_signet.json`
 
+## Coalition Evaluation
+
+To evaluate the coalition extension from `coalition_dev_prompt.md`, run:
+
+```powershell
+go run ./cmd/coalition_eval/main.go
+```
+
+This prints coalition-size feasibility and required collateral tables derived from the current CRAB-He parameters.
+
+## Experiment Guide Runner (Checklist Coverage)
+
+To execute parameter-grid sweeps, seed-based simulation, baseline adapters, and runtime telemetry from
+`Dung/experiment_guide.md`, run:
+
+```powershell
+go run ./cmd/experiment_runner
+```
+
+This generates:
+
+- `artifacts/experiments/experiment_summary.json`
+- `artifacts/experiments/parameter_sweep.csv`
+- `artifacts/experiments/multi_hop_table.csv` (includes n=1,3,5,7)
+- `artifacts/experiments/seed_simulation_summary.json` (30-seed paired t-test + Wilcoxon)
+
+The runner includes explicit baseline adapters in code for:
+
+- MAD-HTLC standalone reference
+- He-HTLC standalone condition margin
+- CRAB collateral-only baseline
+- CRAB-He linked-revocation threshold cases (c* - eps, c*, c* + eps)
+
 ``` go 
 go build ./... 
 go vet ./...

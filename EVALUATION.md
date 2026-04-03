@@ -58,3 +58,28 @@ Paper table rows in ../crab-hehtlc.md Section 7 are aligned to `crab_he_results.
 
 - Primary quantitative claims use only CRAB-He-generated data and artifacts from this repository.
 - Legacy data under ../bin is considered historical reference only and is not used as primary Section 7 evidence.
+
+## 8) Experiment-guide automation (grid, seeds, statistics)
+
+Run the experiment guide pipeline:
+
+```powershell
+go run ./cmd/experiment_runner
+```
+
+Outputs:
+
+- `./artifacts/experiments/experiment_summary.json`
+  - full parameter grid (`v_dep/v`, `v_col/v_dep`, `kappa`, `n`)
+  - CRAB collateral-only invariance checks
+  - CRAB-He threshold checks at `c* - eps`, `c*`, `c* + eps`
+  - baseline adapters (MAD-HTLC standalone, He-HTLC standalone, CRAB, CRAB-He)
+  - runtime telemetry (block count from artifacts, witness generation time, script validation time)
+- `./artifacts/experiments/parameter_sweep.csv`
+- `./artifacts/experiments/multi_hop_table.csv` (explicit rows for `n=1,3,5,7`)
+- `./artifacts/experiments/seed_simulation_summary.json`
+  - 30-seed paired simulation per configuration
+  - paired t-test and Wilcoxon signed-rank summaries
+
+These artifacts are intended to cover the remaining checklist items from
+`check-list.md` and `Dung/experiment_guide.md`.

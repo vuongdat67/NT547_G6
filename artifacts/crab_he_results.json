@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-03-25T07:36:07Z",
+  "generatedAtUtc": "2026-04-03T15:56:23Z",
   "source": "crab-he local implementation and deployment artifacts",
   "txTable": [
     {
@@ -158,5 +158,70 @@
     "crabHeWidthSat": "0",
     "crabHeInfeasible": true,
     "cStarSat": "2500000"
+  },
+  "coalitionSummary": {
+    "kMax": 6,
+    "singleMinerCStar": "2500000",
+    "coalitionRows": [
+      {
+        "k": 1,
+        "bobUbSat": "500000",
+        "minerLbSat": "500000",
+        "widthSat": "0",
+        "cStarKSat": "2500000",
+        "clbaFeasible": false
+      },
+      {
+        "k": 2,
+        "bobUbSat": "500000",
+        "minerLbSat": "1000000",
+        "widthSat": "-500000",
+        "cStarKSat": "2000000",
+        "clbaFeasible": false
+      },
+      {
+        "k": 3,
+        "bobUbSat": "500000",
+        "minerLbSat": "1500000",
+        "widthSat": "-1000000",
+        "cStarKSat": "1500000",
+        "clbaFeasible": false
+      },
+      {
+        "k": 4,
+        "bobUbSat": "500000",
+        "minerLbSat": "2000000",
+        "widthSat": "-1500000",
+        "cStarKSat": "1000000",
+        "clbaFeasible": false
+      },
+      {
+        "k": 5,
+        "bobUbSat": "500000",
+        "minerLbSat": "2500000",
+        "widthSat": "-2000000",
+        "cStarKSat": "500000",
+        "clbaFeasible": false
+      },
+      {
+        "k": 6,
+        "bobUbSat": "500000",
+        "minerLbSat": "3000000",
+        "widthSat": "-2500000",
+        "cStarKSat": "0",
+        "clbaFeasible": false
+      },
+      {
+        "k": 7,
+        "bobUbSat": "500000",
+        "minerLbSat": "3500000",
+        "widthSat": "-3000000",
+        "cStarKSat": "0",
+        "clbaFeasible": false
+      }
+    ],
+    "singleMinerDominates": true,
+    "feeSat": 1000,
+    "modelNote": "coalition threshold uses k*v_col (fee-independent SDRBA convention); feeSat retained for compatibility metadata"
   }
 }
