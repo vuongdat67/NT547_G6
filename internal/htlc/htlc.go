@@ -92,7 +92,7 @@ func DepB(dep *HeDep, preB []byte) *HeTx {
 			},
 		},
 		Witness: fmt.Sprintf("<sig_B> <pre_b=%s>", hx(preB)),
-		Note: "Bob refund path: pre_b revealed on-chain; this is the linked-ACS trigger in CRAB-He",
+		Note:    "Bob refund path: pre_b revealed on-chain; this is the linked-ACS trigger in CRAB-He",
 	}
 }
 

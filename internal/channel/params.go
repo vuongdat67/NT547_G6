@@ -225,4 +225,3 @@ func (a *CLBAAnalysis) ReportLinked() string {
 		a.WidthLinked(), midBR, status,
 	)
 }
-

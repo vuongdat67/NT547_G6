@@ -118,7 +118,8 @@ This generates:
 - `artifacts/experiments/experiment_summary.json`
 - `artifacts/experiments/parameter_sweep.csv`
 - `artifacts/experiments/multi_hop_table.csv` (includes n=1,3,5,7)
-- `artifacts/experiments/seed_simulation_summary.json` (30-seed paired t-test + Wilcoxon)
+- `artifacts/experiments/baseline_pipelines.json` (transaction-level MAD-HTLC and He-HTLC standalone paths)
+- `artifacts/experiments/seed_simulation_summary.json` (30-seed synthetic Monte Carlo over analytical widths; paired t-test + Wilcoxon; includes `heConditionValid` flags)
 
 The runner includes explicit baseline adapters in code for:
 
@@ -126,6 +127,51 @@ The runner includes explicit baseline adapters in code for:
 - He-HTLC standalone condition margin
 - CRAB collateral-only baseline
 - CRAB-He linked-revocation threshold cases (c* - eps, c*, c* + eps)
+
+## Repeated On-Chain Grid and Seed Orchestrator
+
+To run repeated on-chain executions across the parameter grid and seed set:
+
+```powershell
+go run ./cmd/onchain_orchestrator -dry-run=false -seed-runs 30 -networks regtest,signet -wallet test
+```
+
+For signet campaigns, public mempool policy (for example `too-long-mempool-chain`) may reject
+bursty runs. Use retry and pacing flags when needed:
+
+```powershell
+go run ./cmd/onchain_orchestrator -dry-run=false -seed-runs 1 -networks signet -wallet test -retry-attempts 3 -retry-delay-ms 15000
+```
+
+Quick planning sample (no broadcast):
+
+```powershell
+go run ./cmd/onchain_orchestrator -dry-run -max-configs 2 -seed-runs 2
+```
+
+Outputs:
+
+- `artifacts/onchain/repeated_onchain_summary.json`
+- `artifacts/onchain/repeated_onchain_runs.csv`
+- per-run deployment artifacts under `artifacts/onchain/<network>/<config>/seed_xxx.json`
+
+## Publication-Ready Tables and Plots
+
+To generate paper-ready LaTeX tables and SVG figures directly from artifacts:
+
+```powershell
+go run ./cmd/publish_results
+```
+
+Outputs:
+
+- `artifacts/publication/table_main_results.tex`
+- `artifacts/publication/table_multi_hop.tex`
+- `artifacts/publication/table_seed_stats.tex`
+- `artifacts/publication/table_onchain_runs.tex`
+- `artifacts/publication/fig_multi_hop_cnstar.svg`
+- `artifacts/publication/fig_baseline_success.svg`
+- `artifacts/publication/fig_onchain_success.svg`
 
 ``` go 
 go build ./... 

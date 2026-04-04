@@ -1,16 +1,16 @@
 {
   "network": "signet",
   "wallet": "test",
-  "linkedACSAddress": "tb1qkf9c6ksssndxte45qed39w7el674z0m036fs4s7g4l2yztz7qgtsgn7dnj",
-  "linkedACSScriptHex": "a820a128a3420440f1e98511a3c0c72b9bb02e8c3cf43645cc680cbd554212522b5588a820f7bd767bb6d43c2effe4eaff1a4a313019771be0fce88fd07480a54313db0a7f8851",
-  "fundTxid": "37bcd54fe81bfcb39a6212a6e9372cf03b024288d207f4e4fbd8df62102625d4",
+  "linkedACSAddress": "tb1qahhvj64kjd3j88wpa8cq95e39tp8wa6jrh4xd09qqkhjyrtm7qeq85m9en",
+  "linkedACSScriptHex": "a82049add090e5e895419fa7bdb19673e68c295f3f21ca52917f556d0f8ae38c785c88a820f67d31454ccdda62875468263f5c89f57ff22742e9c5e1942d9fff422aa26ace8851",
+  "fundTxid": "f658a9f00188765a61e364af3d3725df9a6906c7e6990a98a08f4f3585a7083e",
   "fundVout": 0,
   "fundValueSat": 10000,
-  "spendTxid": "bb425bdfac48e420e1e0711ed5def96a7fc98850609561a84518542a239b4b27",
+  "spendTxid": "828cd142d1e4d38e358fbdbd4bcfcf01a5d26c36457aac580a1b518bfd9c8250",
   "spendValueSat": 8000,
   "feeSat": 2000,
   "witnessOrder": "\u003cpre_b\u003e \u003cr^j_a\u003e \u003credeemScript\u003e",
-  "hashRjA": "a128a3420440f1e98511a3c0c72b9bb02e8c3cf43645cc680cbd554212522b55",
-  "hashPreB": "f7bd767bb6d43c2effe4eaff1a4a313019771be0fce88fd07480a54313db0a7f",
-  "createdAtUtc": "2026-03-25T02:53:40Z"
+  "hashRjA": "49add090e5e895419fa7bdb19673e68c295f3f21ca52917f556d0f8ae38c785c",
+  "hashPreB": "f67d31454ccdda62875468263f5c89f57ff22742e9c5e1942d9fff422aa26ace",
+  "createdAtUtc": "2026-04-04T04:40:59Z"
 }

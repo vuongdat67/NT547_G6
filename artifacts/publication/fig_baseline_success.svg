@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="480" y="32" font-size="26" font-family="Times New Roman" fill="#111">Average Baseline Attack Success Rate</text>
+<line x1="120.0" y1="440.0" x2="880.0" y2="440.0" stroke="#333" stroke-width="2"/>
+<line x1="120.0" y1="60.0" x2="120.0" y2="440.0" stroke="#333" stroke-width="2"/>
+<rect x="177.0" y="60.0" width="139.3" height="380.0" fill="#2a9d8f"/><text x="246.7" y="52.0" font-size="14" text-anchor="middle" fill="#111">1.000</text><rect x="430.3" y="121.8" width="139.3" height="318.2" fill="#e76f51"/><text x="500.0" y="113.8" font-size="14" text-anchor="middle" fill="#111">0.837</text><rect x="683.7" y="344.2" width="139.3" height="95.8" fill="#457b9d"/><text x="753.3" y="336.2" font-size="14" text-anchor="middle" fill="#111">0.252</text>
+<text x="246.7" y="504.0" font-size="14" text-anchor="middle" fill="#222" transform="rotate(20 246.7 504.0)">CRAB collateral-only</text><text x="500.0" y="504.0" font-size="14" text-anchor="middle" fill="#222" transform="rotate(20 500.0 504.0)">MAD-HTLC</text><text x="753.3" y="504.0" font-size="14" text-anchor="middle" fill="#222" transform="rotate(20 753.3 504.0)">He-HTLC</text>
+<text x="500.0" y="542.0" font-size="18" text-anchor="middle" font-family="Times New Roman">Baseline</text>
+<text transform="translate(34,250.0) rotate(-90)" font-size="18" text-anchor="middle" font-family="Times New Roman">Success rate</text>
+</svg>

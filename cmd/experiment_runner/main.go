@@ -12,26 +12,18 @@ import (
 	"path/filepath"
 	"sort"
 	"time"
+
+	"github.com/crab-he/internal/experiments"
 )
 
 const (
-	defaultVSat     int64 = 2_000_000
-	defaultSeedRuns       = 30
-	epsilonSat      int64 = 1_000
+	defaultVSat         int64 = 2_000_000
+	defaultSeedRuns           = 30
+	epsilonSat          int64 = 1_000
+	simModelDescription       = "synthetic Monte Carlo over analytical attack width with Gaussian noise (not blockchain execution)"
 )
 
-type gridConfig struct {
-	ID                string  `json:"id"`
-	VSat              int64   `json:"vSat"`
-	VDepSat           int64   `json:"vDepSat"`
-	VColSat           int64   `json:"vColSat"`
-	VDepOverV         float64 `json:"vDepOverV"`
-	VColOverVDep      float64 `json:"vColOverVDep"`
-	Kappa             int     `json:"kappa"`
-	HopsN             int     `json:"hopsN"`
-	HeConditionValid  bool    `json:"heConditionValid"`
-	HeConditionReason string  `json:"heConditionReason"`
-}
+type gridConfig = experiments.Config
 
 type sweepRow struct {
 	ConfigID               string `json:"configId"`
@@ -92,6 +84,10 @@ type simSummary struct {
 	ConfigID            string      `json:"configId"`
 	BaselineName        string      `json:"baselineName"`
 	SeedRuns            int         `json:"seedRuns"`
+	HeConditionValid    bool        `json:"heConditionValid"`
+	HeConditionReason   string      `json:"heConditionReason"`
+	IncludedInValidSet  bool        `json:"includedInValidSet"`
+	SimulationModel     string      `json:"simulationModel"`
 	BaselineSuccessRate float64     `json:"baselineSuccessRate"`
 	CRABHeSuccessRate   float64     `json:"crabHeSuccessRate"`
 	Pairs               []simPair   `json:"pairs"`
@@ -114,14 +110,15 @@ type telemetry struct {
 }
 
 type experimentReport struct {
-	GeneratedAtUTC string        `json:"generatedAtUtc"`
-	Source         string        `json:"source"`
-	SeedRuns       int           `json:"seedRuns"`
-	GridCount      int           `json:"gridCount"`
-	SweepRows      []sweepRow    `json:"sweepRows"`
-	MultiHopRows   []multiHopRow `json:"multiHopRows"`
-	SimSummaries   []simSummary  `json:"simSummaries"`
-	Telemetry      telemetry     `json:"telemetry"`
+	GeneratedAtUTC    string                 `json:"generatedAtUtc"`
+	Source            string                 `json:"source"`
+	SeedRuns          int                    `json:"seedRuns"`
+	GridCount         int                    `json:"gridCount"`
+	SweepRows         []sweepRow             `json:"sweepRows"`
+	MultiHopRows      []multiHopRow          `json:"multiHopRows"`
+	BaselinePipelines []experiments.Pipeline `json:"baselinePipelines"`
+	SimSummaries      []simSummary           `json:"simSummaries"`
+	Telemetry         telemetry              `json:"telemetry"`
 }
 
 func main() {
@@ -132,26 +129,29 @@ func main() {
 	for _, cfg := range configs {
 		sweepRows = append(sweepRows, evaluateGridRow(cfg))
 	}
+	baselinePipelines := buildBaselinePipelines(configs)
 
 	multiHop := buildMultiHopTable(defaultVSat, 0.05, 0.025)
 	simSummaries := runSeedSimulations(configs, defaultSeedRuns)
 	tel := collectTelemetry()
 
 	rep := experimentReport{
-		GeneratedAtUTC: time.Now().UTC().Format(time.RFC3339),
-		Source:         "crab-he experiment runner (check-list + experiment_guide criteria)",
-		SeedRuns:       defaultSeedRuns,
-		GridCount:      len(configs),
-		SweepRows:      sweepRows,
-		MultiHopRows:   multiHop,
-		SimSummaries:   simSummaries,
-		Telemetry:      tel,
+		GeneratedAtUTC:    time.Now().UTC().Format(time.RFC3339),
+		Source:            "crab-he experiment runner (check-list + experiment_guide criteria)",
+		SeedRuns:          defaultSeedRuns,
+		GridCount:         len(configs),
+		SweepRows:         sweepRows,
+		MultiHopRows:      multiHop,
+		BaselinePipelines: baselinePipelines,
+		SimSummaries:      simSummaries,
+		Telemetry:         tel,
 	}
 
 	must(os.MkdirAll(filepath.Join("artifacts", "experiments"), 0o755))
 	jsonPath := filepath.Join("artifacts", "experiments", "experiment_summary.json")
 	csvPath := filepath.Join("artifacts", "experiments", "parameter_sweep.csv")
 	multiHopPath := filepath.Join("artifacts", "experiments", "multi_hop_table.csv")
+	baselinePipelinesPath := filepath.Join("artifacts", "experiments", "baseline_pipelines.json")
 	simPath := filepath.Join("artifacts", "experiments", "seed_simulation_summary.json")
 
 	b, err := json.MarshalIndent(rep, "", "  ")
@@ -159,61 +159,43 @@ func main() {
 	must(os.WriteFile(jsonPath, b, 0o644))
 	must(writeSweepCSV(csvPath, sweepRows))
 	must(writeMultiHopCSV(multiHopPath, multiHop))
+	must(writeJSON(baselinePipelinesPath, baselinePipelines))
 	must(writeJSON(simPath, simSummaries))
 
 	fmt.Println("Generated experiment artifacts:")
 	fmt.Println(" -", jsonPath)
 	fmt.Println(" -", csvPath)
 	fmt.Println(" -", multiHopPath)
+	fmt.Println(" -", baselinePipelinesPath)
 	fmt.Println(" -", simPath)
 	fmt.Printf("Done in %.2f ms\n", float64(time.Since(startAll).Microseconds())/1000.0)
 }
 
 func buildGridConfigs(vSat int64) []gridConfig {
-	vDepRatios := []float64{0.01, 0.025, 0.05, 0.1}
-	vColOverVDep := []float64{0.5, 0.75, 1.0}
-	kappas := []int{2, 3, 5, 7}
-	hops := []int{1, 3, 5, 7}
+	return experiments.BuildGridConfigs(vSat)
+}
 
-	out := make([]gridConfig, 0, len(vDepRatios)*len(vColOverVDep)*len(kappas)*len(hops))
-	for _, depRatio := range vDepRatios {
-		vDep := int64(math.Round(float64(vSat) * depRatio))
-		for _, colRatio := range vColOverVDep {
-			vCol := int64(math.Round(float64(vDep) * colRatio))
-			for _, kappa := range kappas {
-				valid, reason := heCondition(vDep, vCol, kappa)
-				for _, n := range hops {
-					id := fmt.Sprintf("dep%.3f-col%.2f-k%d-n%d", depRatio, colRatio, kappa, n)
-					out = append(out, gridConfig{
-						ID:                id,
-						VSat:              vSat,
-						VDepSat:           vDep,
-						VColSat:           vCol,
-						VDepOverV:         depRatio,
-						VColOverVDep:      colRatio,
-						Kappa:             kappa,
-						HopsN:             n,
-						HeConditionValid:  valid,
-						HeConditionReason: reason,
-					})
-				}
-			}
-		}
+func buildBaselinePipelines(configs []gridConfig) []experiments.Pipeline {
+	out := make([]experiments.Pipeline, 0, len(configs)*2)
+	for _, cfg := range configs {
+		out = append(out, experiments.BuildMADStandalone(cfg, 0))
+		out = append(out, experiments.BuildHeStandalone(cfg, 0))
 	}
 	return out
 }
 
 func evaluateGridRow(cfg gridConfig) sweepRow {
 	rowStart := time.Now()
-	widthCRAB := cfg.VSat + cfg.VDepSat - cfg.VColSat
+	widthCRAB := experiments.CStar(cfg.VSat, cfg.VDepSat, cfg.VColSat)
 	cStar := widthCRAB
-	widthCStarMinus := linkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, cStar-epsilonSat)
-	widthCStar := linkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, cStar)
-	widthCStarPlus := linkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, cStar+epsilonSat)
+	widthCStarMinus := experiments.LinkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, cStar-epsilonSat)
+	widthCStar := experiments.LinkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, cStar)
+	widthCStarPlus := experiments.LinkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, cStar+epsilonSat)
 
-	// Baseline adapters (explicit execution pipeline in-code)
-	madStandaloneWidth := madStandaloneWidth(cfg.VDepSat, cfg.VColSat)
-	heStandaloneMargin := heStandaloneMargin(cfg.VDepSat, cfg.VColSat, cfg.Kappa)
+	madStandalone := experiments.BuildMADStandalone(cfg, 0)
+	heStandalone := experiments.BuildHeStandalone(cfg, 0)
+	madStandaloneWidth := madStandalone.AttackWidthSat
+	heStandaloneMargin := -heStandalone.AttackWidthSat
 
 	return sweepRow{
 		ConfigID:               cfg.ID,
@@ -231,13 +213,13 @@ func evaluateGridRow(cfg gridConfig) sweepRow {
 		WidthCRABHeCStarMinus:  widthCStarMinus,
 		WidthCRABHeCStar:       widthCStar,
 		WidthCRABHeCStarPlus:   widthCStarPlus,
-		CNStarSat:              cfg.VSat + int64(cfg.HopsN)*(cfg.VDepSat-cfg.VColSat),
+		CNStarSat:              experiments.CNStar(cfg.VSat, cfg.VDepSat, cfg.VColSat, cfg.HopsN),
 		HeConditionValid:       cfg.HeConditionValid,
 		HeConditionReason:      cfg.HeConditionReason,
 		MADStandaloneWidthSat:  madStandaloneWidth,
 		HeStandaloneMarginSat:  heStandaloneMargin,
-		ActiveMinerCoverageMAD: false,
-		Notes:                  "CRAB widths remain invariant under collateral-only scaling; linked width threshold tested at c*±epsilon",
+		ActiveMinerCoverageMAD: madStandalone.Feasible,
+		Notes:                  "CRAB widths remain invariant under collateral-only scaling; standalone MAD/He baselines are computed through tx-level pipelines",
 		ElapsedMicros:          time.Since(rowStart).Microseconds(),
 		GeneratedAtUTC:         time.Now().UTC().Format(time.RFC3339),
 	}
@@ -248,7 +230,7 @@ func buildMultiHopTable(vSat int64, depRatio float64, colRatio float64) []multiH
 	vCol := int64(math.Round(float64(vDep) * colRatio))
 	rows := make([]multiHopRow, 0, 4)
 	for _, n := range []int{1, 3, 5, 7} {
-		cN := vSat + int64(n)*(vDep-vCol)
+		cN := experiments.CNStar(vSat, vDep, vCol, n)
 		rows = append(rows, multiHopRow{
 			N:           n,
 			CNStarSat:   cN,
@@ -259,52 +241,65 @@ func buildMultiHopTable(vSat int64, depRatio float64, colRatio float64) []multiH
 }
 
 func runSeedSimulations(configs []gridConfig, seedRuns int) []simSummary {
-	out := make([]simSummary, 0, len(configs))
+	out := make([]simSummary, 0, len(configs)*3)
 	for _, cfg := range configs {
-		pairs := make([]simPair, 0, seedRuns)
-		for i := 1; i <= seedRuns; i++ {
-			seed := int64(cfg.Kappa*10_000 + cfg.HopsN*1_000 + i)
-			rng := rand.New(rand.NewSource(seed))
+		baselineSet := []struct {
+			name  string
+			width int64
+		}{
+			{name: "CRAB collateral-only baseline (c=v)", width: experiments.CStar(cfg.VSat, cfg.VDepSat, cfg.VColSat)},
+			{name: "MAD-HTLC standalone", width: experiments.BuildMADStandalone(cfg, 0).AttackWidthSat},
+			{name: "He-HTLC standalone", width: experiments.BuildHeStandalone(cfg, 0).AttackWidthSat},
+		}
 
-			baselineWidth := cfg.VSat + cfg.VDepSat - cfg.VColSat
-			crabHeWidth := linkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, cfg.VSat+cfg.VDepSat-cfg.VColSat)
+		crabHeWidth := experiments.LinkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, experiments.CStar(cfg.VSat, cfg.VDepSat, cfg.VColSat))
+		for _, baseline := range baselineSet {
+			pairs := make([]simPair, 0, seedRuns)
+			for i := 1; i <= seedRuns; i++ {
+				seed := int64(cfg.Kappa*10_000 + cfg.HopsN*1_000 + i)
+				rng := rand.New(rand.NewSource(seed))
 
-			baselineSuccess := noisySuccess(baselineWidth, rng)
-			crabHeSuccess := noisySuccess(crabHeWidth, rng)
-			pairs = append(pairs, simPair{
-				Seed:               seed,
-				BaselineSuccess:    btoi(baselineSuccess),
-				CRABHeSuccess:      btoi(crabHeSuccess),
-				DifferenceBaseline: btoi(baselineSuccess) - btoi(crabHeSuccess),
+				baselineSuccess := noisySuccess(baseline.width, rng)
+				crabHeSuccess := noisySuccess(crabHeWidth, rng)
+				pairs = append(pairs, simPair{
+					Seed:               seed,
+					BaselineSuccess:    btoi(baselineSuccess),
+					CRABHeSuccess:      btoi(crabHeSuccess),
+					DifferenceBaseline: btoi(baselineSuccess) - btoi(crabHeSuccess),
+				})
+			}
+
+			diffs := make([]float64, 0, len(pairs))
+			baselineCount := 0
+			crabHeCount := 0
+			for _, p := range pairs {
+				diffs = append(diffs, float64(p.DifferenceBaseline))
+				baselineCount += p.BaselineSuccess
+				crabHeCount += p.CRABHeSuccess
+			}
+
+			stats := computePairedStats(diffs)
+			out = append(out, simSummary{
+				ConfigID:            cfg.ID,
+				BaselineName:        baseline.name,
+				SeedRuns:            seedRuns,
+				HeConditionValid:    cfg.HeConditionValid,
+				HeConditionReason:   cfg.HeConditionReason,
+				IncludedInValidSet:  cfg.HeConditionValid,
+				SimulationModel:     simModelDescription,
+				BaselineSuccessRate: float64(baselineCount) / float64(seedRuns),
+				CRABHeSuccessRate:   float64(crabHeCount) / float64(seedRuns),
+				Pairs:               pairs,
+				Stats:               stats,
+				GeneratedAtUTC:      time.Now().UTC().Format(time.RFC3339),
 			})
 		}
-
-		diffs := make([]float64, 0, len(pairs))
-		baselineCount := 0
-		crabHeCount := 0
-		for _, p := range pairs {
-			diffs = append(diffs, float64(p.DifferenceBaseline))
-			baselineCount += p.BaselineSuccess
-			crabHeCount += p.CRABHeSuccess
-		}
-
-		stats := computePairedStats(diffs)
-		out = append(out, simSummary{
-			ConfigID:            cfg.ID,
-			BaselineName:        "CRAB collateral-only baseline (c=v)",
-			SeedRuns:            seedRuns,
-			BaselineSuccessRate: float64(baselineCount) / float64(seedRuns),
-			CRABHeSuccessRate:   float64(crabHeCount) / float64(seedRuns),
-			Pairs:               pairs,
-			Stats:               stats,
-			GeneratedAtUTC:      time.Now().UTC().Format(time.RFC3339),
-		})
 	}
 	return out
 }
 
 func noisySuccess(widthSat int64, rng *rand.Rand) bool {
-	// A light noise model for seed-based simulation as requested by experiment_guide.
+	// This synthetic model perturbs analytical width; it is not an on-chain execution oracle.
 	sigma := math.Max(1_000.0, 0.05*math.Abs(float64(widthSat))+1.0)
 	effective := float64(widthSat) + rng.NormFloat64()*sigma
 	return effective > 0
@@ -477,37 +472,6 @@ func benchmarkScriptValidation(iter int) (totalMs float64, avgMicros float64) {
 	totalMs = float64(d.Microseconds()) / 1000.0
 	avgMicros = float64(d.Microseconds()) / float64(iter)
 	return totalMs, avgMicros
-}
-
-func linkedWidth(vSat, vDepSat, vColSat, cSat int64) int64 {
-	return (vSat + vDepSat - cSat) - vColSat
-}
-
-func madStandaloneWidth(vDepSat, vColSat int64) int64 {
-	// Standalone approximation used for baseline pipeline reporting.
-	return vDepSat - vColSat
-}
-
-func heStandaloneMargin(vDepSat, vColSat int64, kappa int) int64 {
-	if kappa <= 1 {
-		return math.MinInt64
-	}
-	lower := int64(math.Ceil(float64(vDepSat) / float64(kappa-1)))
-	return vColSat - lower
-}
-
-func heCondition(vDepSat, vColSat int64, kappa int) (bool, string) {
-	if kappa <= 2 {
-		return false, "kappa must be > 2 by He-HTLC theorem assumptions"
-	}
-	lower := int64(math.Ceil(float64(vDepSat) / float64(kappa-1)))
-	if vColSat < lower {
-		return false, fmt.Sprintf("v_col(%d) < ceil(v_dep/(kappa-1))(%d)", vColSat, lower)
-	}
-	if vColSat > vDepSat {
-		return false, fmt.Sprintf("v_col(%d) > v_dep(%d)", vColSat, vDepSat)
-	}
-	return true, "valid"
 }
 
 type heightArtifact struct {
