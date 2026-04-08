@@ -16,5 +16,10 @@
   "witnessOrder": "\u003cdummy\u003e \u003csig_A\u003e \u003csig_B\u003e \u003cpre_b\u003e \u003cr^j_a\u003e \u003credeemScript\u003e",
   "hashRjA": "f621f27fc26d6c1aa7829815fe3f00e53d4a0dd59bf1fe941e1757c6a3991845",
   "hashPreB": "3797a23a2f40ddc13b222b22986435a29667c888ace5cd2403c22a90ec8c1866",
+  "analyticalTargetFundSat": 3000000,
+  "analyticalTargetFeeSat": 500000,
+  "analyticalTargetBurnSat": 2500000,
+  "analyticalRerunStatus": "skipped_insufficient_funds",
+  "analyticalRerunNote": "Retry on 2026-04-08: available balance 0.01470037 BTC (trusted 0.01367169 + pending 0.00102868) was below required 0.03 BTC (3000000 sat).",
   "createdAtUtc": "2026-04-07T13:14:59Z"
 }

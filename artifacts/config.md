@@ -1,3 +1,8 @@
+> NOTE: This file is a historical command/output log and contains older low-value
+> examples (e.g., 10,000 sat fund runs). Current analytical evaluation defaults
+> are documented in `scripts/deploy_linked_acs.go` and `README.md` and use
+> 3,000,000 sat funding with 500,000 sat fee for linked-ACS analytical runs.
+
 ``` bitcoin.conf
 regtest=1
 server=1
@@ -74,6 +79,7 @@ Download [Bitcoin](https://bitcoincore.org/en/download/)
 
 [Get Signet Coin ](https://signet257.bublina.eu.org/)
 or [Signet](https://signetfaucet.com/)
+or [Sign](https://faucet.wiki/faucet/Bitcoin-Signet)
 
 
 ### 1. Wallet Management

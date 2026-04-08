@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-04-08T00:03:08Z",
+  "generatedAtUtc": "2026-04-08T00:43:40Z",
   "source": "crab-he local implementation and deployment artifacts",
   "txTable": [
     {
@@ -154,15 +154,15 @@
     {
       "network": "regtest",
       "wallet": "hehtlc_research",
-      "linkedACSAddress": "bcrt1qs7k64vpp27gyqvth93gtpffs54phvwv8372hmkk28nkfd5nhny5smf7jl3",
-      "fundTxid": "7802fbdda123a7f6bfc4f5f201112e527b62fa58080ea5077067e8fd082593e2",
+      "linkedACSAddress": "bcrt1qwhl43at9mw2vv4degqxg85pyfs2fkv8ytg5dxvxhje4q2fyrmszq633rgs",
+      "fundTxid": "a1c6dfcdda0c9735ce644cd870e9cc5cfabcb8d665864011f1fc2f1ee074b323",
       "fundVout": 1,
-      "fundValueSat": 10000,
-      "spendTxid": "180fe4abf1e06e9c1d529da463d987c07c6dcbad39f47ed2063a3600a6a247fa",
-      "spendValueSat": 5000,
-      "feeSat": 5000,
+      "fundValueSat": 3000000,
+      "spendTxid": "3837f7f5210ecd4d4c169e5504071bf3df445b2801f31646dd576d78a14846da",
+      "spendValueSat": 2500000,
+      "feeSat": 500000,
       "witnessOrder": "\u003cdummy\u003e \u003csig_A\u003e \u003csig_B\u003e \u003cpre_b\u003e \u003cr^j_a\u003e \u003credeemScript\u003e",
-      "createdAtUtc": "2026-04-07T10:22:10Z"
+      "createdAtUtc": "2026-04-08T00:42:17Z"
     },
     {
       "network": "signet",

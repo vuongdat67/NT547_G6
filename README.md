@@ -87,8 +87,11 @@ go run ./scripts/deploy_linked_acs.go -network regtest -wallet test -create-wall
 Run on signet (no auto-mining):
 
 ```powershell
-go run ./scripts/deploy_linked_acs.go -network signet -wallet hehtlc_research -fund-sat 10000 -fee-sat 1000
+go run ./scripts/deploy_linked_acs.go -network signet -wallet hehtlc_research -fund-sat 3000000 -fee-sat 500000 -max-burn-btc 0.03
 ```
+
+This analytical signet profile requires a sufficiently funded wallet (at least
+~0.03 BTC plus fees and change overhead).
 
 Artifact output:
 

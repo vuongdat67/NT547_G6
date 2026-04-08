@@ -1,6 +1,6 @@
 # CRAB-He Evaluation Results (Generated)
 
-Generated at: 2026-04-08T00:03:08Z
+Generated at: 2026-04-08T00:43:40Z
 
 Reference BTC price for fee conversion: $26,900/BTC (aligned with CRAB).
 
@@ -33,7 +33,7 @@ Formula: vbytes = ceil(weight / 4), weight = base*3 + total, witness = total - b
 
 | network | wallet | fund_txid | spend_txid | fund_vout | fund_value_sat | spend_value_sat | fee_sat | witness_order |
 |---|---|---|---|---:|---:|---:|---:|---|
-| regtest | hehtlc_research | 7802fbdda123a7f6bfc4f5f201112e527b62fa58080ea5077067e8fd082593e2 | 180fe4abf1e06e9c1d529da463d987c07c6dcbad39f47ed2063a3600a6a247fa | 1 | 10000 | 5000 | 5000 | <dummy> <sig_A> <sig_B> <pre_b> <r^j_a> <redeemScript> |
+| regtest | hehtlc_research | a1c6dfcdda0c9735ce644cd870e9cc5cfabcb8d665864011f1fc2f1ee074b323 | 3837f7f5210ecd4d4c169e5504071bf3df445b2801f31646dd576d78a14846da | 1 | 3000000 | 2500000 | 500000 | <dummy> <sig_A> <sig_B> <pre_b> <r^j_a> <redeemScript> |
 | signet | hehtlc_research | d393b63a9f901138ae55557200c6496f8ff3fbe4ab1335a2198e7ebff8c2d17a | 44927340565152697cfae902878510cc7c8849caa6c718fa1eed565f0f23acbb | 0 | 10000 | 5000 | 5000 | <dummy> <sig_A> <sig_B> <pre_b> <r^j_a> <redeemScript> |
 
 ## 3) CLBA Summary
