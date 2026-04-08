@@ -68,34 +68,46 @@ The signet artifact is written to:
 
 ## Linked ACS Deploy Script (Actual Script Spend)
 
-This script creates a linked ACS P2WSH output and spends it using witness
-`<pre_b> <r^j_a> <redeemScript>` with corrected stack order.
+This script creates a Taproot single-UTXO linked ACS output on `out[2]` with two leaves:
+
+- leaf-CRAB: `OP_SHA256 H(r^j_a) OP_EQUAL`
+- leaf-linked: `H(r^j_a)` + `H(pre_b)` + 2-of-2 Schnorr `OP_CHECKSIGADD`
+
+The linked spend is executed via script-path witness:
+`<sig_B> <sig_A> <pre_b> <r^j_a> <linkedLeafScript> <controlBlock>`.
 
 Run on regtest (auto-mines fund/spend blocks):
 
 ```powershell
-go run ./scripts/deploy_linked_acs.go -network regtest -wallet test
+go run ./scripts/deploy_linked_acs.go -bitcoin-cli "C:\Program Files\Bitcoin\daemon\bitcoin-cli.exe" -network regtest -wallet hehtlc_research -fund-sat 3000000 -fee-sat 500000 -max-burn-btc 0.03
 ```
 
 If wallet exists but is not loaded, the script auto-loads it by default.
 If wallet may not exist yet, add:
 
 ```powershell
-go run ./scripts/deploy_linked_acs.go -network regtest -wallet test -create-wallet-if-missing
+go run ./scripts/deploy_linked_acs.go -bitcoin-cli "C:\Program Files\Bitcoin\daemon\bitcoin-cli.exe" -network regtest -wallet hehtlc_research -create-wallet-if-missing
 ```
 
 Run on signet (no auto-mining):
 
 ```powershell
-go run ./scripts/deploy_linked_acs.go -network signet -wallet hehtlc_research -fund-sat 3000000 -fee-sat 500000 -max-burn-btc 0.03
+go run ./scripts/deploy_linked_acs.go -bitcoin-cli "C:\Program Files\Bitcoin\daemon\bitcoin-cli.exe" -network signet -wallet hehtlc_research -fund-sat 2500000 -fee-sat 500000 -max-burn-btc 0.03 -max-wait-seconds 600
 ```
 
-This analytical signet profile requires a sufficiently funded wallet (at least
-~0.03 BTC plus fees and change overhead).
+The tested signet profile above requires a funded wallet with at least `fund-sat`
+available as trusted balance.
 
 Artifact output:
 
 `artifacts/linked_acs_regtest.json` or `artifacts/linked_acs_signet.json`
+
+Latest verified evidence (2026-04-08):
+
+- regtest fund: `6aceae598d61ae2256508a4bdafc43568c77045f04f91fcca147c6423563038e`
+- regtest spend: `5a64ec6a227bd6dc481e37e764d17712314933978bb7cdb9569adbdaff134245`
+- signet fund: `d77febbc5f3778d089955541bfa881d86d1db7ec0720a5ef6d71c0eaa598deaa`
+- signet spend: `e9b820874ff5aa2f3b5da2e0f8a8283d2091482731fa4a7279b8703aee80074f`
 
 ## Coalition Evaluation
 
@@ -109,7 +121,7 @@ This prints coalition-size feasibility and required collateral tables derived fr
 
 ## Experiment Guide Runner (Checklist Coverage)
 
-To execute parameter-grid sweeps, seed-based simulation, baseline adapters, and runtime telemetry from
+To execute parameter-grid sweeps, baseline adapters, and runtime telemetry from
 `Dung/experiment_guide.md`, run:
 
 ```powershell
@@ -122,7 +134,9 @@ This generates:
 - `artifacts/experiments/parameter_sweep.csv`
 - `artifacts/experiments/multi_hop_table.csv` (includes n=1,3,5,7)
 - `artifacts/experiments/baseline_pipelines.json` (transaction-level MAD-HTLC and He-HTLC standalone paths)
-- `artifacts/experiments/seed_simulation_summary.json` (30-seed synthetic Monte Carlo over analytical widths; paired t-test + Wilcoxon; includes `heConditionValid` flags)
+
+Note: `seed_simulation_summary.json` is intentionally removed by the runner in
+the current analytical-only pipeline.
 
 The runner includes explicit baseline adapters in code for:
 

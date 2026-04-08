@@ -1,6 +1,6 @@
 # CRAB-He Evaluation Results (Generated)
 
-Generated at: 2026-04-08T00:43:40Z
+Generated at: 2026-04-08T13:56:06Z
 
 Reference BTC price for fee conversion: $26,900/BTC (aligned with CRAB).
 
@@ -10,7 +10,7 @@ Reference BTC price for fee conversion: $26,900/BTC (aligned with CRAB).
 |---|---|---:|---:|---:|---:|---:|
 | tx_fund | channel_tx | 338 | 0.18 | 0.64 | 0.91 | 1.82 |
 | tx_commit_A (no HTLC) | channel_tx | 283 | 0.15 | 0.53 | 0.76 | 1.52 |
-| tx_commit_A (HTLC+linked ACS) | channel_tx | 433 | 0.23 | 0.82 | 1.16 | 2.33 |
+| tx_commit_A (HTLC+linked ACS) | channel_tx | 281 | 0.15 | 0.53 | 0.76 | 1.51 |
 | tx_spend_A | channel_tx | 418 | 0.22 | 0.79 | 1.12 | 2.25 |
 | tx_revoke_B | channel_tx | 192 | 0.10 | 0.36 | 0.52 | 1.03 |
 | tx_revoke_ACS_std | channel_tx | 192 | 0.10 | 0.36 | 0.52 | 1.03 |
@@ -27,14 +27,14 @@ Formula: vbytes = ceil(weight / 4), weight = base*3 + total, witness = total - b
 | name | base_bytes | witness_bytes | total_bytes | weight | vbytes | inputs | outputs | witness_items |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | tx_commit_A (no HTLC) | 227 | 224 | 451 | 1132 | 283 | 1 | 3 | 4 |
-| tx_commit_A (HTLC+linked ACS) | 377 | 224 | 601 | 1732 | 433 | 1 | 4 | 4 |
+| tx_commit_A (HTLC+linked ACS) | 225 | 224 | 449 | 1124 | 281 | 1 | 3 | 4 |
 
 ## 2) Linked ACS On-chain Evidence
 
 | network | wallet | fund_txid | spend_txid | fund_vout | fund_value_sat | spend_value_sat | fee_sat | witness_order |
 |---|---|---|---|---:|---:|---:|---:|---|
-| regtest | hehtlc_research | a1c6dfcdda0c9735ce644cd870e9cc5cfabcb8d665864011f1fc2f1ee074b323 | 3837f7f5210ecd4d4c169e5504071bf3df445b2801f31646dd576d78a14846da | 1 | 3000000 | 2500000 | 500000 | <dummy> <sig_A> <sig_B> <pre_b> <r^j_a> <redeemScript> |
-| signet | hehtlc_research | d393b63a9f901138ae55557200c6496f8ff3fbe4ab1335a2198e7ebff8c2d17a | 44927340565152697cfae902878510cc7c8849caa6c718fa1eed565f0f23acbb | 0 | 10000 | 5000 | 5000 | <dummy> <sig_A> <sig_B> <pre_b> <r^j_a> <redeemScript> |
+| regtest | hehtlc_research | 6aceae598d61ae2256508a4bdafc43568c77045f04f91fcca147c6423563038e | 5a64ec6a227bd6dc481e37e764d17712314933978bb7cdb9569adbdaff134245 | 0 | 3000000 | 2500000 | 500000 | <sig_B> <sig_A> <pre_b> <r^j_a> <linkedLeafScript> <controlBlock> |
+| signet | hehtlc_research | d77febbc5f3778d089955541bfa881d86d1db7ec0720a5ef6d71c0eaa598deaa | e9b820874ff5aa2f3b5da2e0f8a8283d2091482731fa4a7279b8703aee80074f | 0 | 3000000 | 2500000 | 500000 | <sig_B> <sig_A> <pre_b> <r^j_a> <linkedLeafScript> <controlBlock> |
 
 ## 3) CLBA Summary
 

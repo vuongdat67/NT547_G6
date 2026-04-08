@@ -7,10 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
-	"math/rand"
 	"os"
 	"path/filepath"
-	"sort"
 	"time"
 
 	"github.com/crab-he/internal/experiments"
@@ -19,7 +17,6 @@ import (
 const (
 	defaultVSat         int64 = 2_000_000
 	epsilonSat          int64 = 1_000
-	simModelDescription       = "synthetic Monte Carlo over analytical attack width with Gaussian noise (not blockchain execution)"
 )
 
 type gridConfig = experiments.Config
@@ -55,43 +52,6 @@ type multiHopRow struct {
 	N           int   `json:"n"`
 	CNStarSat   int64 `json:"cNStarSat"`
 	OverheadSat int64 `json:"overheadAboveCRABByzSat"`
-}
-
-type simPair struct {
-	Seed               int64 `json:"seed"`
-	BaselineSuccess    int   `json:"baselineSuccess"`
-	CRABHeSuccess      int   `json:"crabHeSuccess"`
-	DifferenceBaseline int   `json:"differenceBaselineMinusCRABHe"`
-}
-
-type pairedStats struct {
-	SampleSize           int     `json:"sampleSize"`
-	MeanDiff             float64 `json:"meanDiff"`
-	StdDevDiff           float64 `json:"stdDevDiff"`
-	CI95Low              float64 `json:"ci95Low"`
-	CI95High             float64 `json:"ci95High"`
-	TStatistic           float64 `json:"tStatistic"`
-	TTestPValueApprox    float64 `json:"tTestPValueApprox"`
-	CohensDz             float64 `json:"cohensDz"`
-	WilcoxonWPlus        float64 `json:"wilcoxonWPlus"`
-	WilcoxonZApprox      float64 `json:"wilcoxonZApprox"`
-	WilcoxonPValueApprox float64 `json:"wilcoxonPValueApprox"`
-	WilcoxonEffectR      float64 `json:"wilcoxonEffectR"`
-}
-
-type simSummary struct {
-	ConfigID            string      `json:"configId"`
-	BaselineName        string      `json:"baselineName"`
-	SeedRuns            int         `json:"seedRuns"`
-	HeConditionValid    bool        `json:"heConditionValid"`
-	HeConditionReason   string      `json:"heConditionReason"`
-	IncludedInValidSet  bool        `json:"includedInValidSet"`
-	SimulationModel     string      `json:"simulationModel"`
-	BaselineSuccessRate float64     `json:"baselineSuccessRate"`
-	CRABHeSuccessRate   float64     `json:"crabHeSuccessRate"`
-	Pairs               []simPair   `json:"pairs"`
-	Stats               pairedStats `json:"stats"`
-	GeneratedAtUTC      string      `json:"generatedAtUtc"`
 }
 
 type telemetry struct {
@@ -231,167 +191,6 @@ func buildMultiHopTable(vSat int64, depRatio float64, colRatio float64) []multiH
 		})
 	}
 	return rows
-}
-
-func runSeedSimulations(configs []gridConfig, seedRuns int) []simSummary {
-	out := make([]simSummary, 0, len(configs)*3)
-	for _, cfg := range configs {
-		baselineSet := []struct {
-			name  string
-			width int64
-		}{
-			{name: "CRAB collateral-only baseline (c=v)", width: experiments.CStar(cfg.VSat, cfg.VDepSat, cfg.VColSat)},
-			{name: "MAD-HTLC standalone", width: experiments.BuildMADStandalone(cfg, 0).AttackWidthSat},
-			{name: "He-HTLC standalone", width: experiments.BuildHeStandalone(cfg, 0).AttackWidthSat},
-		}
-
-		crabHeWidth := experiments.LinkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, experiments.CStar(cfg.VSat, cfg.VDepSat, cfg.VColSat))
-		for _, baseline := range baselineSet {
-			pairs := make([]simPair, 0, seedRuns)
-			for i := 1; i <= seedRuns; i++ {
-				seed := int64(cfg.Kappa*10_000 + cfg.HopsN*1_000 + i)
-				rng := rand.New(rand.NewSource(seed))
-
-				baselineSuccess := noisySuccess(baseline.width, rng)
-				crabHeSuccess := noisySuccess(crabHeWidth, rng)
-				pairs = append(pairs, simPair{
-					Seed:               seed,
-					BaselineSuccess:    btoi(baselineSuccess),
-					CRABHeSuccess:      btoi(crabHeSuccess),
-					DifferenceBaseline: btoi(baselineSuccess) - btoi(crabHeSuccess),
-				})
-			}
-
-			diffs := make([]float64, 0, len(pairs))
-			baselineCount := 0
-			crabHeCount := 0
-			for _, p := range pairs {
-				diffs = append(diffs, float64(p.DifferenceBaseline))
-				baselineCount += p.BaselineSuccess
-				crabHeCount += p.CRABHeSuccess
-			}
-
-			stats := computePairedStats(diffs)
-			out = append(out, simSummary{
-				ConfigID:            cfg.ID,
-				BaselineName:        baseline.name,
-				SeedRuns:            seedRuns,
-				HeConditionValid:    cfg.HeConditionValid,
-				HeConditionReason:   cfg.HeConditionReason,
-				IncludedInValidSet:  cfg.HeConditionValid,
-				SimulationModel:     simModelDescription,
-				BaselineSuccessRate: float64(baselineCount) / float64(seedRuns),
-				CRABHeSuccessRate:   float64(crabHeCount) / float64(seedRuns),
-				Pairs:               pairs,
-				Stats:               stats,
-				GeneratedAtUTC:      time.Now().UTC().Format(time.RFC3339),
-			})
-		}
-	}
-	return out
-}
-
-func noisySuccess(widthSat int64, rng *rand.Rand) bool {
-	// This synthetic model perturbs analytical width; it is not an on-chain execution oracle.
-	sigma := math.Max(1_000.0, 0.05*math.Abs(float64(widthSat))+1.0)
-	effective := float64(widthSat) + rng.NormFloat64()*sigma
-	return effective > 0
-}
-
-func computePairedStats(diffs []float64) pairedStats {
-	n := len(diffs)
-	if n == 0 {
-		return pairedStats{}
-	}
-
-	mean := mean(diffs)
-	sd := stddevSample(diffs, mean)
-	se := 0.0
-	if n > 0 {
-		se = sd / math.Sqrt(float64(n))
-	}
-	ciDelta := 1.96 * se
-
-	tStat := 0.0
-	tP := 1.0
-	cohen := 0.0
-	if sd > 0 {
-		tStat = mean / se
-		tP = 2 * (1 - normCDF(math.Abs(tStat)))
-		cohen = mean / sd
-	} else if mean != 0 {
-		tP = 0
-	}
-
-	wPlus, wZ, wP, wR := wilcoxonSignedRank(diffs)
-
-	return pairedStats{
-		SampleSize:           n,
-		MeanDiff:             mean,
-		StdDevDiff:           sd,
-		CI95Low:              mean - ciDelta,
-		CI95High:             mean + ciDelta,
-		TStatistic:           tStat,
-		TTestPValueApprox:    tP,
-		CohensDz:             cohen,
-		WilcoxonWPlus:        wPlus,
-		WilcoxonZApprox:      wZ,
-		WilcoxonPValueApprox: wP,
-		WilcoxonEffectR:      wR,
-	}
-}
-
-func wilcoxonSignedRank(diffs []float64) (wPlus float64, z float64, p float64, r float64) {
-	type nz struct {
-		abs  float64
-		sign float64
-	}
-	vals := make([]nz, 0, len(diffs))
-	for _, d := range diffs {
-		if d == 0 {
-			continue
-		}
-		sign := 1.0
-		if d < 0 {
-			sign = -1.0
-		}
-		vals = append(vals, nz{abs: math.Abs(d), sign: sign})
-	}
-	n := len(vals)
-	if n == 0 {
-		return 0, 0, 1, 0
-	}
-
-	sort.Slice(vals, func(i, j int) bool { return vals[i].abs < vals[j].abs })
-
-	ranks := make([]float64, n)
-	for i := 0; i < n; {
-		j := i + 1
-		for j < n && vals[j].abs == vals[i].abs {
-			j++
-		}
-		avgRank := (float64(i+1) + float64(j)) / 2.0
-		for k := i; k < j; k++ {
-			ranks[k] = avgRank
-		}
-		i = j
-	}
-
-	for i := range vals {
-		if vals[i].sign > 0 {
-			wPlus += ranks[i]
-		}
-	}
-
-	mu := float64(n*(n+1)) / 4.0
-	sigma := math.Sqrt(float64(n*(n+1)*(2*n+1)) / 24.0)
-	if sigma == 0 {
-		return wPlus, 0, 1, 0
-	}
-	z = (wPlus - mu) / sigma
-	p = 2 * (1 - normCDF(math.Abs(z)))
-	r = math.Abs(z) / math.Sqrt(float64(n))
-	return wPlus, z, p, r
 }
 
 func collectTelemetry() telemetry {
@@ -571,41 +370,6 @@ func writeJSON(path string, v any) error {
 		return err
 	}
 	return os.WriteFile(path, b, 0o644)
-}
-
-func mean(xs []float64) float64 {
-	if len(xs) == 0 {
-		return 0
-	}
-	s := 0.0
-	for _, x := range xs {
-		s += x
-	}
-	return s / float64(len(xs))
-}
-
-func stddevSample(xs []float64, mu float64) float64 {
-	n := len(xs)
-	if n <= 1 {
-		return 0
-	}
-	s := 0.0
-	for _, x := range xs {
-		d := x - mu
-		s += d * d
-	}
-	return math.Sqrt(s / float64(n-1))
-}
-
-func normCDF(x float64) float64 {
-	return 0.5 * (1 + math.Erf(x/math.Sqrt2))
-}
-
-func btoi(v bool) int {
-	if v {
-		return 1
-	}
-	return 0
 }
 
 func must(err error) {

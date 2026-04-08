@@ -66,8 +66,8 @@ func main() {
 	}
 	fmt.Printf("\nk_max (natural infeasibility threshold) = %d\n\n", kMax)
 
-	fmt.Println("=== Table: Derived c*_k Reference by Coalition Size ===")
-	fmt.Printf("%-6s %-22s %-22s %-18s\n", "k", "c*_k needed (sat)", "vs single-miner c*", "Overhead change")
+	fmt.Println("=== Table: Diagnostic c_ref(k) by Coalition Size ===")
+	fmt.Printf("%-6s %-22s %-22s %-18s\n", "k", "c_ref(k) diag (sat)", "vs single-miner c*", "Delta")
 	fmt.Println(strings.Repeat("-", 72))
 
 	cStarSingle := params.CStar.Int64()
@@ -76,7 +76,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		cStarK := ca.CStarForCoalition().Int64()
+		cStarK := ca.DiagnosticCStarReduction().Int64()
 		diff := cStarK - cStarSingle
 		sign := "+"
 		if diff < 0 {
@@ -87,8 +87,8 @@ func main() {
 	}
 
 	fmt.Println()
-	fmt.Println("Note: c*_k values above are derived under the same SDRBA simplifications used in He-HTLC.")
-	fmt.Println("They are reported as comparative references, not as a standalone new theorem claim.")
+	fmt.Println("Note: c_ref(k) values above are diagnostic extrapolations under SDRBA-style simplifications.")
+	fmt.Println("They are comparative references only, not standalone theorem-level security bounds.")
 }
 
 func min(a, b int) int {

@@ -24,9 +24,21 @@ func TestBurnSplitPresignedLinkedACSSpendValid(t *testing.T) {
 
 	alicePriv, alicePub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x33}, 32))
 	bobPriv, bobPub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x44}, 32))
+	leafCRABScript, err := buildCRABTaprootLeafScript(hR[:])
+	if err != nil {
+		t.Fatalf("buildCRABTaprootLeafScript: %v", err)
+	}
 	redeemScript, err := buildBurnSplitLinkedACSScript(hR[:], hP[:], alicePub.SerializeCompressed(), bobPub.SerializeCompressed())
 	if err != nil {
 		t.Fatalf("buildBurnSplitLinkedACSScript: %v", err)
+	}
+	linkedLeaf := txscript.NewBaseTapLeaf(redeemScript)
+	tapTree := txscript.AssembleTaprootScriptTree(txscript.NewBaseTapLeaf(leafCRABScript), linkedLeaf)
+	internalKey := alicePub
+	rootHash := tapTree.RootNode.TapHash()
+	p2trScript, err := txscript.PayToTaprootScript(txscript.ComputeTaprootOutputKey(internalKey, rootHash[:]))
+	if err != nil {
+		t.Fatalf("PayToTaprootScript: %v", err)
 	}
 
 	prevHash := chainhash.DoubleHashH([]byte("funding-outpoint"))
@@ -38,18 +50,14 @@ func TestBurnSplitPresignedLinkedACSSpendValid(t *testing.T) {
 		t.Fatalf("burnValue=%d, want 9000", burnValue)
 	}
 
-	witness, err := signPresignedBurnSplitWitness(tx, 0, fundValueSat, redeemScript, preB, rjA, alicePriv, bobPriv)
+	witness, err := signPresignedBurnSplitWitness(tx, 0, fundValueSat, p2trScript, linkedLeaf, tapTree, internalKey, preB, rjA, alicePriv, bobPriv)
 	if err != nil {
 		t.Fatalf("signPresignedBurnSplitWitness: %v", err)
 	}
 	tx.TxIn[0].Witness = witness
 
-	prevPkScript, err := p2WSHScriptPubKey(redeemScript)
-	if err != nil {
-		t.Fatalf("p2WSHScriptPubKey: %v", err)
-	}
-	if err := verifyP2WSHSpend(tx, 0, prevPkScript, fundValueSat); err != nil {
-		t.Fatalf("verifyP2WSHSpend(valid): %v", err)
+	if err := verifyTaprootScriptSpend(tx, 0, p2trScript, fundValueSat); err != nil {
+		t.Fatalf("verifyTaprootScriptSpend(valid): %v", err)
 	}
 
 	if len(tx.TxOut) != 1 {
@@ -75,10 +83,22 @@ func TestBobCannotTakeSurplusFromLinkedOutput(t *testing.T) {
 
 	alicePriv, alicePub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x63}, 32))
 	bobPriv, bobPub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x64}, 32))
+	leafCRABScript, err := buildCRABTaprootLeafScript(hR[:])
+	if err != nil {
+		t.Fatalf("buildCRABTaprootLeafScript: %v", err)
+	}
 
 	redeemScript, err := buildBurnSplitLinkedACSScript(hR[:], hP[:], alicePub.SerializeCompressed(), bobPub.SerializeCompressed())
 	if err != nil {
 		t.Fatalf("buildBurnSplitLinkedACSScript: %v", err)
+	}
+	linkedLeaf := txscript.NewBaseTapLeaf(redeemScript)
+	tapTree := txscript.AssembleTaprootScriptTree(txscript.NewBaseTapLeaf(leafCRABScript), linkedLeaf)
+	internalKey := alicePub
+	rootHash := tapTree.RootNode.TapHash()
+	p2trScript, err := txscript.PayToTaprootScript(txscript.ComputeTaprootOutputKey(internalKey, rootHash[:]))
+	if err != nil {
+		t.Fatalf("PayToTaprootScript: %v", err)
 	}
 
 	prevHash := chainhash.DoubleHashH([]byte("funding-outpoint-surplus"))
@@ -86,17 +106,12 @@ func TestBobCannotTakeSurplusFromLinkedOutput(t *testing.T) {
 	if err != nil {
 		t.Fatalf("build canonical tx: %v", err)
 	}
-	canonicalWitness, err := signPresignedBurnSplitWitness(canonicalTx, 0, fundValueSat, redeemScript, preB, rjA, alicePriv, bobPriv)
+	canonicalWitness, err := signPresignedBurnSplitWitness(canonicalTx, 0, fundValueSat, p2trScript, linkedLeaf, tapTree, internalKey, preB, rjA, alicePriv, bobPriv)
 	if err != nil {
 		t.Fatalf("sign canonical witness: %v", err)
 	}
 	canonicalTx.TxIn[0].Witness = canonicalWitness
-
-	prevPkScript, err := p2WSHScriptPubKey(redeemScript)
-	if err != nil {
-		t.Fatalf("p2WSHScriptPubKey: %v", err)
-	}
-	if err := verifyP2WSHSpend(canonicalTx, 0, prevPkScript, fundValueSat); err != nil {
+	if err := verifyTaprootScriptSpend(canonicalTx, 0, p2trScript, fundValueSat); err != nil {
 		t.Fatalf("canonical tx should verify: %v", err)
 	}
 
@@ -114,23 +129,32 @@ func TestBobCannotTakeSurplusFromLinkedOutput(t *testing.T) {
 		Value:    spendValueSat,
 		PkScript: bobPkScript,
 	}}
+	proofIndex, ok := tapTree.LeafProofIndex[linkedLeaf.TapHash()]
+	if !ok {
+		t.Fatal("linked leaf proof not found")
+	}
+	ctrl := tapTree.LeafMerkleProofs[proofIndex].ToControlBlock(internalKey)
+	ctrlBytes, err := ctrl.ToBytes()
+	if err != nil {
+		t.Fatalf("control block bytes: %v", err)
+	}
 
-	prevFetcher := txscript.NewCannedPrevOutputFetcher(prevPkScript, fundValueSat)
+	prevFetcher := txscript.NewCannedPrevOutputFetcher(p2trScript, fundValueSat)
 	hashes := txscript.NewTxSigHashes(mutatedTx, prevFetcher)
-	bobSig, err := txscript.RawTxInWitnessSignature(mutatedTx, hashes, 0, fundValueSat, redeemScript, txscript.SigHashAll, bobPriv)
+	bobSig, err := txscript.RawTxInTapscriptSignature(mutatedTx, hashes, 0, fundValueSat, p2trScript, linkedLeaf, txscript.SigHashDefault, bobPriv)
 	if err != nil {
 		t.Fatalf("bob signature: %v", err)
 	}
 
 	candidates := []wire.TxWitness{
-		{[]byte{}, bobSig, preB, rjA, redeemScript},
-		{[]byte{}, bobSig, bobSig, preB, rjA, redeemScript},
-		{[]byte{}, canonicalWitness[1], canonicalWitness[2], preB, rjA, redeemScript},
+		{bobSig, preB, rjA, redeemScript, ctrlBytes},
+		{bobSig, bobSig, preB, rjA, redeemScript, ctrlBytes},
+		{canonicalWitness[0], canonicalWitness[1], preB, rjA, redeemScript, ctrlBytes},
 	}
 
 	for i, w := range candidates {
 		mutatedTx.TxIn[0].Witness = w
-		if err := verifyP2WSHSpend(mutatedTx, 0, prevPkScript, fundValueSat); err == nil {
+		if err := verifyTaprootScriptSpend(mutatedTx, 0, p2trScript, fundValueSat); err == nil {
 			t.Fatalf("candidate %d unexpectedly verifies; Bob should not obtain surplus path", i)
 		}
 	}
@@ -147,9 +171,21 @@ func TestLinkedACSRejectsWrongPreimages(t *testing.T) {
 
 	alicePriv, alicePub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x73}, 32))
 	bobPriv, bobPub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x74}, 32))
+	leafCRABScript, err := buildCRABTaprootLeafScript(hR[:])
+	if err != nil {
+		t.Fatalf("buildCRABTaprootLeafScript: %v", err)
+	}
 	redeemScript, err := buildBurnSplitLinkedACSScript(hR[:], hP[:], alicePub.SerializeCompressed(), bobPub.SerializeCompressed())
 	if err != nil {
 		t.Fatalf("buildBurnSplitLinkedACSScript: %v", err)
+	}
+	linkedLeaf := txscript.NewBaseTapLeaf(redeemScript)
+	tapTree := txscript.AssembleTaprootScriptTree(txscript.NewBaseTapLeaf(leafCRABScript), linkedLeaf)
+	internalKey := alicePub
+	rootHash := tapTree.RootNode.TapHash()
+	p2trScript, err := txscript.PayToTaprootScript(txscript.ComputeTaprootOutputKey(internalKey, rootHash[:]))
+	if err != nil {
+		t.Fatalf("PayToTaprootScript: %v", err)
 	}
 
 	prevHash := chainhash.DoubleHashH([]byte("funding-outpoint-wrong-preimage"))
@@ -158,18 +194,14 @@ func TestLinkedACSRejectsWrongPreimages(t *testing.T) {
 		t.Fatalf("build tx: %v", err)
 	}
 
-	witness, err := signPresignedBurnSplitWitness(tx, 0, fundValueSat, redeemScript, preB, rjA, alicePriv, bobPriv)
+	witness, err := signPresignedBurnSplitWitness(tx, 0, fundValueSat, p2trScript, linkedLeaf, tapTree, internalKey, preB, rjA, alicePriv, bobPriv)
 	if err != nil {
 		t.Fatalf("sign witness: %v", err)
 	}
-	prevPkScript, err := p2WSHScriptPubKey(redeemScript)
-	if err != nil {
-		t.Fatalf("p2WSHScriptPubKey: %v", err)
-	}
 
 	wrongPreB := bytes.Repeat([]byte{0x7A}, 32)
-	tx.TxIn[0].Witness = wire.TxWitness{witness[0], witness[1], witness[2], wrongPreB, rjA, redeemScript}
-	if err := verifyP2WSHSpend(tx, 0, prevPkScript, fundValueSat); err == nil {
+	tx.TxIn[0].Witness = wire.TxWitness{witness[0], witness[1], wrongPreB, rjA, redeemScript, witness[5]}
+	if err := verifyTaprootScriptSpend(tx, 0, p2trScript, fundValueSat); err == nil {
 		t.Fatal("verification unexpectedly succeeded with wrong pre_b")
 	}
 }

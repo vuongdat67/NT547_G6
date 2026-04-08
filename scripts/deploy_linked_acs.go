@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/btcsuite/btcd/btcec/v2"
+	"github.com/btcsuite/btcd/btcec/v2/schnorr"
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
@@ -108,6 +109,8 @@ type deployArtifact struct {
 	Wallet             string `json:"wallet"`
 	LinkedACSAddress   string `json:"linkedACSAddress"`
 	LinkedACSScriptHex string `json:"linkedACSScriptHex"`
+	LeafCRABScriptHex  string `json:"leafCrabScriptHex"`
+	TaprootOutputKey   string `json:"taprootOutputKeyXOnly"`
 	AlicePubKeyHex     string `json:"alicePubKeyHex"`
 	BobPubKeyHex       string `json:"bobPubKeyHex"`
 	FundTxID           string `json:"fundTxid"`
@@ -189,15 +192,25 @@ func main() {
 	alicePriv, alicePub := btcec.PrivKeyFromBytes(random32())
 	bobPriv, bobPub := btcec.PrivKeyFromBytes(random32())
 
+	leafCRABScript, err := buildCRABTaprootLeafScript(hashRjA[:])
+	must(err)
 	linkedScript, err := buildBurnSplitLinkedACSScript(hashRjA[:], hashPreB[:], alicePub.SerializeCompressed(), bobPub.SerializeCompressed())
+	must(err)
+
+	leafCRAB := txscript.NewBaseTapLeaf(leafCRABScript)
+	linkedLeaf := txscript.NewBaseTapLeaf(linkedScript)
+	tapTree := txscript.AssembleTaprootScriptTree(leafCRAB, linkedLeaf)
+	rootHash := tapTree.RootNode.TapHash()
+	internalKey := alicePub
+	outKey := txscript.ComputeTaprootOutputKey(internalKey, rootHash[:])
+	p2trScript, err := txscript.PayToTaprootScript(outKey)
 	must(err)
 
 	params := &chaincfg.RegressionNetParams
 	if *network == "signet" {
 		params = &chaincfg.SigNetParams
 	}
-	scriptHash := sha256.Sum256(linkedScript)
-	addr, err := btcutil.NewAddressWitnessScriptHash(scriptHash[:], params)
+	addr, err := btcutil.NewAddressTaproot(schnorr.SerializePubKey(outKey), params)
 	must(err)
 
 	fmt.Printf("  linked ACS address: %s\n", addr.EncodeAddress())
@@ -236,13 +249,23 @@ func main() {
 	spendTx, burnValue, err := buildBurnSplitSpendTx(*hash, fundVout, fundValueSat, *feeSat, hashRjA[:], hashPreB[:])
 	must(err)
 
-	witness, err := signPresignedBurnSplitWitness(spendTx, 0, fundValueSat, linkedScript, preB, rjA, alicePriv, bobPriv)
+	witness, err := signPresignedBurnSplitWitness(
+		spendTx,
+		0,
+		fundValueSat,
+		p2trScript,
+		linkedLeaf,
+		tapTree,
+		internalKey,
+		preB,
+		rjA,
+		alicePriv,
+		bobPriv,
+	)
 	must(err)
 	spendTx.TxIn[0].Witness = witness
 
-	prevPkScript, err := p2WSHScriptPubKey(linkedScript)
-	must(err)
-	must(verifyP2WSHSpend(spendTx, 0, prevPkScript, fundValueSat))
+	must(verifyTaprootScriptSpend(spendTx, 0, p2trScript, fundValueSat))
 	fmt.Printf("  burn-split outputs: burn=%d sat; miner reward via fee=%d sat\n", burnValue, *feeSat)
 
 	var buf bytes.Buffer
@@ -289,6 +312,8 @@ func main() {
 		Wallet:             *wallet,
 		LinkedACSAddress:   addr.EncodeAddress(),
 		LinkedACSScriptHex: hex.EncodeToString(linkedScript),
+		LeafCRABScriptHex:  hex.EncodeToString(leafCRABScript),
+		TaprootOutputKey:   hex.EncodeToString(schnorr.SerializePubKey(outKey)),
 		AlicePubKeyHex:     hex.EncodeToString(alicePub.SerializeCompressed()),
 		BobPubKeyHex:       hex.EncodeToString(bobPub.SerializeCompressed()),
 		FundTxID:           fundTxID,
@@ -299,7 +324,7 @@ func main() {
 		MinerPayoutSat:     *feeSat,
 		BurnValueSat:       burnValue,
 		FeeSat:             *feeSat,
-		WitnessOrder:       "<dummy> <sig_A> <sig_B> <pre_b> <r^j_a> <redeemScript>",
+		WitnessOrder:       "<sig_B> <sig_A> <pre_b> <r^j_a> <linkedLeafScript> <controlBlock>",
 		HashRjA:            hex.EncodeToString(hashRjA[:]),
 		HashPreB:           hex.EncodeToString(hashPreB[:]),
 		CreatedAtUTC:       time.Now().UTC().Format(time.RFC3339),
@@ -320,7 +345,26 @@ func main() {
 	fmt.Printf("Artifact  : %s\n", path)
 }
 
+func buildCRABTaprootLeafScript(hashRjA []byte) ([]byte, error) {
+	b := txscript.NewScriptBuilder()
+	b.AddOp(txscript.OP_SHA256)
+	b.AddData(hashRjA)
+	b.AddOp(txscript.OP_EQUAL)
+	return b.Script()
+}
+
 func buildBurnSplitLinkedACSScript(hashRjA, hashPreB, alicePub, bobPub []byte) ([]byte, error) {
+	aliceKey, err := btcec.ParsePubKey(alicePub)
+	if err != nil {
+		return nil, fmt.Errorf("parse alice pubkey: %w", err)
+	}
+	bobKey, err := btcec.ParsePubKey(bobPub)
+	if err != nil {
+		return nil, fmt.Errorf("parse bob pubkey: %w", err)
+	}
+	aliceXOnly := schnorr.SerializePubKey(aliceKey)
+	bobXOnly := schnorr.SerializePubKey(bobKey)
+
 	b := txscript.NewScriptBuilder()
 	b.AddOp(txscript.OP_SHA256)
 	b.AddData(hashRjA)
@@ -328,11 +372,12 @@ func buildBurnSplitLinkedACSScript(hashRjA, hashPreB, alicePub, bobPub []byte) (
 	b.AddOp(txscript.OP_SHA256)
 	b.AddData(hashPreB)
 	b.AddOp(txscript.OP_EQUALVERIFY)
+	b.AddData(aliceXOnly)
+	b.AddOp(txscript.OP_CHECKSIG)
+	b.AddData(bobXOnly)
+	b.AddOp(txscript.OP_CHECKSIGADD)
 	b.AddOp(txscript.OP_2)
-	b.AddData(alicePub)
-	b.AddData(bobPub)
-	b.AddOp(txscript.OP_2)
-	b.AddOp(txscript.OP_CHECKMULTISIG)
+	b.AddOp(txscript.OP_EQUAL)
 	return b.Script()
 }
 
@@ -369,47 +414,39 @@ func buildBurnOutputScript(hashRjA, hashPreB []byte) ([]byte, error) {
 	return b.Script()
 }
 
-func signPresignedBurnSplitWitness(tx *wire.MsgTx, inputIndex int, prevValueSat int64, redeemScript, preB, rjA []byte, alicePriv, bobPriv *btcec.PrivateKey) (wire.TxWitness, error) {
-	prevPkScript, err := p2WSHScriptPubKey(redeemScript)
-	if err != nil {
-		return nil, err
-	}
+func signPresignedBurnSplitWitness(tx *wire.MsgTx, inputIndex int, prevValueSat int64, prevPkScript []byte, linkedLeaf txscript.TapLeaf, tapTree *txscript.IndexedTapScriptTree, internalKey *btcec.PublicKey, preB, rjA []byte, alicePriv, bobPriv *btcec.PrivateKey) (wire.TxWitness, error) {
 	prevFetcher := txscript.NewCannedPrevOutputFetcher(prevPkScript, prevValueSat)
 	hashes := txscript.NewTxSigHashes(tx, prevFetcher)
 
-	sigA, err := txscript.RawTxInWitnessSignature(tx, hashes, inputIndex, prevValueSat, redeemScript, txscript.SigHashAll, alicePriv)
+	sigA, err := txscript.RawTxInTapscriptSignature(tx, hashes, inputIndex, prevValueSat, prevPkScript, linkedLeaf, txscript.SigHashDefault, alicePriv)
 	if err != nil {
 		return nil, fmt.Errorf("alice signature: %w", err)
 	}
-	sigB, err := txscript.RawTxInWitnessSignature(tx, hashes, inputIndex, prevValueSat, redeemScript, txscript.SigHashAll, bobPriv)
+	sigB, err := txscript.RawTxInTapscriptSignature(tx, hashes, inputIndex, prevValueSat, prevPkScript, linkedLeaf, txscript.SigHashDefault, bobPriv)
 	if err != nil {
 		return nil, fmt.Errorf("bob signature: %w", err)
 	}
-
-	candidates := []wire.TxWitness{
-		{[]byte{}, sigA, sigB, preB, rjA, redeemScript},
-		{[]byte{}, sigB, sigA, preB, rjA, redeemScript},
+	proofIndex, ok := tapTree.LeafProofIndex[linkedLeaf.TapHash()]
+	if !ok {
+		return nil, errors.New("linked leaf proof not found in taproot tree")
+	}
+	ctrl := tapTree.LeafMerkleProofs[proofIndex].ToControlBlock(internalKey)
+	ctrlBytes, err := ctrl.ToBytes()
+	if err != nil {
+		return nil, fmt.Errorf("serialize control block: %w", err)
 	}
 
-	for _, w := range candidates {
-		tx.TxIn[inputIndex].Witness = w
-		if err := verifyP2WSHSpend(tx, inputIndex, prevPkScript, prevValueSat); err == nil {
-			return w, nil
-		}
+	// Witness order is chosen so preimage checks consume rjA then preB before signature checks.
+	w := wire.TxWitness{sigB, sigA, preB, rjA, linkedLeaf.Script, ctrlBytes}
+	tx.TxIn[inputIndex].Witness = w
+	if err := verifyTaprootScriptSpend(tx, inputIndex, prevPkScript, prevValueSat); err != nil {
+		return nil, fmt.Errorf("deterministic witness ordering failed verification: %w", err)
 	}
 
-	return nil, errors.New("unable to construct a valid 2-of-2 witness ordering")
+	return w, nil
 }
 
-func p2WSHScriptPubKey(redeemScript []byte) ([]byte, error) {
-	h := sha256.Sum256(redeemScript)
-	b := txscript.NewScriptBuilder()
-	b.AddOp(txscript.OP_0)
-	b.AddData(h[:])
-	return b.Script()
-}
-
-func verifyP2WSHSpend(tx *wire.MsgTx, inputIndex int, prevPkScript []byte, prevValueSat int64) error {
+func verifyTaprootScriptSpend(tx *wire.MsgTx, inputIndex int, prevPkScript []byte, prevValueSat int64) error {
 	prevFetcher := txscript.NewCannedPrevOutputFetcher(prevPkScript, prevValueSat)
 	hashes := txscript.NewTxSigHashes(tx, prevFetcher)
 	vm, err := txscript.NewEngine(prevPkScript, tx, inputIndex, txscript.StandardVerifyFlags, nil, hashes, prevValueSat, prevFetcher)

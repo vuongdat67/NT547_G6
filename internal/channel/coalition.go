@@ -81,14 +81,12 @@ func (a *CoalitionAnalysis) IsCLBAFeasibleCoalition() bool {
 	return a.WidthCoalition().Sign() > 0
 }
 
-// CStarForCoalition is a purely COMPARATIVE value exposed for diagnostic
-// reporting. It is anchored at the single-miner burn-based bound
-// c* = v + v_dep and reduced by (k-1) * v_col to visualize how the
-// single-miner bound would shrink if one naively extrapolated the
-// He-HTLC coalition floor into the CRAB-He composed model. This
-// extrapolation is NOT derived from the composed Theorem 2 and must not
-// be cited as an independent security threshold.
-func (a *CoalitionAnalysis) CStarForCoalition() *big.Int {
+// DiagnosticCStarReduction is a purely COMPARATIVE diagnostic value.
+// It is anchored at the single-miner burn-based bound c* = v + v_dep and
+// reduced by (k-1) * v_col to visualize a naive extrapolation trend.
+// This value is NOT a theorem-level security threshold in the composed
+// CRAB-He model.
+func (a *CoalitionAnalysis) DiagnosticCStarReduction() *big.Int {
 	if a.K <= 1 {
 		return new(big.Int).Set(a.Params.CStar)
 	}
@@ -98,6 +96,12 @@ func (a *CoalitionAnalysis) CStarForCoalition() *big.Int {
 		return big.NewInt(0)
 	}
 	return cStar
+}
+
+// CStarForCoalition is retained for API compatibility.
+// Deprecated: use DiagnosticCStarReduction.
+func (a *CoalitionAnalysis) CStarForCoalition() *big.Int {
+	return a.DiagnosticCStarReduction()
 }
 
 // KMax returns the diagnostic threshold index k where the He-HTLC
@@ -133,7 +137,7 @@ func (a *CoalitionAnalysis) Report() string {
 			"  Bob-UB     (v+v_dep)             = %s sat\n"+
 			"  Miner-LB_k (k*v_col, diagnostic) = %s sat\n"+
 			"  Width_k    (Bob-UB - Miner-LB_k) = %s sat\n"+
-			"  c*_k comparative reference        = %s sat\n"+
+			"  c_ref(k) diagnostic reference     = %s sat\n"+
 			"  Diagnostic status: %s\n"+
 			"  NOTE: composed-model security is governed by Theorem 2 (single-miner c*),\n"+
 			"  not by this diagnostic. See Remark 2 in the paper.\n",
@@ -144,7 +148,7 @@ func (a *CoalitionAnalysis) Report() string {
 		a.BobUBLinked(),
 		a.MinerLBCoalition(),
 		a.WidthCoalition(),
-		a.CStarForCoalition(),
+		a.DiagnosticCStarReduction(),
 		status,
 	)
 }

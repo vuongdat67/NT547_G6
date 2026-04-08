@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	"github.com/btcsuite/btcd/btcec/v2"
+	"github.com/btcsuite/btcd/btcec/v2/schnorr"
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcd/wire"
 )
@@ -67,7 +69,7 @@ func MakeFunding(p *Params, alicePK, bobPK string) *Tx {
 			Condition: fmt.Sprintf("2-of-2 multisig(%s|%s)", short(alicePK), short(bobPK)),
 			Script:    fmt.Sprintf("OP_2 %s %s OP_2 OP_CHECKMULTISIG", short(alicePK), short(bobPK)),
 		}},
-		Note: fmt.Sprintf("total=%d sat  v=%d  c*=%d", total, sat(p.V), sat(p.CStar)),
+		Note: fmt.Sprintf("total=%d sat  v=%d  c*=%d  (base lockup without linked tranche)", total, sat(p.V), sat(p.CStar)),
 	}
 }
 
@@ -77,7 +79,7 @@ func MakeCommitA(p *Params, j int, vA, vB int64,
 
 	outputs := []Output{
 		{
-			ValueSat:  vB + sat(p.CStar),
+			ValueSat:  vB,
 			Condition: fmt.Sprintf("B immediately (pk=%s)", short(bobPK)),
 			Script:    fmt.Sprintf("%s OP_CHECKSIG", short(bobPK)),
 		},
@@ -102,20 +104,19 @@ func MakeCommitA(p *Params, j int, vA, vB int64,
 	note := fmt.Sprintf("j=%d vA=%d vB=%d c*=%d", j, vA, vB, sat(p.CStar))
 
 	if htlc != nil {
-		outputs = append(outputs, Output{
+		outputs[2] = Output{
 			ValueSat: sat(p.CStar),
 			Condition: fmt.Sprintf(
-				"[CRAB-He linked ACS] 2-of-2(A|B) + r^%d_a + pre_b; presigned split(miner=v_col, residual=burn)  H(pre_b)=%s",
-				j, hx(htlc.HashPreB)),
+				"[CRAB-He Taproot ACS] out[2] commits two leaves: leaf-CRAB(H(r^%d_a)) and leaf-linked(H(pre_b),H(r^%d_a),2-of-2 schnorr CHECKSIGADD)",
+				j, j),
 			Script: fmt.Sprintf(
-				"OP_SHA256 %s OP_EQUALVERIFY OP_SHA256 %s OP_EQUALVERIFY OP_2 %s %s OP_2 OP_CHECKMULTISIG",
+				"P2TR(internal=pkA, leaves={OP_SHA256 %s OP_EQUAL ; OP_SHA256 %s OP_EQUALVERIFY OP_SHA256 %s OP_EQUALVERIFY <xonly(pkA)> OP_CHECKSIG <xonly(pkB)> OP_CHECKSIGADD OP_2 OP_EQUAL})",
 				hx(rjA.Hash),
 				hx(htlc.HashPreB),
-				short(alicePK),
-				short(bobPK)),
-		})
+				hx(rjA.Hash)),
+		}
 		sizeVB = estimateCommitVBytes(p, true, rjA.Hash, htlc.HashPreB)
-		note += " | HTLC linked ACS active"
+		note += " | HTLC linked ACS active via Taproot leaf on out[2] (no additional collateral tranche)"
 	}
 
 	return &Tx{
@@ -178,8 +179,10 @@ func MeasureCommitTemplateSerialized(p *Params, withLinkedACS bool, hashRjA, has
 }
 
 func buildCommitTemplateTx(p *Params, withLinkedACS bool, hashRjA, hashPreB []byte) (*wire.MsgTx, error) {
-	aliceKey := dummyCompressedKey(0x02, 0x11)
-	bobKey := dummyCompressedKey(0x03, 0x22)
+	_, alicePub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x11}, 32))
+	_, bobPub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x22}, 32))
+	aliceKey := alicePub.SerializeCompressed()
+	bobKey := bobPub.SerializeCompressed()
 	revHash := normalizedHash32(hashRjA, 0x55)
 	preBHash := normalizedHash32(hashPreB, 0x66)
 
@@ -218,7 +221,7 @@ func buildCommitTemplateTx(p *Params, withLinkedACS bool, hashRjA, hashPreB []by
 		return nil, err
 	}
 
-	out2, err := txscript.NewScriptBuilder().
+	out2Legacy, err := txscript.NewScriptBuilder().
 		AddOp(txscript.OP_SHA256).
 		AddData(revHash).
 		AddOp(txscript.OP_EQUALVERIFY).
@@ -235,29 +238,61 @@ func buildCommitTemplateTx(p *Params, withLinkedACS bool, hashRjA, hashPreB []by
 	})
 
 	cStar := sat(p.CStar)
-	tx.AddTxOut(&wire.TxOut{Value: cStar, PkScript: out0})
-	tx.AddTxOut(&wire.TxOut{Value: sat(p.V) + cStar, PkScript: out1})
-	tx.AddTxOut(&wire.TxOut{Value: cStar, PkScript: out2})
+	vHalf := sat(p.V) / 2
+	tx.AddTxOut(&wire.TxOut{Value: vHalf, PkScript: out0})
+	tx.AddTxOut(&wire.TxOut{Value: sat(p.V) - vHalf + cStar, PkScript: out1})
+	txOut2 := out2Legacy
 
 	if withLinkedACS {
-		out3, buildErr := txscript.NewScriptBuilder().
+		alicePub, parseErr := btcec.ParsePubKey(aliceKey)
+		if parseErr != nil {
+			return nil, parseErr
+		}
+		bobPub, parseErr := btcec.ParsePubKey(bobKey)
+		if parseErr != nil {
+			return nil, parseErr
+		}
+
+		leafCRAB, buildErr := txscript.NewScriptBuilder().
+			AddOp(txscript.OP_SHA256).
+			AddData(revHash).
+			AddOp(txscript.OP_EQUAL).
+			Script()
+		if buildErr != nil {
+			return nil, buildErr
+		}
+
+		leafLinked, buildErr := txscript.NewScriptBuilder().
 			AddOp(txscript.OP_SHA256).
 			AddData(revHash).
 			AddOp(txscript.OP_EQUALVERIFY).
 			AddOp(txscript.OP_SHA256).
 			AddData(preBHash).
 			AddOp(txscript.OP_EQUALVERIFY).
+			AddData(schnorr.SerializePubKey(alicePub)).
+			AddOp(txscript.OP_CHECKSIG).
+			AddData(schnorr.SerializePubKey(bobPub)).
+			AddOp(txscript.OP_CHECKSIGADD).
 			AddOp(txscript.OP_2).
-			AddData(aliceKey).
-			AddData(bobKey).
-			AddOp(txscript.OP_2).
-			AddOp(txscript.OP_CHECKMULTISIG).
+			AddOp(txscript.OP_EQUAL).
 			Script()
 		if buildErr != nil {
 			return nil, buildErr
 		}
-		tx.AddTxOut(&wire.TxOut{Value: cStar, PkScript: out3})
+
+		tapTree := txscript.AssembleTaprootScriptTree(
+			txscript.NewBaseTapLeaf(leafCRAB),
+			txscript.NewBaseTapLeaf(leafLinked),
+		)
+		rootHash := tapTree.RootNode.TapHash()
+		outKey := txscript.ComputeTaprootOutputKey(alicePub, rootHash[:])
+		txOut2, buildErr = txscript.PayToTaprootScript(outKey)
+		if buildErr != nil {
+			return nil, buildErr
+		}
 	}
+
+	tx.AddTxOut(&wire.TxOut{Value: cStar, PkScript: txOut2})
 
 	// Model the 2-of-2 funding-spend witness used by tx_commit_A.
 	tx.TxIn[0].Witness = wire.TxWitness{
@@ -268,15 +303,6 @@ func buildCommitTemplateTx(p *Params, withLinkedACS bool, hashRjA, hashPreB []by
 	}
 
 	return tx, nil
-}
-
-func dummyCompressedKey(prefix, fill byte) []byte {
-	key := make([]byte, 33)
-	key[0] = prefix
-	for i := 1; i < len(key); i++ {
-		key[i] = fill
-	}
-	return key
 }
 
 func normalizedHash32(src []byte, fill byte) []byte {
@@ -344,7 +370,7 @@ func MakeRevokeACSLinked(j int, rjA *RevocationSecret, htlc *HTLCSecrets, cStar 
 	return &Tx{
 		Label:  fmt.Sprintf("tx_revoke_ACS_linked[%d]", j),
 		SizeVB: 246,
-		Inputs: []string{fmt.Sprintf("tx_commit_A[%d] out[3]", j)},
+		Inputs: []string{fmt.Sprintf("tx_commit_A[%d] out[2] (Taproot linked leaf)", j)},
 		Outputs: []Output{{
 			ValueSat:  burnValue,
 			Condition: "provable burn output; miner reward is transaction fee",
@@ -352,11 +378,11 @@ func MakeRevokeACSLinked(j int, rjA *RevocationSecret, htlc *HTLCSecrets, cStar 
 		}},
 		Note: fmt.Sprintf(
 			"CRAB-He linked ACS j=%d\n"+
-				"  witness: <pre_b> <r^%d_a> + 2-of-2 presign\n"+
+				"  witness: tapscript leaf2 stack <sig_B> <sig_A> <pre_b> <r^%d_a>\n"+
 				"  trigger: Bob broadcasts dep-B on-chain\n"+
 				"  r^%d_a from: PBB or Alice revoke tx\n"+
 				"  payout split: miner fee=%d sat, burn output=%d sat\n"+
-				"  Bob has no standalone spend path for out[3]",
+				"  Bob has no standalone spend path that redirects Taproot linked value",
 			j, j, j, minerFee, burnValue),
 	}
 }
