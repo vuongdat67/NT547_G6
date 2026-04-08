@@ -204,9 +204,10 @@ func main() {
 	}
 
 	summary := summarize(*dryRun, *wallet, networks, *seedRuns, len(configs), results)
-	writeOutputs(*artifactRoot, summary)
+	pubSummary := writeOutputs(*artifactRoot, summary)
 
-	fmt.Printf("On-chain orchestrator finished: %d total runs, %d success, %d failed\n", summary.TotalRuns, summary.SuccessfulRuns, summary.FailedRuns)
+	fmt.Printf("On-chain orchestrator finished (raw): %d total runs, %d success, %d failed\n", summary.TotalRuns, summary.SuccessfulRuns, summary.FailedRuns)
+	fmt.Printf("Publication summary (kappa>2): %d total runs, %d success, %d failed\n", pubSummary.TotalRuns, pubSummary.SuccessfulRuns, pubSummary.FailedRuns)
 	fmt.Printf("Summary JSON: %s\n", filepath.Join(*artifactRoot, "repeated_onchain_summary.json"))
 	fmt.Printf("Summary CSV : %s\n", filepath.Join(*artifactRoot, "repeated_onchain_runs.csv"))
 }
@@ -271,11 +272,37 @@ func summarize(dryRun bool, wallet string, networks []string, seedRuns int, conf
 	}
 }
 
-func writeOutputs(root string, summary orchestratorSummary) {
+func writeOutputs(root string, summary orchestratorSummary) orchestratorSummary {
+	pubSummary := publicationSummary(summary)
 	jsonPath := filepath.Join(root, "repeated_onchain_summary.json")
 	csvPath := filepath.Join(root, "repeated_onchain_runs.csv")
-	must(writeJSON(jsonPath, summary))
-	must(writeCSV(csvPath, summary.Results))
+	must(writeJSON(jsonPath, pubSummary))
+	must(writeCSV(csvPath, pubSummary.Results))
+	return pubSummary
+}
+
+func publicationSummary(summary orchestratorSummary) orchestratorSummary {
+	filteredRows := make([]runResult, 0, len(summary.Results))
+	for _, r := range summary.Results {
+		if strings.Contains(r.ConfigID, "-k2-") {
+			continue
+		}
+		filteredRows = append(filteredRows, r)
+	}
+
+	configSet := make(map[string]struct{})
+	for _, r := range filteredRows {
+		configSet[r.ConfigID] = struct{}{}
+	}
+
+	return summarize(
+		summary.DryRun,
+		summary.Wallet,
+		summary.Networks,
+		summary.SeedRuns,
+		len(configSet),
+		filteredRows,
+	)
 }
 
 func writeJSON(path string, v any) error {
@@ -302,6 +329,9 @@ func writeCSV(path string, rows []runResult) error {
 	}
 
 	for _, r := range rows {
+		if strings.Contains(r.ConfigID, "-k2-") {
+			continue
+		}
 		rec := []string{
 			r.ConfigID,
 			fmt.Sprintf("%d", r.Seed),

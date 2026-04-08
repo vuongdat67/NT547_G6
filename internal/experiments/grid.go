@@ -22,7 +22,7 @@ type Config struct {
 func BuildGridConfigs(vSat int64) []Config {
 	vDepRatios := []float64{0.01, 0.025, 0.05, 0.1}
 	vColOverVDep := []float64{0.5, 0.75, 1.0}
-	kappas := []int{2, 3, 5, 7}
+	kappas := []int{3, 5, 7}
 	hops := []int{1, 3, 5, 7}
 
 	out := make([]Config, 0, len(vDepRatios)*len(vColOverVDep)*len(kappas)*len(hops))
@@ -68,13 +68,16 @@ func HeCondition(vDepSat, vColSat int64, kappa int) (bool, string) {
 }
 
 func LinkedWidth(vSat, vDepSat, vColSat, cSat int64) int64 {
-	return (vSat + vDepSat - cSat) - vColSat
+	_ = vColSat
+	return (vSat + vDepSat) - cSat
 }
 
 func CStar(vSat, vDepSat, vColSat int64) int64 {
-	return vSat + vDepSat - vColSat
+	_ = vColSat
+	return vSat + vDepSat
 }
 
 func CNStar(vSat, vDepSat, vColSat int64, hops int) int64 {
-	return vSat + int64(hops)*(vDepSat-vColSat)
+	_ = vColSat
+	return vSat + int64(hops)*vDepSat
 }

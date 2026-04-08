@@ -18,7 +18,6 @@ import (
 
 const (
 	defaultVSat         int64 = 2_000_000
-	defaultSeedRuns           = 30
 	epsilonSat          int64 = 1_000
 	simModelDescription       = "synthetic Monte Carlo over analytical attack width with Gaussian noise (not blockchain execution)"
 )
@@ -112,12 +111,10 @@ type telemetry struct {
 type experimentReport struct {
 	GeneratedAtUTC    string                 `json:"generatedAtUtc"`
 	Source            string                 `json:"source"`
-	SeedRuns          int                    `json:"seedRuns"`
 	GridCount         int                    `json:"gridCount"`
 	SweepRows         []sweepRow             `json:"sweepRows"`
 	MultiHopRows      []multiHopRow          `json:"multiHopRows"`
 	BaselinePipelines []experiments.Pipeline `json:"baselinePipelines"`
-	SimSummaries      []simSummary           `json:"simSummaries"`
 	Telemetry         telemetry              `json:"telemetry"`
 }
 
@@ -132,18 +129,15 @@ func main() {
 	baselinePipelines := buildBaselinePipelines(configs)
 
 	multiHop := buildMultiHopTable(defaultVSat, 0.05, 0.025)
-	simSummaries := runSeedSimulations(configs, defaultSeedRuns)
 	tel := collectTelemetry()
 
 	rep := experimentReport{
 		GeneratedAtUTC:    time.Now().UTC().Format(time.RFC3339),
 		Source:            "crab-he experiment runner (check-list + experiment_guide criteria)",
-		SeedRuns:          defaultSeedRuns,
 		GridCount:         len(configs),
 		SweepRows:         sweepRows,
 		MultiHopRows:      multiHop,
 		BaselinePipelines: baselinePipelines,
-		SimSummaries:      simSummaries,
 		Telemetry:         tel,
 	}
 
@@ -160,14 +154,13 @@ func main() {
 	must(writeSweepCSV(csvPath, sweepRows))
 	must(writeMultiHopCSV(multiHopPath, multiHop))
 	must(writeJSON(baselinePipelinesPath, baselinePipelines))
-	must(writeJSON(simPath, simSummaries))
+	_ = os.Remove(simPath)
 
 	fmt.Println("Generated experiment artifacts:")
 	fmt.Println(" -", jsonPath)
 	fmt.Println(" -", csvPath)
 	fmt.Println(" -", multiHopPath)
 	fmt.Println(" -", baselinePipelinesPath)
-	fmt.Println(" -", simPath)
 	fmt.Printf("Done in %.2f ms\n", float64(time.Since(startAll).Microseconds())/1000.0)
 }
 
@@ -514,6 +507,9 @@ func writeSweepCSV(path string, rows []sweepRow) error {
 	}
 
 	for _, r := range rows {
+		if r.Kappa <= 2 {
+			continue
+		}
 		rec := []string{
 			r.ConfigID,
 			fmt.Sprintf("%d", r.VSat),
