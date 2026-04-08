@@ -2,7 +2,12 @@
 package channel
 
 import (
+	"bytes"
+	"encoding/hex"
 	"fmt"
+
+	"github.com/btcsuite/btcd/txscript"
+	"github.com/btcsuite/btcd/wire"
 )
 
 type Output struct {
@@ -33,6 +38,19 @@ func (t *Tx) String() string {
 		s += "  >> " + t.Note + "\n"
 	}
 	return s
+}
+
+type SerializedMeasurement struct {
+	Name         string `json:"name"`
+	BaseBytes    int    `json:"baseBytes"`
+	WitnessBytes int    `json:"witnessBytes"`
+	TotalBytes   int    `json:"totalBytes"`
+	Weight       int    `json:"weight"`
+	VBytes       int    `json:"vbytes"`
+	InputCount   int    `json:"inputCount"`
+	OutputCount  int    `json:"outputCount"`
+	WitnessItems int    `json:"witnessItems"`
+	TxHex        string `json:"txHex"`
 }
 
 func MakeFunding(p *Params, alicePK, bobPK string) *Tx {
@@ -80,21 +98,23 @@ func MakeCommitA(p *Params, j int, vA, vB int64,
 		},
 	}
 
-	sizeVB := 457
+	sizeVB := estimateCommitVBytes(p, false, rjA.Hash, nil)
 	note := fmt.Sprintf("j=%d vA=%d vB=%d c*=%d", j, vA, vB, sat(p.CStar))
 
 	if htlc != nil {
 		outputs = append(outputs, Output{
 			ValueSat: sat(p.CStar),
 			Condition: fmt.Sprintf(
-				"[CRAB-He ACS] any miner + r^%d_a + pre_b  H(pre_b)=%s",
+				"[CRAB-He linked ACS] 2-of-2(A|B) + r^%d_a + pre_b; presigned split(miner=v_col, residual=burn)  H(pre_b)=%s",
 				j, hx(htlc.HashPreB)),
 			Script: fmt.Sprintf(
-				"OP_SHA256 %s OP_EQUALVERIFY OP_SHA256 %s OP_EQUALVERIFY OP_TRUE",
+				"OP_SHA256 %s OP_EQUALVERIFY OP_SHA256 %s OP_EQUALVERIFY OP_2 %s %s OP_2 OP_CHECKMULTISIG",
 				hx(rjA.Hash),
-				hx(htlc.HashPreB)),
+				hx(htlc.HashPreB),
+				short(alicePK),
+				short(bobPK)),
 		})
-		sizeVB += 32
+		sizeVB = estimateCommitVBytes(p, true, rjA.Hash, htlc.HashPreB)
 		note += " | HTLC linked ACS active"
 	}
 
@@ -105,6 +125,164 @@ func MakeCommitA(p *Params, j int, vA, vB int64,
 		Outputs: outputs,
 		Note:    note,
 	}
+}
+
+func estimateCommitVBytes(p *Params, withLinkedACS bool, hashRjA, hashPreB []byte) int {
+	measure, err := MeasureCommitTemplateSerialized(p, withLinkedACS, hashRjA, hashPreB)
+	if err != nil {
+		panic(fmt.Sprintf("failed to build commit template tx for vsize measurement: %v", err))
+	}
+
+	return measure.VBytes
+}
+
+func MeasureCommitTemplateSerialized(p *Params, withLinkedACS bool, hashRjA, hashPreB []byte) (SerializedMeasurement, error) {
+	tx, err := buildCommitTemplateTx(p, withLinkedACS, hashRjA, hashPreB)
+	if err != nil {
+		return SerializedMeasurement{}, err
+	}
+
+	base := tx.SerializeSizeStripped()
+	total := tx.SerializeSize()
+	weight := (base * 3) + total
+	vsize := (weight + 3) / 4
+	witnessBytes := total - base
+
+	var witItems int
+	if len(tx.TxIn) > 0 {
+		witItems = len(tx.TxIn[0].Witness)
+	}
+
+	var buf bytes.Buffer
+	if err := tx.Serialize(&buf); err != nil {
+		return SerializedMeasurement{}, err
+	}
+
+	name := "tx_commit_A (no HTLC)"
+	if withLinkedACS {
+		name = "tx_commit_A (HTLC+linked ACS)"
+	}
+
+	return SerializedMeasurement{
+		Name:         name,
+		BaseBytes:    base,
+		WitnessBytes: witnessBytes,
+		TotalBytes:   total,
+		Weight:       weight,
+		VBytes:       vsize,
+		InputCount:   len(tx.TxIn),
+		OutputCount:  len(tx.TxOut),
+		WitnessItems: witItems,
+		TxHex:        hex.EncodeToString(buf.Bytes()),
+	}, nil
+}
+
+func buildCommitTemplateTx(p *Params, withLinkedACS bool, hashRjA, hashPreB []byte) (*wire.MsgTx, error) {
+	aliceKey := dummyCompressedKey(0x02, 0x11)
+	bobKey := dummyCompressedKey(0x03, 0x22)
+	revHash := normalizedHash32(hashRjA, 0x55)
+	preBHash := normalizedHash32(hashPreB, 0x66)
+
+	fundingRedeem, err := txscript.NewScriptBuilder().
+		AddOp(txscript.OP_2).
+		AddData(aliceKey).
+		AddData(bobKey).
+		AddOp(txscript.OP_2).
+		AddOp(txscript.OP_CHECKMULTISIG).
+		Script()
+	if err != nil {
+		return nil, err
+	}
+
+	out0, err := txscript.NewScriptBuilder().
+		AddData(bobKey).
+		AddOp(txscript.OP_CHECKSIG).
+		Script()
+	if err != nil {
+		return nil, err
+	}
+
+	out1, err := txscript.NewScriptBuilder().
+		AddOp(txscript.OP_IF).
+		AddData(bobKey).
+		AddOp(txscript.OP_CHECKSIG).
+		AddOp(txscript.OP_ELSE).
+		AddInt64(p.T).
+		AddOp(txscript.OP_CHECKSEQUENCEVERIFY).
+		AddOp(txscript.OP_DROP).
+		AddData(aliceKey).
+		AddOp(txscript.OP_CHECKSIG).
+		AddOp(txscript.OP_ENDIF).
+		Script()
+	if err != nil {
+		return nil, err
+	}
+
+	out2, err := txscript.NewScriptBuilder().
+		AddOp(txscript.OP_SHA256).
+		AddData(revHash).
+		AddOp(txscript.OP_EQUALVERIFY).
+		AddOp(txscript.OP_TRUE).
+		Script()
+	if err != nil {
+		return nil, err
+	}
+
+	tx := wire.NewMsgTx(wire.TxVersion)
+	tx.AddTxIn(&wire.TxIn{
+		PreviousOutPoint: wire.OutPoint{},
+		Sequence:         wire.MaxTxInSequenceNum,
+	})
+
+	cStar := sat(p.CStar)
+	tx.AddTxOut(&wire.TxOut{Value: cStar, PkScript: out0})
+	tx.AddTxOut(&wire.TxOut{Value: sat(p.V) + cStar, PkScript: out1})
+	tx.AddTxOut(&wire.TxOut{Value: cStar, PkScript: out2})
+
+	if withLinkedACS {
+		out3, buildErr := txscript.NewScriptBuilder().
+			AddOp(txscript.OP_SHA256).
+			AddData(revHash).
+			AddOp(txscript.OP_EQUALVERIFY).
+			AddOp(txscript.OP_SHA256).
+			AddData(preBHash).
+			AddOp(txscript.OP_EQUALVERIFY).
+			AddOp(txscript.OP_2).
+			AddData(aliceKey).
+			AddData(bobKey).
+			AddOp(txscript.OP_2).
+			AddOp(txscript.OP_CHECKMULTISIG).
+			Script()
+		if buildErr != nil {
+			return nil, buildErr
+		}
+		tx.AddTxOut(&wire.TxOut{Value: cStar, PkScript: out3})
+	}
+
+	// Model the 2-of-2 funding-spend witness used by tx_commit_A.
+	tx.TxIn[0].Witness = wire.TxWitness{
+		[]byte{},
+		bytes.Repeat([]byte{0x30}, 73),
+		bytes.Repeat([]byte{0x31}, 73),
+		fundingRedeem,
+	}
+
+	return tx, nil
+}
+
+func dummyCompressedKey(prefix, fill byte) []byte {
+	key := make([]byte, 33)
+	key[0] = prefix
+	for i := 1; i < len(key); i++ {
+		key[i] = fill
+	}
+	return key
+}
+
+func normalizedHash32(src []byte, fill byte) []byte {
+	out := bytes.Repeat([]byte{fill}, 32)
+	copy(out, src)
+	return out
 }
 
 func MakeSpendA(p *Params, j int, vA int64, alicePK string) *Tx {
@@ -153,26 +331,33 @@ func MakeRevokeACSStd(j int, rjA *RevocationSecret, cStar int64) *Tx {
 	}
 }
 
-func MakeRevokeACSLinked(j int, rjA *RevocationSecret, htlc *HTLCSecrets, cStar int64) *Tx {
+func MakeRevokeACSLinked(j int, rjA *RevocationSecret, htlc *HTLCSecrets, cStar int64, vCol int64) *Tx {
+	minerFee := vCol
+	if minerFee > cStar {
+		minerFee = cStar
+	}
+	burnValue := cStar - minerFee
+	if burnValue < 0 {
+		burnValue = 0
+	}
+
 	return &Tx{
 		Label:  fmt.Sprintf("tx_revoke_ACS_linked[%d]", j),
-		SizeVB: 224,
+		SizeVB: 246,
 		Inputs: []string{fmt.Sprintf("tx_commit_A[%d] out[3]", j)},
 		Outputs: []Output{{
-			ValueSat:  cStar,
-			Condition: "any miner knowing r^j_a AND pre_b (CRAB-He linked ACS)",
-			Script: fmt.Sprintf(
-				"OP_SHA256 %s OP_EQUALVERIFY OP_SHA256 %s OP_EQUALVERIFY OP_TRUE",
-				hx(rjA.Hash),
-				hx(htlc.HashPreB)),
+			ValueSat:  burnValue,
+			Condition: "provable burn output; miner reward is transaction fee",
+			Script:    "OP_RETURN <burn-commitment>",
 		}},
 		Note: fmt.Sprintf(
 			"CRAB-He linked ACS j=%d\n"+
-				"  witness: <pre_b> <r^%d_a>\n"+
+				"  witness: <pre_b> <r^%d_a> + 2-of-2 presign\n"+
 				"  trigger: Bob broadcasts dep-B on-chain\n"+
 				"  r^%d_a from: PBB or Alice revoke tx\n"+
-				"  auto-collects c*=%d sat -> CLBA self-defeating",
-			j, j, j, cStar),
+				"  payout split: miner fee=%d sat, burn output=%d sat\n"+
+				"  Bob has no standalone spend path for out[3]",
+			j, j, j, minerFee, burnValue),
 	}
 }
 
@@ -212,7 +397,7 @@ func (ch *Channel) GeneratePunishmentBundle(fraudJ int, fraudRevA *RevocationSec
 	}
 	if ch.HTLC != nil {
 		bundle = append(bundle,
-			MakeRevokeACSLinked(fraudJ, fraudRevA, ch.HTLC, sat(ch.P.CStar)))
+			MakeRevokeACSLinked(fraudJ, fraudRevA, ch.HTLC, sat(ch.P.CStar), sat(ch.P.VCol)))
 	}
 	return bundle
 }

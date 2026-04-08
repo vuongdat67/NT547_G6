@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-04-03T15:56:23Z",
+  "generatedAtUtc": "2026-04-08T00:03:08Z",
   "source": "crab-he local implementation and deployment artifacts",
   "txTable": [
     {
@@ -16,23 +16,23 @@
     {
       "name": "tx_commit_A (no HTLC)",
       "objectType": "channel_tx",
-      "vbytes": 457,
+      "vbytes": 283,
       "feeUsdBySatPerVB": {
-        "10": 1.22933,
-        "2": 0.245866,
-        "20": 2.45866,
-        "7": 0.860531
+        "10": 0.76127,
+        "2": 0.152254,
+        "20": 1.52254,
+        "7": 0.532889
       }
     },
     {
       "name": "tx_commit_A (HTLC+linked ACS)",
       "objectType": "channel_tx",
-      "vbytes": 489,
+      "vbytes": 433,
       "feeUsdBySatPerVB": {
-        "10": 1.31541,
-        "2": 0.263082,
-        "20": 2.63082,
-        "7": 0.920787
+        "10": 1.16477,
+        "2": 0.232954,
+        "20": 2.32954,
+        "7": 0.815339
       }
     },
     {
@@ -71,12 +71,12 @@
     {
       "name": "tx_revoke_ACS_linked",
       "objectType": "channel_tx",
-      "vbytes": 224,
+      "vbytes": 246,
       "feeUsdBySatPerVB": {
-        "10": 0.60256,
-        "2": 0.120512,
-        "20": 1.20512,
-        "7": 0.421792
+        "10": 0.66174,
+        "2": 0.132348,
+        "20": 1.32348,
+        "7": 0.463218
       }
     },
     {
@@ -124,32 +124,58 @@
       }
     }
   ],
+  "txSizeEvidence": [
+    {
+      "name": "tx_commit_A (no HTLC)",
+      "baseBytes": 227,
+      "witnessBytes": 224,
+      "totalBytes": 451,
+      "weight": 1132,
+      "vbytes": 283,
+      "inputCount": 1,
+      "outputCount": 3,
+      "witnessItems": 4,
+      "txHex": "0100000000010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff03c0c62d00000000002321032222222222222222222222222222222222222222222222222222222222222222ac404b4c00000000004e6321032222222222222222222222222222222222222222222222222222222222222222ac67029000b27521021111111111111111111111111111111111111111111111111111111111111111ac68c0c62d000000000024a8203eb1bd439947eb762998e566ccc2e099c791118b2f40579cc4f7da2b5061b7f988510400493030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303049313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131314752210211111111111111111111111111111111111111111111111111111111111111112103222222222222222222222222222222222222222222222222222222222222222252ae00000000"
+    },
+    {
+      "name": "tx_commit_A (HTLC+linked ACS)",
+      "baseBytes": 377,
+      "witnessBytes": 224,
+      "totalBytes": 601,
+      "weight": 1732,
+      "vbytes": 433,
+      "inputCount": 1,
+      "outputCount": 4,
+      "witnessItems": 4,
+      "txHex": "0100000000010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff04c0c62d00000000002321032222222222222222222222222222222222222222222222222222222222222222ac404b4c00000000004e6321032222222222222222222222222222222222222222222222222222222222222222ac67029000b27521021111111111111111111111111111111111111111111111111111111111111111ac68c0c62d000000000024a8203eb1bd439947eb762998e566ccc2e099c791118b2f40579cc4f7da2b5061b7f98851c0c62d00000000008da8203eb1bd439947eb762998e566ccc2e099c791118b2f40579cc4f7da2b5061b7f988a820b96d8b007268f9c3173c2a6d12d4fd968d1f6db7cc099a7d353399c6b4557db68852210211111111111111111111111111111111111111111111111111111111111111112103222222222222222222222222222222222222222222222222222222222222222252ae0400493030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303049313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131314752210211111111111111111111111111111111111111111111111111111111111111112103222222222222222222222222222222222222222222222222222222222222222252ae00000000"
+    }
+  ],
   "linkedDeployments": [
     {
       "network": "regtest",
-      "wallet": "test",
-      "linkedACSAddress": "bcrt1qflnxz8y6vdmgnddhrsmxh7upv5yfhc5mjgar8hdffn27c9m4h4cqe4uk30",
-      "fundTxid": "b1bf01a8e60dd9864652460af0b17ec10d8a5c6246b052d77d108c12d9e9c40c",
-      "fundVout": 0,
+      "wallet": "hehtlc_research",
+      "linkedACSAddress": "bcrt1qs7k64vpp27gyqvth93gtpffs54phvwv8372hmkk28nkfd5nhny5smf7jl3",
+      "fundTxid": "7802fbdda123a7f6bfc4f5f201112e527b62fa58080ea5077067e8fd082593e2",
+      "fundVout": 1,
       "fundValueSat": 10000,
-      "spendTxid": "9c793e227b99a167c30b845f3b4a09de761899c03ad79df0b2e96e4258f0983d",
-      "spendValueSat": 9000,
-      "feeSat": 1000,
-      "witnessOrder": "\u003cpre_b\u003e \u003cr^j_a\u003e \u003credeemScript\u003e",
-      "createdAtUtc": "2026-03-25T02:33:22Z"
+      "spendTxid": "180fe4abf1e06e9c1d529da463d987c07c6dcbad39f47ed2063a3600a6a247fa",
+      "spendValueSat": 5000,
+      "feeSat": 5000,
+      "witnessOrder": "\u003cdummy\u003e \u003csig_A\u003e \u003csig_B\u003e \u003cpre_b\u003e \u003cr^j_a\u003e \u003credeemScript\u003e",
+      "createdAtUtc": "2026-04-07T10:22:10Z"
     },
     {
       "network": "signet",
-      "wallet": "test",
-      "linkedACSAddress": "tb1qkf9c6ksssndxte45qed39w7el674z0m036fs4s7g4l2yztz7qgtsgn7dnj",
-      "fundTxid": "37bcd54fe81bfcb39a6212a6e9372cf03b024288d207f4e4fbd8df62102625d4",
+      "wallet": "hehtlc_research",
+      "linkedACSAddress": "tb1qjzxwn587y54v6hecrd3l6ly75lzkmd2x27zalpmt32jnw525xnqqrdfudv",
+      "fundTxid": "d393b63a9f901138ae55557200c6496f8ff3fbe4ab1335a2198e7ebff8c2d17a",
       "fundVout": 0,
       "fundValueSat": 10000,
-      "spendTxid": "bb425bdfac48e420e1e0711ed5def96a7fc98850609561a84518542a239b4b27",
-      "spendValueSat": 8000,
-      "feeSat": 2000,
-      "witnessOrder": "\u003cpre_b\u003e \u003cr^j_a\u003e \u003credeemScript\u003e",
-      "createdAtUtc": "2026-03-25T02:53:40Z"
+      "spendTxid": "44927340565152697cfae902878510cc7c8849caa6c718fa1eed565f0f23acbb",
+      "spendValueSat": 5000,
+      "feeSat": 5000,
+      "witnessOrder": "\u003cdummy\u003e \u003csig_A\u003e \u003csig_B\u003e \u003cpre_b\u003e \u003cr^j_a\u003e \u003credeemScript\u003e",
+      "createdAtUtc": "2026-04-07T13:14:59Z"
     }
   ],
   "clbaSummary": {
@@ -157,71 +183,71 @@
     "crabByzantineWidthSat": "2500000",
     "crabHeWidthSat": "0",
     "crabHeInfeasible": true,
-    "cStarSat": "2500000"
+    "cStarSat": "3000000"
   },
   "coalitionSummary": {
     "kMax": 6,
-    "singleMinerCStar": "2500000",
+    "singleMinerCStar": "3000000",
     "coalitionRows": [
       {
         "k": 1,
-        "bobUbSat": "500000",
+        "bobUbSat": "3000000",
         "minerLbSat": "500000",
-        "widthSat": "0",
-        "cStarKSat": "2500000",
-        "clbaFeasible": false
+        "widthSat": "2500000",
+        "cStarKSat": "3000000",
+        "clbaFeasible": true
       },
       {
         "k": 2,
-        "bobUbSat": "500000",
+        "bobUbSat": "3000000",
         "minerLbSat": "1000000",
-        "widthSat": "-500000",
-        "cStarKSat": "2000000",
-        "clbaFeasible": false
+        "widthSat": "2000000",
+        "cStarKSat": "2500000",
+        "clbaFeasible": true
       },
       {
         "k": 3,
-        "bobUbSat": "500000",
+        "bobUbSat": "3000000",
         "minerLbSat": "1500000",
-        "widthSat": "-1000000",
-        "cStarKSat": "1500000",
-        "clbaFeasible": false
+        "widthSat": "1500000",
+        "cStarKSat": "2000000",
+        "clbaFeasible": true
       },
       {
         "k": 4,
-        "bobUbSat": "500000",
+        "bobUbSat": "3000000",
         "minerLbSat": "2000000",
-        "widthSat": "-1500000",
-        "cStarKSat": "1000000",
-        "clbaFeasible": false
+        "widthSat": "1000000",
+        "cStarKSat": "1500000",
+        "clbaFeasible": true
       },
       {
         "k": 5,
-        "bobUbSat": "500000",
+        "bobUbSat": "3000000",
         "minerLbSat": "2500000",
-        "widthSat": "-2000000",
+        "widthSat": "500000",
+        "cStarKSat": "1000000",
+        "clbaFeasible": true
+      },
+      {
+        "k": 6,
+        "bobUbSat": "3000000",
+        "minerLbSat": "3000000",
+        "widthSat": "0",
         "cStarKSat": "500000",
         "clbaFeasible": false
       },
       {
-        "k": 6,
-        "bobUbSat": "500000",
-        "minerLbSat": "3000000",
-        "widthSat": "-2500000",
-        "cStarKSat": "0",
-        "clbaFeasible": false
-      },
-      {
         "k": 7,
-        "bobUbSat": "500000",
+        "bobUbSat": "3000000",
         "minerLbSat": "3500000",
-        "widthSat": "-3000000",
+        "widthSat": "-500000",
         "cStarKSat": "0",
         "clbaFeasible": false
       }
     ],
     "singleMinerDominates": true,
     "feeSat": 1000,
-    "modelNote": "coalition threshold uses k*v_col (fee-independent SDRBA convention); feeSat retained for compatibility metadata"
+    "modelNote": "derived comparison under He-HTLC SDRBA assumptions (k*v_col threshold); this section is interpretive support, not an independent theorem claim"
   }
 }

@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
@@ -107,11 +108,15 @@ type deployArtifact struct {
 	Wallet             string `json:"wallet"`
 	LinkedACSAddress   string `json:"linkedACSAddress"`
 	LinkedACSScriptHex string `json:"linkedACSScriptHex"`
+	AlicePubKeyHex     string `json:"alicePubKeyHex"`
+	BobPubKeyHex       string `json:"bobPubKeyHex"`
 	FundTxID           string `json:"fundTxid"`
 	FundVout           uint32 `json:"fundVout"`
 	FundValueSat       int64  `json:"fundValueSat"`
 	SpendTxID          string `json:"spendTxid"`
 	SpendValueSat      int64  `json:"spendValueSat"`
+	MinerPayoutSat     int64  `json:"minerPayoutSat"`
+	BurnValueSat       int64  `json:"burnValueSat"`
 	FeeSat             int64  `json:"feeSat"`
 	WitnessOrder       string `json:"witnessOrder"`
 	HashRjA            string `json:"hashRjA"`
@@ -127,7 +132,8 @@ func main() {
 		tryLoad      = flag.Bool("try-load-wallet", true, "Try loading wallet before wallet-scoped RPC calls")
 		createWallet = flag.Bool("create-wallet-if-missing", false, "Create wallet if missing when try-load-wallet is enabled")
 		fundSat      = flag.Int64("fund-sat", 10000, "Funding amount in satoshis sent to linked ACS output")
-		feeSat       = flag.Int64("fee-sat", 1000, "Fee in satoshis for spending linked ACS output")
+		feeSat       = flag.Int64("fee-sat", 5000, "Miner reward carried as spend transaction fee in satoshis (v_col)")
+		maxBurnBTC   = flag.String("max-burn-btc", "0.001", "Maximum BTC allowed as provably-unspendable burn output in sendrawtransaction")
 		autoMine     = flag.Bool("auto-mine-regtest", true, "Mine 1 block automatically on regtest after fund and spend")
 		pollSeconds  = flag.Int("poll-seconds", 5, "Polling interval while waiting for fund tx visibility")
 		maxWaitSec   = flag.Int("max-wait-seconds", 120, "Max wait for tx visibility")
@@ -143,6 +149,9 @@ func main() {
 	}
 	if *feeSat <= 0 {
 		die("-fee-sat must be > 0")
+	}
+	if strings.TrimSpace(*maxBurnBTC) == "" {
+		die("-max-burn-btc must be non-empty")
 	}
 	if *fundSat <= *feeSat {
 		die("-fund-sat (%d) must be greater than -fee-sat (%d)", *fundSat, *feeSat)
@@ -167,18 +176,20 @@ func main() {
 	fmt.Println("[1.6/9] Checking wallet balance...")
 	balanceSat, err := walletBalanceSat(cli)
 	must(err)
-	requiredSat := *fundSat + *feeSat
+	requiredSat := *fundSat
 	if balanceSat < requiredSat {
-		die("insufficient funds in wallet %q on %s: balance=%d sat, required>=%d sat (fund-sat + fee-sat)", *wallet, *network, balanceSat, requiredSat)
+		die("insufficient funds in wallet %q on %s: balance=%d sat, required>=%d sat (fund-sat)", *wallet, *network, balanceSat, requiredSat)
 	}
 
-	fmt.Println("[2/9] Generating secrets and linked ACS script...")
+	fmt.Println("[2/9] Generating secrets, signer keys, and burn-split linked ACS script...")
 	rjA := random32()
 	preB := random32()
 	hashRjA := sha256.Sum256(rjA)
 	hashPreB := sha256.Sum256(preB)
+	alicePriv, alicePub := btcec.PrivKeyFromBytes(random32())
+	bobPriv, bobPub := btcec.PrivKeyFromBytes(random32())
 
-	linkedScript, err := buildLinkedACSScript(hashRjA[:], hashPreB[:])
+	linkedScript, err := buildBurnSplitLinkedACSScript(hashRjA[:], hashPreB[:], alicePub.SerializeCompressed(), bobPub.SerializeCompressed())
 	must(err)
 
 	params := &chaincfg.RegressionNetParams
@@ -190,6 +201,8 @@ func main() {
 	must(err)
 
 	fmt.Printf("  linked ACS address: %s\n", addr.EncodeAddress())
+	fmt.Printf("  alice signer pubkey: %s\n", hex.EncodeToString(alicePub.SerializeCompressed()))
+	fmt.Printf("  bob signer pubkey:   %s\n", hex.EncodeToString(bobPub.SerializeCompressed()))
 	fmt.Printf("  H(r^j_a): %s\n", hex.EncodeToString(hashRjA[:]))
 	fmt.Printf("  H(pre_b): %s\n", hex.EncodeToString(hashPreB[:]))
 
@@ -213,47 +226,33 @@ func main() {
 	fundVout, fundValueSat := waitForFundOutput(cli, fundTxID, addr.EncodeAddress(), time.Duration(*pollSeconds)*time.Second, time.Duration(*maxWaitSec)*time.Second)
 	fmt.Printf("  located funding outpoint: %s:%d (%d sat)\n", fundTxID, fundVout, fundValueSat)
 
-	fmt.Println("[5/9] Building spend transaction with corrected witness order...")
-	spendValue := fundValueSat - *feeSat
-	if spendValue <= 0 {
+	fmt.Println("[5/9] Building burn-split pre-signed spend transaction...")
+	if fundValueSat <= *feeSat {
 		die("funding value %d is not enough after fee %d", fundValueSat, *feeSat)
 	}
 
-	destAddr, err := cli.run(true, "getnewaddress", "linked_acs_test")
-	must(err)
-	destAddr = strings.TrimSpace(destAddr)
-	aiRaw, err := cli.run(true, "getaddressinfo", destAddr)
-	must(err)
-	var ai addressInfo
-	must(json.Unmarshal([]byte(aiRaw), &ai))
-	if ai.ScriptPubKey == "" {
-		die("empty scriptPubKey for destination address %s", destAddr)
-	}
-	destPkScript, err := hex.DecodeString(ai.ScriptPubKey)
-	must(err)
-
 	hash, err := chainhash.NewHashFromStr(fundTxID)
 	must(err)
-	spendTx := wire.NewMsgTx(wire.TxVersion)
-	spendTx.AddTxIn(&wire.TxIn{
-		PreviousOutPoint: wire.OutPoint{Hash: *hash, Index: fundVout},
-		Sequence:         wire.MaxTxInSequenceNum,
-	})
-	spendTx.AddTxOut(&wire.TxOut{Value: spendValue, PkScript: destPkScript})
+	spendTx, burnValue, err := buildBurnSplitSpendTx(*hash, fundVout, fundValueSat, *feeSat, hashRjA[:], hashPreB[:])
+	must(err)
 
-	// Correct witness order for script:
-	// OP_SHA256 <H(rjA)> OP_EQUALVERIFY OP_SHA256 <H(preB)> OP_EQUALVERIFY OP_TRUE
-	// First OP_SHA256 consumes top stack item => rjA must be on top.
-	// Witness stack items are pushed in listed order, so preB must come before rjA.
-	spendTx.TxIn[0].Witness = wire.TxWitness{
-		preB,
-		rjA,
-		linkedScript,
-	}
+	witness, err := signPresignedBurnSplitWitness(spendTx, 0, fundValueSat, linkedScript, preB, rjA, alicePriv, bobPriv)
+	must(err)
+	spendTx.TxIn[0].Witness = witness
+
+	prevPkScript, err := p2WSHScriptPubKey(linkedScript)
+	must(err)
+	must(verifyP2WSHSpend(spendTx, 0, prevPkScript, fundValueSat))
+	fmt.Printf("  burn-split outputs: burn=%d sat; miner reward via fee=%d sat\n", burnValue, *feeSat)
 
 	var buf bytes.Buffer
 	must(spendTx.Serialize(&buf))
 	spendHex := hex.EncodeToString(buf.Bytes())
+
+	spendValue := int64(0)
+	for _, out := range spendTx.TxOut {
+		spendValue += out.Value
+	}
 
 	fmt.Println("[6/9] Verifying mempool acceptance...")
 	acceptRaw, err := cli.run(false, "testmempoolaccept", fmt.Sprintf("[\"%s\"]", spendHex))
@@ -269,7 +268,7 @@ func main() {
 	}
 
 	fmt.Println("[7/9] Broadcasting spend transaction...")
-	spendTxID, err := cli.run(false, "sendrawtransaction", spendHex)
+	spendTxID, err := cli.run(false, "sendrawtransaction", spendHex, "0", *maxBurnBTC)
 	must(err)
 	spendTxID = strings.TrimSpace(spendTxID)
 	fmt.Printf("  spend txid: %s\n", spendTxID)
@@ -290,13 +289,17 @@ func main() {
 		Wallet:             *wallet,
 		LinkedACSAddress:   addr.EncodeAddress(),
 		LinkedACSScriptHex: hex.EncodeToString(linkedScript),
+		AlicePubKeyHex:     hex.EncodeToString(alicePub.SerializeCompressed()),
+		BobPubKeyHex:       hex.EncodeToString(bobPub.SerializeCompressed()),
 		FundTxID:           fundTxID,
 		FundVout:           fundVout,
 		FundValueSat:       fundValueSat,
 		SpendTxID:          spendTxID,
 		SpendValueSat:      spendValue,
+		MinerPayoutSat:     *feeSat,
+		BurnValueSat:       burnValue,
 		FeeSat:             *feeSat,
-		WitnessOrder:       "<pre_b> <r^j_a> <redeemScript>",
+		WitnessOrder:       "<dummy> <sig_A> <sig_B> <pre_b> <r^j_a> <redeemScript>",
 		HashRjA:            hex.EncodeToString(hashRjA[:]),
 		HashPreB:           hex.EncodeToString(hashPreB[:]),
 		CreatedAtUTC:       time.Now().UTC().Format(time.RFC3339),
@@ -317,7 +320,7 @@ func main() {
 	fmt.Printf("Artifact  : %s\n", path)
 }
 
-func buildLinkedACSScript(hashRjA, hashPreB []byte) ([]byte, error) {
+func buildBurnSplitLinkedACSScript(hashRjA, hashPreB, alicePub, bobPub []byte) ([]byte, error) {
 	b := txscript.NewScriptBuilder()
 	b.AddOp(txscript.OP_SHA256)
 	b.AddData(hashRjA)
@@ -325,8 +328,95 @@ func buildLinkedACSScript(hashRjA, hashPreB []byte) ([]byte, error) {
 	b.AddOp(txscript.OP_SHA256)
 	b.AddData(hashPreB)
 	b.AddOp(txscript.OP_EQUALVERIFY)
-	b.AddOp(txscript.OP_TRUE)
+	b.AddOp(txscript.OP_2)
+	b.AddData(alicePub)
+	b.AddData(bobPub)
+	b.AddOp(txscript.OP_2)
+	b.AddOp(txscript.OP_CHECKMULTISIG)
 	return b.Script()
+}
+
+func buildBurnSplitSpendTx(prevHash chainhash.Hash, prevVout uint32, fundValueSat, feeSat int64, hashRjA, hashPreB []byte) (*wire.MsgTx, int64, error) {
+	if feeSat <= 0 {
+		return nil, 0, fmt.Errorf("feeSat must be > 0")
+	}
+	if fundValueSat <= feeSat {
+		return nil, 0, fmt.Errorf("fundValueSat (%d) must be > feeSat (%d)", fundValueSat, feeSat)
+	}
+	burnValue := fundValueSat - feeSat
+
+	burnPkScript, err := buildBurnOutputScript(hashRjA, hashPreB)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	tx := wire.NewMsgTx(wire.TxVersion)
+	tx.AddTxIn(&wire.TxIn{
+		PreviousOutPoint: wire.OutPoint{Hash: prevHash, Index: prevVout},
+		Sequence:         wire.MaxTxInSequenceNum,
+	})
+	tx.AddTxOut(&wire.TxOut{Value: burnValue, PkScript: burnPkScript})
+
+	return tx, burnValue, nil
+}
+
+func buildBurnOutputScript(hashRjA, hashPreB []byte) ([]byte, error) {
+	marker := append([]byte("crab-he-burn:"), hashRjA[:4]...)
+	marker = append(marker, hashPreB[:4]...)
+	b := txscript.NewScriptBuilder()
+	b.AddOp(txscript.OP_RETURN)
+	b.AddData(marker)
+	return b.Script()
+}
+
+func signPresignedBurnSplitWitness(tx *wire.MsgTx, inputIndex int, prevValueSat int64, redeemScript, preB, rjA []byte, alicePriv, bobPriv *btcec.PrivateKey) (wire.TxWitness, error) {
+	prevPkScript, err := p2WSHScriptPubKey(redeemScript)
+	if err != nil {
+		return nil, err
+	}
+	prevFetcher := txscript.NewCannedPrevOutputFetcher(prevPkScript, prevValueSat)
+	hashes := txscript.NewTxSigHashes(tx, prevFetcher)
+
+	sigA, err := txscript.RawTxInWitnessSignature(tx, hashes, inputIndex, prevValueSat, redeemScript, txscript.SigHashAll, alicePriv)
+	if err != nil {
+		return nil, fmt.Errorf("alice signature: %w", err)
+	}
+	sigB, err := txscript.RawTxInWitnessSignature(tx, hashes, inputIndex, prevValueSat, redeemScript, txscript.SigHashAll, bobPriv)
+	if err != nil {
+		return nil, fmt.Errorf("bob signature: %w", err)
+	}
+
+	candidates := []wire.TxWitness{
+		{[]byte{}, sigA, sigB, preB, rjA, redeemScript},
+		{[]byte{}, sigB, sigA, preB, rjA, redeemScript},
+	}
+
+	for _, w := range candidates {
+		tx.TxIn[inputIndex].Witness = w
+		if err := verifyP2WSHSpend(tx, inputIndex, prevPkScript, prevValueSat); err == nil {
+			return w, nil
+		}
+	}
+
+	return nil, errors.New("unable to construct a valid 2-of-2 witness ordering")
+}
+
+func p2WSHScriptPubKey(redeemScript []byte) ([]byte, error) {
+	h := sha256.Sum256(redeemScript)
+	b := txscript.NewScriptBuilder()
+	b.AddOp(txscript.OP_0)
+	b.AddData(h[:])
+	return b.Script()
+}
+
+func verifyP2WSHSpend(tx *wire.MsgTx, inputIndex int, prevPkScript []byte, prevValueSat int64) error {
+	prevFetcher := txscript.NewCannedPrevOutputFetcher(prevPkScript, prevValueSat)
+	hashes := txscript.NewTxSigHashes(tx, prevFetcher)
+	vm, err := txscript.NewEngine(prevPkScript, tx, inputIndex, txscript.StandardVerifyFlags, nil, hashes, prevValueSat, prevFetcher)
+	if err != nil {
+		return err
+	}
+	return vm.Execute()
 }
 
 func waitForFundOutput(cli *rpcCLI, txID, expectedAddr string, poll, timeout time.Duration) (uint32, int64) {
