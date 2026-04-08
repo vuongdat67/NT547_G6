@@ -165,13 +165,46 @@ go run ./cmd/publish_results
 
 Outputs:
 
-- `artifacts/publication/table_main_results.tex`
 - `artifacts/publication/table_multi_hop.tex`
-- `artifacts/publication/table_seed_stats.tex`
-- `artifacts/publication/table_onchain_runs.tex`
 - `artifacts/publication/fig_multi_hop_cnstar.svg`
-- `artifacts/publication/fig_baseline_success.svg`
-- `artifacts/publication/fig_onchain_success.svg`
+- `artifacts/publication/publication_manifest.json`
+
+Note: obsolete publication artifacts (`table_main_results.tex`, `table_seed_stats.tex`,
+`table_onchain_runs.tex`, `fig_baseline_success.*`, `fig_onchain_success.*`) are removed
+by `cmd/publish_results` to keep paper assets consistent with the current manuscript scope.
+
+## One-Command Publication + Paper Sync
+
+To regenerate evaluation/experiment/publication artifacts and sync publication tables/images
+into paper folders (`../tex` and `../Dung/paper` by default), run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\publish_sync.ps1
+```
+
+This script also mirrors linked deployment evidence to:
+
+- `artifacts/onchain/regtest/latest_linked_acs.json`
+- `artifacts/onchain/signet/latest_linked_acs.json`
+
+Optional flags:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\publish_sync.ps1 -SkipExperimentRunner
+powershell -ExecutionPolicy Bypass -File .\scripts\publish_sync.ps1 -PaperDirs ..\tex
+powershell -ExecutionPolicy Bypass -File .\scripts\publish_sync.ps1 -SvgConverter browser
+powershell -ExecutionPolicy Bypass -File .\scripts\publish_sync.ps1 -SvgConverter texlive
+```
+
+`-SvgConverter` modes:
+
+- `auto` (default): native tools (`inkscape`/`magick`/`rsvg-convert`) then browser fallback
+- `native`: only native converter tools
+- `browser`: force Chrome/Edge headless conversion
+- `texlive`: force TeX Live (`lualatex` + `svg` package, requires shell-escape workflow)
+- `none`: skip SVG→PDF conversion (only copy SVG)
+
+If `-SvgConverter texlive` cannot complete SVG conversion (for example missing Inkscape bridge), the script automatically falls back to Chrome/Edge headless when available.
 
 ``` go 
 go build ./... 
