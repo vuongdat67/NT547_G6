@@ -47,7 +47,7 @@ func main() {
 	fmt.Println("[CRAB Byzantine c=v]: " + byzAnalysis.Report())
 
 	defenseAnalysis, _ := channel.NewCLBAAnalysis(params, 0.3, params.CStar)
-	fmt.Println("[CRAB-He c*=v+v_dep-v_col]: " + defenseAnalysis.ReportLinked())
+	fmt.Println("[CRAB-He c*=v+v_dep]: " + defenseAnalysis.ReportLinked())
 
 	fmt.Println("--- Step 3: Key Generation ---")
 	alicePK := randomHex(32)
@@ -110,10 +110,15 @@ func main() {
 	fmt.Println()
 
 	fmt.Println("--- Step 10: Linked ACS Execution ---")
-	linkedACS := channel.MakeRevokeACSLinked(0, revA0, htlcSecrets, sat(params.CStar))
+	linkedACS := channel.MakeRevokeACSLinked(0, revA0, htlcSecrets, sat(params.CStar), sat(params.VCol))
 	fmt.Print(linkedACS)
-	fmt.Printf("\nMiner auto-collects c* = %d sat = %.4f BTC\n", sat(params.CStar), float64(sat(params.CStar))/1e8)
-	fmt.Println("-> Bob loses c* automatically -> CLBA self-defeating")
+	burn := sat(params.CStar) - sat(params.VCol)
+	if burn < 0 {
+		burn = 0
+	}
+	fmt.Printf("\nMiner payout (linked path) = v_col = %d sat = %.4f BTC\n", sat(params.VCol), float64(sat(params.VCol))/1e8)
+	fmt.Printf("Residual burn from linked output = %d sat\n", burn)
+	fmt.Println("-> Bob cannot extract linked output surplus -> CLBA self-defeating")
 	fmt.Println()
 
 	fmt.Println("--- Step 11: Evaluation Summary ---")
@@ -135,7 +140,7 @@ func printEvaluationTable(p *channel.Params, commitNoHTLCSize, commitWithHTLCSiz
 		{"tx_spend_A (honest close)", 418},
 		{"tx_revoke_B (punishment B)", 192},
 		{"tx_revoke_ACS_std (punishment miner)", 192},
-		{"tx_revoke_ACS_linked (CRAB-He)", 224},
+		{"tx_revoke_ACS_linked (CRAB-He)", 246},
 		{"tx_dep_A (He-HTLC dep-A)", 190},
 		{"tx_dep_B (He-HTLC dep-B)", 172},
 		{"tx_col_B (He-HTLC col-B)", 152},
@@ -154,26 +159,25 @@ func printEvaluationTable(p *channel.Params, commitNoHTLCSize, commitWithHTLCSiz
 	fmt.Printf("Collateral comparison (v=%d sat):\n", sat(p.V))
 	fmt.Printf("  CRAB rational  c = v/2    = %d sat (%.4f BTC)\n", sat(p.V)/2, float64(sat(p.V)/2)/1e8)
 	fmt.Printf("  CRAB Byzantine c = v      = %d sat (%.4f BTC)\n", sat(p.V), float64(sat(p.V))/1e8)
-	fmt.Printf("  CRAB-He        c*=v+v_dep-v_col = %d sat (%.4f BTC)\n", sat(p.CStar), float64(sat(p.CStar))/1e8)
+	fmt.Printf("  CRAB-He        c*=v+v_dep       = %d sat (%.4f BTC)\n", sat(p.CStar), float64(sat(p.CStar))/1e8)
 	fmt.Printf("  Overhead vs CRAB Byzantine: +%d sat (+%.1f%%)\n", sat(p.OverheadAboveCRABByzantine()), float64(sat(p.OverheadAboveCRABByzantine()))*100/float64(sat(p.V)))
 	fmt.Println()
 
 	fmt.Println("(Single deterministic pass; no duplicated rows)")
-	fmt.Println("n-hop collateral c*_n = v + n*(v_dep - v_col):")
+	fmt.Println("n-hop collateral c*_n = v + n*v_dep:")
 	for n := 1; n <= 7; n++ {
-		cN := sat(p.V) + int64(n)*(sat(p.VDep)-sat(p.VCol))
+		cN := sat(p.V) + int64(n)*sat(p.VDep)
 		pct := float64(cN-sat(p.V)) * 100 / float64(sat(p.V))
 		fmt.Printf("  n=%d: c*_%d = %d sat  (+%.1f%% vs CRAB Byz)\n", n, n, cN, pct)
 	}
 
 	// Practical Lightning-like scenario (small HTLC relative to channel capacity).
 	fmt.Println()
-	fmt.Println("n-hop practical example (v_dep=5% of v, v_col=2.5% of v):")
+	fmt.Println("n-hop practical example (v_dep=5% of v):")
 	vPrac := sat(p.V)
 	vDepPrac := vPrac / 20 // 5%
-	vColPrac := vPrac / 40 // 2.5%
 	for n := 1; n <= 7; n++ {
-		cN := vPrac + int64(n)*(vDepPrac-vColPrac)
+		cN := vPrac + int64(n)*vDepPrac
 		pct := float64(cN-vPrac) * 100 / float64(vPrac)
 		fmt.Printf("  n=%d: c*_%d = %d sat  (+%.1f%% vs CRAB Byz)\n", n, n, cN, pct)
 	}
