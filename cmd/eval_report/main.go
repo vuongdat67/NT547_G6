@@ -60,19 +60,20 @@ type clbaSummary struct {
 }
 
 type report struct {
-	GeneratedAtUTC    string           `json:"generatedAtUtc"`
-	Source            string           `json:"source"`
-	TxTable           []txRow          `json:"txTable"`
-	LinkedDeployments []linkedArtifact `json:"linkedDeployments"`
-	CLBASummary       clbaSummary      `json:"clbaSummary"`
-	CoalitionSummary  coalitionSummary `json:"coalitionSummary"`
+	GeneratedAtUTC    string                          `json:"generatedAtUtc"`
+	Source            string                          `json:"source"`
+	TxTable           []txRow                         `json:"txTable"`
+	TxSizeEvidence    []channel.SerializedMeasurement `json:"txSizeEvidence"`
+	LinkedDeployments []linkedArtifact                `json:"linkedDeployments"`
+	CLBASummary       clbaSummary                     `json:"clbaSummary"`
+	CoalitionSummary  coalitionSummary                `json:"coalitionSummary"`
 }
 
 func main() {
 	params, err := defaultParams()
 	must(err)
 
-	txRows, clba, err := computeCRABHeData(params)
+	txRows, txEvidence, clba, err := computeCRABHeData(params)
 	must(err)
 	coalition, err := computeCoalitionData(params, 1_000)
 	must(err)
@@ -89,6 +90,7 @@ func main() {
 		GeneratedAtUTC:    time.Now().UTC().Format(time.RFC3339),
 		Source:            "crab-he local implementation and deployment artifacts",
 		TxTable:           txRows,
+		TxSizeEvidence:    txEvidence,
 		LinkedDeployments: artifacts,
 		CLBASummary:       clba,
 		CoalitionSummary:  coalition,
@@ -97,15 +99,24 @@ func main() {
 	must(os.MkdirAll("artifacts", 0o755))
 	jsonPath := filepath.Join("artifacts", "crab_he_results.json")
 	mdPath := filepath.Join("artifacts", "crab_he_results.md")
+	evidenceJSONPath := filepath.Join("artifacts", "tx_size_evidence.json")
+	evidenceMDPath := filepath.Join("artifacts", "tx_size_evidence.md")
 
 	b, err := json.MarshalIndent(rep, "", "  ")
 	must(err)
 	must(os.WriteFile(jsonPath, b, 0o644))
 	must(os.WriteFile(mdPath, []byte(toMarkdown(rep)), 0o644))
 
+	bEvidence, err := json.MarshalIndent(rep.TxSizeEvidence, "", "  ")
+	must(err)
+	must(os.WriteFile(evidenceJSONPath, bEvidence, 0o644))
+	must(os.WriteFile(evidenceMDPath, []byte(toSizeEvidenceMarkdown(rep.TxSizeEvidence)), 0o644))
+
 	fmt.Println("Generated:")
 	fmt.Println(" -", jsonPath)
 	fmt.Println(" -", mdPath)
+	fmt.Println(" -", evidenceJSONPath)
+	fmt.Println(" -", evidenceMDPath)
 }
 
 func defaultParams() (*channel.Params, error) {
@@ -117,22 +128,39 @@ func defaultParams() (*channel.Params, error) {
 	return channel.NewParams(v, vDep, vCol, delta, 144, 288, 6, 3)
 }
 
-func computeCRABHeData(params *channel.Params) ([]txRow, clbaSummary, error) {
+func computeCRABHeData(params *channel.Params) ([]txRow, []channel.SerializedMeasurement, clbaSummary, error) {
 	rev := channel.NewRevocationSecret([]byte("0123456789abcdef0123456789abcdef"), 0)
 	h := channel.NewHTLCSecrets([]byte("prea-prea-prea-prea-prea-prea-0000"), []byte("preb-preb-preb-preb-preb-preb-1111"))
+
+	evidenceNoHTLC, err := channel.MeasureCommitTemplateSerialized(params, false, rev.Hash, nil)
+	if err != nil {
+		return nil, nil, clbaSummary{}, err
+	}
+	evidenceHTLC, err := channel.MeasureCommitTemplateSerialized(params, true, rev.Hash, h.HashPreB)
+	if err != nil {
+		return nil, nil, clbaSummary{}, err
+	}
+	txEvidence := []channel.SerializedMeasurement{evidenceNoHTLC, evidenceHTLC}
 
 	v := new(big.Int).Set(params.V)
 	commitNoHTLC := channel.MakeCommitA(params, 0, sat(v), 0, rev, nil, "alice_pk_sample", "bob_pk_sample")
 	commitHTLC := channel.MakeCommitA(params, 0, sat(v), 0, rev, h, "alice_pk_sample", "bob_pk_sample")
 
+	if commitNoHTLC.SizeVB != evidenceNoHTLC.VBytes {
+		return nil, nil, clbaSummary{}, fmt.Errorf("commit no-HTLC vbytes mismatch: model=%d evidence=%d", commitNoHTLC.SizeVB, evidenceNoHTLC.VBytes)
+	}
+	if commitHTLC.SizeVB != evidenceHTLC.VBytes {
+		return nil, nil, clbaSummary{}, fmt.Errorf("commit linked-ACS vbytes mismatch: model=%d evidence=%d", commitHTLC.SizeVB, evidenceHTLC.VBytes)
+	}
+
 	rows := []txRow{
 		newTxRow("tx_fund", "channel_tx", 338),
-		newTxRow("tx_commit_A (no HTLC)", "channel_tx", commitNoHTLC.SizeVB),
-		newTxRow("tx_commit_A (HTLC+linked ACS)", "channel_tx", commitHTLC.SizeVB),
+		newTxRow("tx_commit_A (no HTLC)", "channel_tx", evidenceNoHTLC.VBytes),
+		newTxRow("tx_commit_A (HTLC+linked ACS)", "channel_tx", evidenceHTLC.VBytes),
 		newTxRow("tx_spend_A", "channel_tx", 418),
 		newTxRow("tx_revoke_B", "channel_tx", 192),
 		newTxRow("tx_revoke_ACS_std", "channel_tx", 192),
-		newTxRow("tx_revoke_ACS_linked", "channel_tx", 224),
+		newTxRow("tx_revoke_ACS_linked", "channel_tx", 246),
 		newTxRow("tx_dep_A", "htlc_tx", 190),
 		newTxRow("tx_dep_B", "htlc_tx", 172),
 		newTxRow("tx_col_B", "htlc_tx", 152),
@@ -141,15 +169,15 @@ func computeCRABHeData(params *channel.Params) ([]txRow, clbaSummary, error) {
 
 	attackAnalysis, err := channel.NewCLBAAnalysis(params, 0.3, new(big.Int).Div(v, big.NewInt(2)))
 	if err != nil {
-		return nil, clbaSummary{}, err
+		return nil, nil, clbaSummary{}, err
 	}
 	byzAnalysis, err := channel.NewCLBAAnalysis(params, 0.3, new(big.Int).Set(v))
 	if err != nil {
-		return nil, clbaSummary{}, err
+		return nil, nil, clbaSummary{}, err
 	}
 	defenseAnalysis, err := channel.NewCLBAAnalysis(params, 0.3, params.CStar)
 	if err != nil {
-		return nil, clbaSummary{}, err
+		return nil, nil, clbaSummary{}, err
 	}
 
 	sum := clbaSummary{
@@ -160,7 +188,7 @@ func computeCRABHeData(params *channel.Params) ([]txRow, clbaSummary, error) {
 		CStarSat:              params.CStar.String(),
 	}
 
-	return rows, sum, nil
+	return rows, txEvidence, sum, nil
 }
 
 func computeCoalitionData(params *channel.Params, feeSat int64) (coalitionSummary, error) {
@@ -210,7 +238,7 @@ func computeCoalitionData(params *channel.Params, feeSat int64) (coalitionSummar
 		CoalitionRows:        rows,
 		SingleMinerDominates: singleMinerDominates,
 		FeeSat:               feeSat,
-		ModelNote:            "coalition threshold uses k*v_col (fee-independent SDRBA convention); feeSat retained for compatibility metadata",
+		ModelNote:            "derived comparison under He-HTLC SDRBA assumptions (k*v_col threshold); this section is interpretive support, not an independent theorem claim",
 	}, nil
 }
 
@@ -258,6 +286,15 @@ func toMarkdown(r report) string {
 			row.Name, row.ObjectType, row.VBytes, row.FeeUSDBySatPerVB["2"], row.FeeUSDBySatPerVB["7"], row.FeeUSDBySatPerVB["10"], row.FeeUSDBySatPerVB["20"]))
 	}
 
+	sb.WriteString("\n## 1.1) Serialized Size Evidence (commit templates)\n\n")
+	sb.WriteString("Formula: vbytes = ceil(weight / 4), weight = base*3 + total, witness = total - base.\n\n")
+	sb.WriteString("| name | base_bytes | witness_bytes | total_bytes | weight | vbytes | inputs | outputs | witness_items |\n")
+	sb.WriteString("|---|---:|---:|---:|---:|---:|---:|---:|---:|\n")
+	for _, m := range r.TxSizeEvidence {
+		sb.WriteString(fmt.Sprintf("| %s | %d | %d | %d | %d | %d | %d | %d | %d |\n",
+			m.Name, m.BaseBytes, m.WitnessBytes, m.TotalBytes, m.Weight, m.VBytes, m.InputCount, m.OutputCount, m.WitnessItems))
+	}
+
 	sb.WriteString("\n## 2) Linked ACS On-chain Evidence\n\n")
 	if len(r.LinkedDeployments) == 0 {
 		sb.WriteString("No linked_acs artifacts found. Run deploy script first.\n")
@@ -288,6 +325,28 @@ func toMarkdown(r report) string {
 	for _, row := range r.CoalitionSummary.CoalitionRows {
 		sb.WriteString(fmt.Sprintf("| %d | %s | %s | %s | %s | %t |\n",
 			row.K, row.BobUB, row.MinerLB, row.Width, row.CStarK, row.Feasible))
+	}
+
+	return sb.String()
+}
+
+func toSizeEvidenceMarkdown(measurements []channel.SerializedMeasurement) string {
+	var sb strings.Builder
+	sb.WriteString("# Serialized Transaction Size Evidence\n\n")
+	sb.WriteString("This artifact records direct wire.MsgTx serialization measurements used by eval_report.\n\n")
+	sb.WriteString("Formula: vbytes = ceil(weight / 4), weight = base*3 + total, witness = total - base.\n\n")
+	sb.WriteString("| name | base_bytes | witness_bytes | total_bytes | weight | vbytes | inputs | outputs | witness_items | tx_hex_len |\n")
+	sb.WriteString("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n")
+	for _, m := range measurements {
+		sb.WriteString(fmt.Sprintf("| %s | %d | %d | %d | %d | %d | %d | %d | %d | %d |\n",
+			m.Name, m.BaseBytes, m.WitnessBytes, m.TotalBytes, m.Weight, m.VBytes, m.InputCount, m.OutputCount, m.WitnessItems, len(m.TxHex)))
+	}
+
+	sb.WriteString("\n## Raw Hex\n\n")
+	for _, m := range measurements {
+		sb.WriteString(fmt.Sprintf("### %s\n\n", m.Name))
+		sb.WriteString(m.TxHex)
+		sb.WriteString("\n\n")
 	}
 
 	return sb.String()

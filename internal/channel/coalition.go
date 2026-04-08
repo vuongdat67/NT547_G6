@@ -44,14 +44,10 @@ func (a *CoalitionAnalysis) MinerLBCoalition() *big.Int {
 	return new(big.Int).Mul(big.NewInt(int64(a.K)), a.Params.VCol)
 }
 
-// BobUBLinked returns Bob's max bribe budget under linked ACS.
+// BobUBLinked returns Bob's transferable bribe budget under linked ACS.
+// This follows the paper definition UB_Bob^He = v + v_dep.
 func (a *CoalitionAnalysis) BobUBLinked() *big.Int {
-	ub := new(big.Int).Add(a.Params.V, a.Params.VDep)
-	ub.Sub(ub, a.Params.CStar)
-	if ub.Sign() < 0 {
-		return big.NewInt(0)
-	}
-	return ub
+	return new(big.Int).Add(a.Params.V, a.Params.VDep)
 }
 
 // WidthCoalition returns the feasible range width for a coalition of size k.
@@ -59,17 +55,21 @@ func (a *CoalitionAnalysis) WidthCoalition() *big.Int {
 	return new(big.Int).Sub(a.BobUBLinked(), a.MinerLBCoalition())
 }
 
-// IsCLBAFeasibleCoalition returns true if the coalition attack succeeds.
+// IsCLBAFeasibleCoalition returns true if coalition width is strictly positive.
+// Width <= 0 implies infeasible.
 func (a *CoalitionAnalysis) IsCLBAFeasibleCoalition() bool {
 	return a.WidthCoalition().Sign() > 0
 }
 
-// CStarForCoalition returns the minimum c* needed to block a coalition of size k.
-// c*_k = v + v_dep - k*v_col.
+// CStarForCoalition returns a derived comparison curve anchored at the single-miner
+// burn-based bound c*=v+v_dep and reduced by (k-1)*v_col under the same SDRBA-style
+// simplification. This is used for interpretive reporting only.
 func (a *CoalitionAnalysis) CStarForCoalition() *big.Int {
-	kVCol := new(big.Int).Mul(big.NewInt(int64(a.K)), a.Params.VCol)
-	cStar := new(big.Int).Add(a.Params.V, a.Params.VDep)
-	cStar.Sub(cStar, kVCol)
+	if a.K <= 1 {
+		return new(big.Int).Set(a.Params.CStar)
+	}
+	reduction := new(big.Int).Mul(big.NewInt(int64(a.K-1)), a.Params.VCol)
+	cStar := new(big.Int).Sub(new(big.Int).Set(a.Params.CStar), reduction)
 	if cStar.Sign() < 0 {
 		return big.NewInt(0)
 	}
@@ -90,25 +90,25 @@ func KMax(p *Params, feeSat int64) int {
 	return int(new(big.Int).Div(numerator, p.VCol).Int64())
 }
 
-// Report generates a human-readable analysis summary.
+// Report generates a human-readable derived-comparison summary.
 func (a *CoalitionAnalysis) Report() string {
 	status := "PROFITABLE (coalition attack succeeds)"
 	if !a.IsCLBAFeasibleCoalition() {
 		status = "INFEASIBLE (defense holds)"
 	}
 	return fmt.Sprintf(
-		"=== Coalition CLBA Analysis (k=%d miners) ===\n"+
+		"=== Coalition Comparison (Derived, k=%d) ===\n"+
 			"  v          = %s sat\n"+
 			"  v_dep      = %s sat\n"+
 			"  v_col      = %s sat\n"+
 			"  c*         = %s sat\n"+
 			"  fee f      = %s sat\n"+
 			"  Lambda_K   = %.3f\n"+
-			"  Bob-UB     (v+v_dep-c*)          = %s sat\n"+
+			"  Bob-UB     (v+v_dep)             = %s sat\n"+
 			"  Miner-LB_k (k*v_col)             = %s sat\n"+
 			"  Width_k    (Bob-UB - Miner-LB_k) = %s sat\n"+
-			"  c*_k needed to block k-coalition = %s sat\n"+
-			"  Coalition CLBA: %s\n",
+			"  c*_k derived reference value      = %s sat\n"+
+			"  Coalition feasibility (same model): %s\n",
 		a.K,
 		a.Params.V, a.Params.VDep, a.Params.VCol,
 		a.Params.CStar, a.Fee,

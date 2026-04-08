@@ -31,8 +31,13 @@ func TestSingleMinerMatchesExisting(t *testing.T) {
 	if got.Cmp(want) != 0 {
 		t.Fatalf("k=1 c*_1 = %s, want %s", got, want)
 	}
-	if w := ca.WidthCoalition(); w.Sign() != 0 {
-		t.Fatalf("k=1 width at c* = %s, want 0", w)
+	expectedWidth := new(big.Int).Add(p.V, p.VDep)
+	expectedWidth.Sub(expectedWidth, p.VCol)
+	if w := ca.WidthCoalition(); w.Cmp(expectedWidth) != 0 {
+		t.Fatalf("k=1 width = %s, want %s", w, expectedWidth)
+	}
+	if !ca.IsCLBAFeasibleCoalition() {
+		t.Fatal("k=1 width should be positive and therefore feasible")
 	}
 }
 

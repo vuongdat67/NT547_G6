@@ -22,8 +22,8 @@ type Params struct {
 	Kappa     int
 }
 
-// NewParams creates CRAB-He parameters with collateral derived from Theorem 3.
-// c* = v + v_dep - v_col.
+// NewParams creates CRAB-He parameters with collateral derived from the
+// burn-based linked-ACS game: c* = v + v_dep.
 func NewParams(v, vDep, vCol, delta *big.Int, t, absT, ell int64, kappa int) (*Params, error) {
 	if kappa <= 2 {
 		return nil, fmt.Errorf("kappa must be > 2, got %d", kappa)
@@ -43,7 +43,6 @@ func NewParams(v, vDep, vCol, delta *big.Int, t, absT, ell int64, kappa int) (*P
 	}
 
 	cStar := new(big.Int).Add(v, vDep)
-	cStar.Sub(cStar, vCol)
 
 	return &Params{
 		V:         v,
@@ -60,7 +59,6 @@ func NewParams(v, vDep, vCol, delta *big.Int, t, absT, ell int64, kappa int) (*P
 
 func (p *Params) VerifyCLBAInfeasible() bool {
 	lhs := new(big.Int).Add(p.V, p.VDep)
-	lhs.Sub(lhs, p.VCol)
 	return p.CStar.Cmp(lhs) >= 0
 }
 
@@ -72,7 +70,7 @@ func (p *Params) String() string {
 	return fmt.Sprintf(
 		"CRAB-He Params:\n"+
 			"  v       = %s sat\n"+
-			"  c*      = %s sat  (v+v_dep-v_col)\n"+
+			"  c*      = %s sat  (v+v_dep)\n"+
 			"  v_dep   = %s sat\n"+
 			"  v_col   = %s sat\n"+
 			"  overhead= %s sat above CRAB-Byzantine\n"+
@@ -142,17 +140,18 @@ func (a *CLBAAnalysis) Width() *big.Int {
 }
 
 // BRLowerBoundLinked returns miner's minimum bribe for linked-ACS model.
-// With linked ACS, miner already gets c* automatically, so marginal threshold is v_col.
+// Honest path utility is c + v_col (CRAB punishment plus HTLC col-M), while CLBA-path
+// utility is v_col + BR once dep-B reveals pre_b and linked ACS is claimed. Therefore
+// BR must cover at least c.
 func (a *CLBAAnalysis) BRLowerBoundLinked() *big.Int {
-	return new(big.Int).Set(a.Params.VCol)
+	return new(big.Int).Set(a.CollateralC)
 }
 
 // BRUpperBoundLinked returns Bob's max bribe in linked-ACS model.
-// Bob loses c* automatically once pre_b is revealed, so budget is v + v_dep - c.
+// Bob's CLBA branch gross gain is v + c + v_dep, but revealing pre_b deterministically
+// triggers loss of the linked output value c. Net transferable surplus is v + v_dep.
 func (a *CLBAAnalysis) BRUpperBoundLinked() *big.Int {
-	ub := new(big.Int).Add(a.Params.V, a.Params.VDep)
-	ub.Sub(ub, a.CollateralC)
-	return ub
+	return new(big.Int).Add(a.Params.V, a.Params.VDep)
 }
 
 // WidthLinked returns BR range width in linked-ACS model.
@@ -214,8 +213,8 @@ func (a *CLBAAnalysis) ReportLinked() string {
 			"  v_col   = %s sat\n"+
 			"  c       = %s sat\n"+
 			"  lambda_i= %.3f\n"+
-			"  Miner-LB linked (v_col)      = %s sat\n"+
-			"  Bob-UB   linked (v+v_dep-c)  = %s sat\n"+
+			"  Miner-LB linked (c)          = %s sat\n"+
+			"  Bob-UB   linked (v+v_dep)    = %s sat\n"+
 			"  Width    linked              = %s sat\n"+
 			"  Midpoint BR                  = %s sat\n"+
 			"  CLBA linked: %s\n",

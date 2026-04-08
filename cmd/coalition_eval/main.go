@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println("=== CRAB-He Coalition Extension Evaluation ===")
+	fmt.Println("=== CRAB-He Coalition Derived Comparison ===")
 	fmt.Println()
 
 	v := big.NewInt(2_000_000)
@@ -34,6 +34,7 @@ func main() {
 	fmt.Println(strings.Repeat("-", 76))
 
 	kMax := channel.KMax(params, feeSat)
+	exactThresholdDetected := false
 	for k := 1; k <= min(10, kMax+1); k++ {
 		lambdaK := float64(k) * 0.05
 		if lambdaK >= 0.5 {
@@ -44,21 +45,28 @@ func main() {
 			fmt.Printf("k=%d: error %v\n", k, err)
 			continue
 		}
+		bobUB := ca.BobUBLinked().String()
 		feasible := "YES"
 		if !ca.IsCLBAFeasibleCoalition() {
 			feasible = "NO"
 		}
+		if k == 1 && bobUB == "0" && !ca.IsCLBAFeasibleCoalition() {
+			exactThresholdDetected = true
+		}
 		fmt.Printf("%-6d %-18s %-18s %-18s %-12s\n",
 			k,
-			ca.BobUBLinked().String(),
+			bobUB,
 			ca.MinerLBCoalition().String(),
 			ca.WidthCoalition().String(),
 			feasible,
 		)
 	}
+	if exactThresholdDetected {
+		fmt.Println("Note: Bob-UB = 0 indicates exact-threshold operation (c = c*); defense holds with zero margin.")
+	}
 	fmt.Printf("\nk_max (natural infeasibility threshold) = %d\n\n", kMax)
 
-	fmt.Println("=== Table: Required c* to Block Coalition of Size k ===")
+	fmt.Println("=== Table: Derived c*_k Reference by Coalition Size ===")
 	fmt.Printf("%-6s %-22s %-22s %-18s\n", "k", "c*_k needed (sat)", "vs single-miner c*", "Overhead change")
 	fmt.Println(strings.Repeat("-", 72))
 
@@ -79,9 +87,8 @@ func main() {
 	}
 
 	fmt.Println()
-	fmt.Println("Key insight: c*_k DECREASES as k increases.")
-	fmt.Println("Larger coalition requires LESS collateral to block, not more.")
-	fmt.Println("Current single-miner c* already dominates all coalition sizes.")
+	fmt.Println("Note: c*_k values above are derived under the same SDRBA simplifications used in He-HTLC.")
+	fmt.Println("They are reported as comparative references, not as a standalone new theorem claim.")
 }
 
 func min(a, b int) int {
