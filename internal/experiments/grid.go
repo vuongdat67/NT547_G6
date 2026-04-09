@@ -31,6 +31,9 @@ func BuildGridConfigs(vSat int64) []Config {
 		for _, colRatio := range vColOverVDep {
 			vCol := int64(math.Round(float64(vDep) * colRatio))
 			for _, kappa := range kappas {
+				if kappa <= 2 {
+					continue
+				}
 				valid, reason := HeCondition(vDep, vCol, kappa)
 				for _, n := range hops {
 					id := fmt.Sprintf("dep%.3f-col%.2f-k%d-n%d", depRatio, colRatio, kappa, n)

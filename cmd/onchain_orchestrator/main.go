@@ -29,6 +29,8 @@ type runResult struct {
 	Seed         int    `json:"seed"`
 	Network      string `json:"network"`
 	Success      bool   `json:"success"`
+	RetryAttempts int   `json:"retryAttempts"`
+	RetryPolicyHits int `json:"retryPolicyHits"`
 	DurationMs   int64  `json:"durationMs"`
 	ArtifactPath string `json:"artifactPath"`
 	FundTxID     string `json:"fundTxid,omitempty"`
@@ -138,6 +140,8 @@ func main() {
 						Seed:         seed,
 						Network:      network,
 						Success:      true,
+						RetryAttempts: 0,
+						RetryPolicyHits: 0,
 						DurationMs:   time.Since(start).Milliseconds(),
 						ArtifactPath: artifactPath,
 						Command:      commandDisplay,
@@ -146,13 +150,15 @@ func main() {
 					continue
 				}
 
-				out, err := runDeployWithRetry(args, *retryAttempts, *retryDelayMs)
+				out, err, attemptsUsed, policyHits := runDeployWithRetry(args, *retryAttempts, *retryDelayMs)
 				if err != nil {
 					r := runResult{
 						ConfigID:     cfg.ID,
 						Seed:         seed,
 						Network:      network,
 						Success:      false,
+						RetryAttempts: attemptsUsed,
+						RetryPolicyHits: policyHits,
 						DurationMs:   time.Since(start).Milliseconds(),
 						ArtifactPath: artifactPath,
 						Command:      commandDisplay,
@@ -192,6 +198,8 @@ func main() {
 					Seed:         seed,
 					Network:      network,
 					Success:      true,
+					RetryAttempts: attemptsUsed,
+					RetryPolicyHits: policyHits,
 					DurationMs:   time.Since(start).Milliseconds(),
 					ArtifactPath: artifactPath,
 					FundTxID:     artifact.FundTxID,
@@ -323,7 +331,7 @@ func writeCSV(path string, rows []runResult) error {
 	w := csv.NewWriter(f)
 	defer w.Flush()
 
-	head := []string{"config_id", "seed", "network", "success", "duration_ms", "artifact_path", "fund_txid", "spend_txid", "dry_run", "error", "command"}
+	head := []string{"config_id", "seed", "network", "success", "retry_attempts", "retry_policy_hits", "duration_ms", "artifact_path", "fund_txid", "spend_txid", "dry_run", "error", "command"}
 	if err := w.Write(head); err != nil {
 		return err
 	}
@@ -337,6 +345,8 @@ func writeCSV(path string, rows []runResult) error {
 			fmt.Sprintf("%d", r.Seed),
 			r.Network,
 			fmt.Sprintf("%t", r.Success),
+			fmt.Sprintf("%d", r.RetryAttempts),
+			fmt.Sprintf("%d", r.RetryPolicyHits),
 			fmt.Sprintf("%d", r.DurationMs),
 			r.ArtifactPath,
 			r.FundTxID,
@@ -365,24 +375,31 @@ func readDeployArtifact(path string) (deployArtifact, error) {
 	return out, nil
 }
 
-func runDeployWithRetry(args []string, retryAttempts int, retryDelayMs int) ([]byte, error) {
+func runDeployWithRetry(args []string, retryAttempts int, retryDelayMs int) ([]byte, error, int, int) {
 	maxAttempts := retryAttempts + 1
 	var out []byte
 	var err error
+	attemptsUsed := 0
+	policyHits := 0
 	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		attemptsUsed = attempt
 		cmd := exec.Command("go", args...)
 		out, err = cmd.CombinedOutput()
 		if err == nil {
-			return out, nil
+			return out, nil, attemptsUsed, policyHits
 		}
-		if attempt == maxAttempts || !isRetryablePolicyError(out) {
+		retryable := isRetryablePolicyError(out)
+		if retryable {
+			policyHits++
+		}
+		if attempt == maxAttempts || !retryable {
 			break
 		}
 		if retryDelayMs > 0 {
 			time.Sleep(time.Duration(retryDelayMs) * time.Millisecond)
 		}
 	}
-	return out, err
+	return out, err, attemptsUsed, policyHits
 }
 
 func isRetryablePolicyError(out []byte) bool {

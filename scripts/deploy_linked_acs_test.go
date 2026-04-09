@@ -260,6 +260,82 @@ func TestLinkedACSRejectsReplayAcrossDifferentOutpoint(t *testing.T) {
 	}
 }
 
+func TestLinkedACSRejectsReplayAcrossDifferentStateSameOutpoint(t *testing.T) {
+	fundValueSat := int64(10000)
+	feeSat := int64(1000)
+
+	rjStateJ := bytes.Repeat([]byte{0x91}, 32)
+	preStateJ := bytes.Repeat([]byte{0x92}, 32)
+	hRj := sha256.Sum256(rjStateJ)
+	hPj := sha256.Sum256(preStateJ)
+
+	rjStateJ1 := bytes.Repeat([]byte{0x93}, 32)
+	preStateJ1 := bytes.Repeat([]byte{0x94}, 32)
+	hRj1 := sha256.Sum256(rjStateJ1)
+	hPj1 := sha256.Sum256(preStateJ1)
+
+	alicePriv, alicePub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x95}, 32))
+	bobPriv, bobPub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x96}, 32))
+
+	// State j linked leaf / taproot commitment.
+	leafCRABJ, err := buildCRABTaprootLeafScript(hRj[:])
+	if err != nil {
+		t.Fatalf("buildCRABTaprootLeafScript(state j): %v", err)
+	}
+	redeemJ, err := buildBurnSplitLinkedACSScript(hRj[:], hPj[:], alicePub.SerializeCompressed(), bobPub.SerializeCompressed())
+	if err != nil {
+		t.Fatalf("buildBurnSplitLinkedACSScript(state j): %v", err)
+	}
+	leafJ := txscript.NewBaseTapLeaf(redeemJ)
+	treeJ := txscript.AssembleTaprootScriptTree(txscript.NewBaseTapLeaf(leafCRABJ), leafJ)
+	rootJ := treeJ.RootNode.TapHash()
+	p2trJ, err := txscript.PayToTaprootScript(txscript.ComputeTaprootOutputKey(alicePub, rootJ[:]))
+	if err != nil {
+		t.Fatalf("PayToTaprootScript(state j): %v", err)
+	}
+
+	// State j+1 linked leaf / taproot commitment.
+	leafCRABJ1, err := buildCRABTaprootLeafScript(hRj1[:])
+	if err != nil {
+		t.Fatalf("buildCRABTaprootLeafScript(state j+1): %v", err)
+	}
+	redeemJ1, err := buildBurnSplitLinkedACSScript(hRj1[:], hPj1[:], alicePub.SerializeCompressed(), bobPub.SerializeCompressed())
+	if err != nil {
+		t.Fatalf("buildBurnSplitLinkedACSScript(state j+1): %v", err)
+	}
+	leafJ1 := txscript.NewBaseTapLeaf(redeemJ1)
+	treeJ1 := txscript.AssembleTaprootScriptTree(txscript.NewBaseTapLeaf(leafCRABJ1), leafJ1)
+	rootJ1 := treeJ1.RootNode.TapHash()
+	p2trJ1, err := txscript.PayToTaprootScript(txscript.ComputeTaprootOutputKey(alicePub, rootJ1[:]))
+	if err != nil {
+		t.Fatalf("PayToTaprootScript(state j+1): %v", err)
+	}
+
+	// Same prevout, but witness/signature bound to state-j scripts must fail on state-j+1 script commitment.
+	sharedPrevHash := chainhash.DoubleHashH([]byte("funding-shared-outpoint-state-rotation"))
+	txStateJ, _, err := buildBurnSplitSpendTx(sharedPrevHash, 0, fundValueSat, feeSat, hRj[:], hPj[:])
+	if err != nil {
+		t.Fatalf("build state-j tx: %v", err)
+	}
+	wJ, err := signPresignedBurnSplitWitness(txStateJ, 0, fundValueSat, p2trJ, leafJ, treeJ, alicePub, preStateJ, rjStateJ, alicePriv, bobPriv)
+	if err != nil {
+		t.Fatalf("sign state-j witness: %v", err)
+	}
+	txStateJ.TxIn[0].Witness = wJ
+	if err := verifyTaprootScriptSpend(txStateJ, 0, p2trJ, fundValueSat); err != nil {
+		t.Fatalf("state-j tx should verify: %v", err)
+	}
+
+	txStateJ1, _, err := buildBurnSplitSpendTx(sharedPrevHash, 0, fundValueSat, feeSat, hRj1[:], hPj1[:])
+	if err != nil {
+		t.Fatalf("build state-j+1 tx: %v", err)
+	}
+	txStateJ1.TxIn[0].Witness = wJ
+	if err := verifyTaprootScriptSpend(txStateJ1, 0, p2trJ1, fundValueSat); err == nil {
+		t.Fatal("state-j witness unexpectedly verified on state-j+1 commitment for same outpoint")
+	}
+}
+
 func cloneTx(src *wire.MsgTx) *wire.MsgTx {
 	var buf bytes.Buffer
 	_ = src.Serialize(&buf)

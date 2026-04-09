@@ -133,6 +133,9 @@ func (a *CLBAAnalysis) BRUpperBound() *big.Int {
 	return ub
 }
 
+// Width returns baseline CLBA width under the non-linked CRAB composition model:
+//   W = (v + c + v_dep) - (c + v_col) = v + v_dep - v_col.
+// This quantity keeps v_col because miner honest-path utility includes col-M.
 func (a *CLBAAnalysis) Width() *big.Int {
 	w := new(big.Int).Add(a.Params.V, a.Params.VDep)
 	w.Sub(w, a.Params.VCol)
@@ -149,12 +152,17 @@ func (a *CLBAAnalysis) BRLowerBoundLinked() *big.Int {
 
 // BRUpperBoundLinked returns Bob's max bribe in linked-ACS model.
 // Bob's CLBA branch gross gain is v + c + v_dep, but revealing pre_b deterministically
-// triggers loss of the linked output value c. Net transferable surplus is v + v_dep.
+// triggers loss of the linked output value c (burned via fixed linked spend template).
+// Net transferable surplus is v + v_dep.
 func (a *CLBAAnalysis) BRUpperBoundLinked() *big.Int {
 	return new(big.Int).Add(a.Params.V, a.Params.VDep)
 }
 
-// WidthLinked returns BR range width in linked-ACS model.
+// WidthLinked returns BR range width in linked-ACS model:
+//   W' = (v + v_dep) - c.
+// Semantic shift from Width(): v_col disappears because miner indifference is
+// evaluated at attacker-favorable linked-fee capture (pi=1), where v_col terms
+// cancel symmetrically in the linked model.
 // Width <= 0 implies CLBA is infeasible.
 func (a *CLBAAnalysis) WidthLinked() *big.Int {
 	w := a.BRUpperBoundLinked()
