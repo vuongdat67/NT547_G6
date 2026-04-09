@@ -1,0 +1,107 @@
+[
+  {
+    "feeSat": 250,
+    "seed": 1,
+    "fundTxid": "f5a5885233af749a0b2df809f4ba8e60571d286a77071c6acf7ebf6e5fa337be",
+    "spendTxid": "e00385022fbbba937650bdb006306b8073ad4856a1b8406b7410f863f1b34c55",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_250_seed_1.json"
+  },
+  {
+    "feeSat": 250,
+    "seed": 2,
+    "fundTxid": "02e51ccc5633f2d340a9a557b408ed2b59b2ac8a72d3c10cd4c75e6892418145",
+    "spendTxid": "f6e81bfd28aea0da3dbf7e2f10dbbc7f5bf1831a4328989416b31ee67c9d6a9d",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_250_seed_2.json"
+  },
+  {
+    "feeSat": 250,
+    "seed": 3,
+    "fundTxid": "ed0eb9e75a7efaf1273d6a25a2dda7eaa27b075db5fc6d0521e6a9b3eeacfeec",
+    "spendTxid": "4a68af4324f885e4a7670418e057c842e8e5ec352ffef3e6d832e0e2339395de",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_250_seed_3.json"
+  },
+  {
+    "feeSat": 500,
+    "seed": 1,
+    "fundTxid": "26e80a0ba1e43bdc4f08cdde6199d38295f0e4d81f61b0c2917047091825cac2",
+    "spendTxid": "76e44239cfc46174b7e273f4a74079b1b976b4d0b4e4c30dc023cc3e3853115c",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_500_seed_1.json"
+  },
+  {
+    "feeSat": 500,
+    "seed": 2,
+    "fundTxid": "99621ce45aba3b3c7f74f10d560080bc46ba505850e9ef1e9b62c0d4cea3c18b",
+    "spendTxid": "02541dcaf30c1356c9a66d4f7eba0b1a3778fc985c9b5014d90e0c4bb43abdcc",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_500_seed_2.json"
+  },
+  {
+    "feeSat": 500,
+    "seed": 3,
+    "fundTxid": "caf7640287be89663f21391e6878f44b18361e0a65fcf43247d01cf9402f1984",
+    "spendTxid": "80622f8ef820e6e0db3fab659c5c16929383eb99d0f464867116d4a051d87c25",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_500_seed_3.json"
+  },
+  {
+    "feeSat": 1000,
+    "seed": 1,
+    "fundTxid": "caeeceb93b184a722401222a5b78479f67abc07ef92d627270adbf2fbae8facf",
+    "spendTxid": "5b04d4bba12f1eff87b56fc2cacf647d70102b542152e59f6d82d4beff4472d6",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_1000_seed_1.json"
+  },
+  {
+    "feeSat": 1000,
+    "seed": 2,
+    "fundTxid": "c00a2ac04e3cc8ac619305d0fa199a877c3432a52c9ef40cb5dd881e11c9d4bf",
+    "spendTxid": "d0f6bcb27faeaac471bc595630926541b03e67eb7476841f773b4b9c0107d062",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_1000_seed_2.json"
+  },
+  {
+    "feeSat": 1000,
+    "seed": 3,
+    "fundTxid": "687837592511e61d7b4757bd03e9d631786fec64413a108859e0eeb56029e325",
+    "spendTxid": "da7af51e6a2f8d6f93acc5a3e2a3045e946eec23647b8e144d99f06fc9e6d152",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_1000_seed_3.json"
+  },
+  {
+    "feeSat": 2500,
+    "seed": 1,
+    "fundTxid": "a7dd936d05d20024dfd66671bcfbe20c0d5650e8a1235785b9852d6123ebc886",
+    "spendTxid": "a47069fe9901cacf18ab880802e31f1ffd49e5dfd826370de867d88671e838d7",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_2500_seed_1.json"
+  },
+  {
+    "feeSat": 2500,
+    "seed": 2,
+    "fundTxid": "dc06038e46b805564f3ca43809ae39a966d167d998c0731ec3316f5341db3865",
+    "spendTxid": "358a4d68105da33ef2774e5853abed16126560c2ec64bbed27a980e0fafb1e1b",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_2500_seed_2.json"
+  },
+  {
+    "feeSat": 2500,
+    "seed": 3,
+    "fundTxid": "55e124679f282fba7dc24681ae7c2e2766c1388d7c2deed34d1cfa2091c7f4db",
+    "spendTxid": "3934a3a93fa4a78b6c5595fbc5382f44cb2d58a9b117e7763082c64d975628e1",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_2500_seed_3.json"
+  },
+  {
+    "feeSat": 5000,
+    "seed": 1,
+    "fundTxid": "b2d2775a332ee9efbed60908a71fbb55ab77d881529bad3fe0eca67e430e3919",
+    "spendTxid": "f0f19b50f30446fcb257670c5453a4043a15c76f4537bcd8d5804b0e9e4410af",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_5000_seed_1.json"
+  },
+  {
+    "feeSat": 5000,
+    "seed": 2,
+    "fundTxid": "d0bb51e651e63da7490949a213176e42418287f8e79c21304b85071d1b866efb",
+    "spendTxid": "3d5e92bf91aea682e472a27cdc1a32c29adf90d916c2aa45d9410a04c27ac9dd",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_5000_seed_2.json"
+  },
+  {
+    "feeSat": 5000,
+    "seed": 3,
+    "fundTxid": "3c806c3047ff20f9944821e5ccbf8819a6fc835856810a2f13afa116d0e9e97a",
+    "spendTxid": "00dff7c864738135884e86cb3d4b90454207a59796afd79a275966eb236e55e0",
+    "artifact": "C:\\Users\\vuong\\Documents\\He-HTLC-Code-Repository\\code\\crab-he\\artifacts\\onchain\\regtest\\fee_profiles\\fee_5000_seed_3.json"
+  }
+]

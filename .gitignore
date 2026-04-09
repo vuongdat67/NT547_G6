@@ -32,9 +32,4 @@ go.work.sum
 # .vscode/
 
 trash/
-
-artifacts/onchain/
-artifacts/publication/*.pdf
-artifacts/publication/publication_manifest.json
-artifacts/publication/*.print.html
-*.tex
+publication/

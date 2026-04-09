@@ -1,0 +1,22 @@
+{
+  "network": "regtest",
+  "wallet": "test",
+  "linkedACSAddress": "bcrt1pw4sn2pm390hmutk8u8q2zuepj383705p2992h6tgcm96h0yk4t0sm7rd8l",
+  "linkedACSScriptHex": "a8200cf39f2506a8ad85b52a94cf383887a8e92f8ab38b2f712d18ee793a2236417988a820408a38cfb73e25ac69f57856fbb74c46005b5ff673947ab1d3849346f32fb5078820e6450842acc247698bdf6263c5bb1d48460eddc7dd8f32af24ac7d74e779d910ac2064decfa5195a12cfc691d4050c6f6043ef8523d8be3bbc420ca37c0f76ea5a71ba5287",
+  "leafCrabScriptHex": "a8200cf39f2506a8ad85b52a94cf383887a8e92f8ab38b2f712d18ee793a2236417987",
+  "taprootOutputKeyXOnly": "75613507712befbe2ec7e1c0a17321944f1f3e81514aabe968c6cbabbc96aadf",
+  "alicePubKeyHex": "03e6450842acc247698bdf6263c5bb1d48460eddc7dd8f32af24ac7d74e779d910",
+  "bobPubKeyHex": "0364decfa5195a12cfc691d4050c6f6043ef8523d8be3bbc420ca37c0f76ea5a71",
+  "fundTxid": "c6839760ac7e9d4216445f8d24c984d6b8ecdde4352ef5cd1efebe4dd0a85898",
+  "fundVout": 0,
+  "fundValueSat": 3000000,
+  "spendTxid": "17bdfa304b967c5f43371e97ee2c6272cdde031476e057633805a5540718ff0c",
+  "spendValueSat": 2999000,
+  "minerPayoutSat": 1000,
+  "burnValueSat": 2999000,
+  "feeSat": 1000,
+  "witnessOrder": "\u003csig_B\u003e \u003csig_A\u003e \u003cpre_b\u003e \u003cr^j_a\u003e \u003clinkedLeafScript\u003e \u003ccontrolBlock\u003e",
+  "hashRjA": "0cf39f2506a8ad85b52a94cf383887a8e92f8ab38b2f712d18ee793a22364179",
+  "hashPreB": "408a38cfb73e25ac69f57856fbb74c46005b5ff673947ab1d3849346f32fb507",
+  "createdAtUtc": "2026-04-09T02:26:27Z"
+}
