@@ -318,9 +318,6 @@ func writeSweepCSV(path string, rows []sweepRow) error {
 	}
 
 	for _, r := range rows {
-		if r.Kappa <= 2 {
-			continue
-		}
 		rec := []string{
 			r.ConfigID,
 			fmt.Sprintf("%d", r.VSat),

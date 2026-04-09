@@ -146,6 +146,9 @@ func TestBobCannotTakeSurplusFromLinkedOutput(t *testing.T) {
 		t.Fatalf("bob signature: %v", err)
 	}
 
+	// These representative mutations cover Bob-only signing and malformed stack
+	// layouts; any valid spend must satisfy both hash checks and 2-of-2
+	// tapscript signature constraints committed to the fixed spend template.
 	candidates := []wire.TxWitness{
 		{bobSig, preB, rjA, redeemScript, ctrlBytes},
 		{bobSig, bobSig, preB, rjA, redeemScript, ctrlBytes},

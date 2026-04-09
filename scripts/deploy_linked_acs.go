@@ -388,6 +388,8 @@ func buildBurnSplitSpendTx(prevHash chainhash.Hash, prevVout uint32, fundValueSa
 	if fundValueSat <= feeSat {
 		return nil, 0, fmt.Errorf("fundValueSat (%d) must be > feeSat (%d)", fundValueSat, feeSat)
 	}
+	// In CRAB-He notation, fundValueSat models c* on out[2] and feeSat models
+	// v_col paid to the including miner, so the burned residual is c* - v_col.
 	burnValue := fundValueSat - feeSat
 
 	burnPkScript, err := buildBurnOutputScript(hashRjA, hashPreB)

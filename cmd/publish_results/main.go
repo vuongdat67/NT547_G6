@@ -50,6 +50,8 @@ func main() {
 }
 
 func removeObsoleteOutputs(outDir string) {
+	// Cleanup is intentionally scoped to known legacy publication artifacts so
+	// repeated runs do not leave stale files with outdated schemas.
 	obsolete := []string{
 		"table_main_results.tex",
 		"table_seed_stats.tex",
