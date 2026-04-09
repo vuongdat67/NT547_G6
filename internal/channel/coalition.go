@@ -1,7 +1,8 @@
 // Package channel contains coalition-aware CRAB-He analysis helpers.
 //
 // This file provides an INTERPRETIVE DIAGNOSTIC for coalition-sized
-// attacker groups, borrowing the He-HTLC Lemma 14 floor (k * v_col) rather
+// attacker groups, borrowing the He-HTLC standalone coalition-scaling floor
+// (k * v_col) rather
 // than the composed CRAB-He single-miner floor c* used in Theorem 2 of the
 // paper. The diagnostic exists to make artifact outputs readable against
 // the original He-HTLC coalition convention; it is NOT a replacement for
@@ -53,7 +54,8 @@ func NewCoalitionAnalysis(p *Params, k int, lambdaK float64, feeSat int64) (*Coa
 }
 
 // MinerLBCoalition returns the minimum total bribe the coalition will
-// accept under the He-HTLC Lemma 14 convention, namely k * v_col. Note
+// accept under the He-HTLC standalone coalition-scaling convention,
+// namely k * v_col. Note
 // this is the STANDALONE He-HTLC coalition floor, not the composed
 // CRAB-He single-miner floor c* used in Theorem 2.
 func (a *CoalitionAnalysis) MinerLBCoalition() *big.Int {
@@ -127,7 +129,7 @@ func (a *CoalitionAnalysis) Report() string {
 	}
 	return fmt.Sprintf(
 		"=== Coalition Diagnostic (interpretive, k=%d) ===\n"+
-			"  convention : He-HTLC Lemma 14 standalone coalition floor\n"+
+			"  convention : He-HTLC standalone coalition-scaling floor\n"+
 			"  v          = %s sat\n"+
 			"  v_dep      = %s sat\n"+
 			"  v_col      = %s sat\n"+
@@ -140,7 +142,7 @@ func (a *CoalitionAnalysis) Report() string {
 			"  c_ref(k) diagnostic reference     = %s sat\n"+
 			"  Diagnostic status: %s\n"+
 			"  NOTE: composed-model security is governed by Theorem 2 (single-miner c*),\n"+
-			"  not by this diagnostic. See Remark 2 in the paper.\n",
+			"  not by this diagnostic. See the coalition-diagnostic subsection in the paper.\n",
 		a.K,
 		a.Params.V, a.Params.VDep, a.Params.VCol,
 		a.Params.CStar, a.Fee,

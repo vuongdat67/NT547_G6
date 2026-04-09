@@ -106,7 +106,6 @@ func main() {
 	csvPath := filepath.Join("artifacts", "experiments", "parameter_sweep.csv")
 	multiHopPath := filepath.Join("artifacts", "experiments", "multi_hop_table.csv")
 	baselinePipelinesPath := filepath.Join("artifacts", "experiments", "baseline_pipelines.json")
-	simPath := filepath.Join("artifacts", "experiments", "seed_simulation_summary.json")
 
 	b, err := json.MarshalIndent(rep, "", "  ")
 	must(err)
@@ -114,7 +113,6 @@ func main() {
 	must(writeSweepCSV(csvPath, sweepRows))
 	must(writeMultiHopCSV(multiHopPath, multiHop))
 	must(writeJSON(baselinePipelinesPath, baselinePipelines))
-	_ = os.Remove(simPath)
 
 	fmt.Println("Generated experiment artifacts:")
 	fmt.Println(" -", jsonPath)
@@ -139,8 +137,16 @@ func buildBaselinePipelines(configs []gridConfig) []experiments.Pipeline {
 
 func evaluateGridRow(cfg gridConfig) sweepRow {
 	rowStart := time.Now()
-	widthCRAB := experiments.CStar(cfg.VSat, cfg.VDepSat, cfg.VColSat)
-	cStar := widthCRAB
+	cBase := experiments.CStar(cfg.VSat, cfg.VDepSat, cfg.VColSat)
+	cPrime125 := int64(math.Round(float64(cBase) * 1.25))
+	cPrime150 := int64(math.Round(float64(cBase) * 1.50))
+	cPrime200 := int64(math.Round(float64(cBase) * 2.00))
+
+	widthCRAB := crabWidthWithCollateral(cfg.VSat, cfg.VDepSat, cfg.VColSat, cBase)
+	widthCRABPrime125 := crabWidthWithCollateral(cfg.VSat, cfg.VDepSat, cfg.VColSat, cPrime125)
+	widthCRABPrime150 := crabWidthWithCollateral(cfg.VSat, cfg.VDepSat, cfg.VColSat, cPrime150)
+	widthCRABPrime200 := crabWidthWithCollateral(cfg.VSat, cfg.VDepSat, cfg.VColSat, cPrime200)
+	cStar := cBase
 	widthCStarMinus := experiments.LinkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, cStar-epsilonSat)
 	widthCStar := experiments.LinkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, cStar)
 	widthCStarPlus := experiments.LinkedWidth(cfg.VSat, cfg.VDepSat, cfg.VColSat, cStar+epsilonSat)
@@ -159,9 +165,9 @@ func evaluateGridRow(cfg gridConfig) sweepRow {
 		HopsN:                  cfg.HopsN,
 		WidthCRABSat:           widthCRAB,
 		WidthCRABByzantineSat:  widthCRAB,
-		WidthCRABPrime1_25Sat:  widthCRAB,
-		WidthCRABPrime1_50Sat:  widthCRAB,
-		WidthCRABPrime2_00Sat:  widthCRAB,
+		WidthCRABPrime1_25Sat:  widthCRABPrime125,
+		WidthCRABPrime1_50Sat:  widthCRABPrime150,
+		WidthCRABPrime2_00Sat:  widthCRABPrime200,
 		CStarSat:               cStar,
 		WidthCRABHeCStarMinus:  widthCStarMinus,
 		WidthCRABHeCStar:       widthCStar,
@@ -172,10 +178,16 @@ func evaluateGridRow(cfg gridConfig) sweepRow {
 		MADStandaloneWidthSat:  madStandaloneWidth,
 		HeStandaloneMarginSat:  heStandaloneMargin,
 		ActiveMinerCoverageMAD: madStandalone.Feasible,
-		Notes:                  "CRAB widths remain invariant under collateral-only scaling; standalone MAD/He baselines are computed through tx-level pipelines",
+		Notes:                  "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
 		ElapsedMicros:          time.Since(rowStart).Microseconds(),
 		GeneratedAtUTC:         time.Now().UTC().Format(time.RFC3339),
 	}
+}
+
+func crabWidthWithCollateral(vSat, vDepSat, vColSat, cPrimeSat int64) int64 {
+	ub := vSat + cPrimeSat + vDepSat
+	lb := cPrimeSat + vColSat
+	return ub - lb
 }
 
 func buildMultiHopTable(vSat int64, depRatio float64, colRatio float64) []multiHopRow {

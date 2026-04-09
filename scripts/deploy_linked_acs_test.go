@@ -206,6 +206,60 @@ func TestLinkedACSRejectsWrongPreimages(t *testing.T) {
 	}
 }
 
+func TestLinkedACSRejectsReplayAcrossDifferentOutpoint(t *testing.T) {
+	fundValueSat := int64(10000)
+	feeSat := int64(1000)
+
+	rjA := bytes.Repeat([]byte{0x81}, 32)
+	preB := bytes.Repeat([]byte{0x82}, 32)
+	hR := sha256.Sum256(rjA)
+	hP := sha256.Sum256(preB)
+
+	alicePriv, alicePub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x83}, 32))
+	bobPriv, bobPub := btcec.PrivKeyFromBytes(bytes.Repeat([]byte{0x84}, 32))
+	leafCRABScript, err := buildCRABTaprootLeafScript(hR[:])
+	if err != nil {
+		t.Fatalf("buildCRABTaprootLeafScript: %v", err)
+	}
+	redeemScript, err := buildBurnSplitLinkedACSScript(hR[:], hP[:], alicePub.SerializeCompressed(), bobPub.SerializeCompressed())
+	if err != nil {
+		t.Fatalf("buildBurnSplitLinkedACSScript: %v", err)
+	}
+	linkedLeaf := txscript.NewBaseTapLeaf(redeemScript)
+	tapTree := txscript.AssembleTaprootScriptTree(txscript.NewBaseTapLeaf(leafCRABScript), linkedLeaf)
+	internalKey := alicePub
+	rootHash := tapTree.RootNode.TapHash()
+	p2trScript, err := txscript.PayToTaprootScript(txscript.ComputeTaprootOutputKey(internalKey, rootHash[:]))
+	if err != nil {
+		t.Fatalf("PayToTaprootScript: %v", err)
+	}
+
+	stateJPrevHash := chainhash.DoubleHashH([]byte("funding-state-j"))
+	txStateJ, _, err := buildBurnSplitSpendTx(stateJPrevHash, 0, fundValueSat, feeSat, hR[:], hP[:])
+	if err != nil {
+		t.Fatalf("build state-j tx: %v", err)
+	}
+	stateJWitness, err := signPresignedBurnSplitWitness(txStateJ, 0, fundValueSat, p2trScript, linkedLeaf, tapTree, internalKey, preB, rjA, alicePriv, bobPriv)
+	if err != nil {
+		t.Fatalf("sign state-j witness: %v", err)
+	}
+	txStateJ.TxIn[0].Witness = stateJWitness
+	if err := verifyTaprootScriptSpend(txStateJ, 0, p2trScript, fundValueSat); err != nil {
+		t.Fatalf("state-j tx should verify: %v", err)
+	}
+
+	stateJ1PrevHash := chainhash.DoubleHashH([]byte("funding-state-j-plus-1"))
+	txStateJ1, _, err := buildBurnSplitSpendTx(stateJ1PrevHash, 0, fundValueSat, feeSat, hR[:], hP[:])
+	if err != nil {
+		t.Fatalf("build state-j+1 tx: %v", err)
+	}
+	// Replaying a witness pre-signed for a different prevout must fail.
+	txStateJ1.TxIn[0].Witness = stateJWitness
+	if err := verifyTaprootScriptSpend(txStateJ1, 0, p2trScript, fundValueSat); err == nil {
+		t.Fatal("replayed witness unexpectedly verified on a different outpoint/state")
+	}
+}
+
 func cloneTx(src *wire.MsgTx) *wire.MsgTx {
 	var buf bytes.Buffer
 	_ = src.Serialize(&buf)

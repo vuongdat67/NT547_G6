@@ -406,6 +406,10 @@ func buildBurnSplitSpendTx(prevHash chainhash.Hash, prevVout uint32, fundValueSa
 }
 
 func buildBurnOutputScript(hashRjA, hashPreB []byte) ([]byte, error) {
+	// Marker bytes are for auditability only. Replay protection is provided by
+	// Taproot signatures committing to the concrete prevout (txid:vout) of the
+	// funded out[2] UTXO, so a witness pre-signed for state j cannot authorize
+	// spending a different state's outpoint.
 	marker := append([]byte("crab-he-burn:"), hashRjA[:4]...)
 	marker = append(marker, hashPreB[:4]...)
 	b := txscript.NewScriptBuilder()
