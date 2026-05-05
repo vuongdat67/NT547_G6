@@ -136,7 +136,7 @@ func main() {
 		createWallet = flag.Bool("create-wallet-if-missing", false, "Create wallet if missing when try-load-wallet is enabled")
 		fundSat      = flag.Int64("fund-sat", 3000000, "Funding amount in satoshis sent to linked ACS output (default c*)")
 		feeSat       = flag.Int64("fee-sat", 500000, "Miner reward carried as spend transaction fee in satoshis (default v_col)")
-		maxBurnBTC   = flag.String("max-burn-btc", "0.03", "Maximum BTC allowed as provably-unspendable burn output in sendrawtransaction")
+		maxBurnBTC   = flag.String("max-burn-btc", "", "Maximum BTC allowed as provably-unspendable burn output in sendrawtransaction; if empty, computed dynamically as (fund-sat - fee-sat) * 1.1 / 1e8")
 		autoMine     = flag.Bool("auto-mine-regtest", true, "Mine 1 block automatically on regtest after fund and spend")
 		pollSeconds  = flag.Int("poll-seconds", 5, "Polling interval while waiting for fund tx visibility")
 		maxWaitSec   = flag.Int("max-wait-seconds", 120, "Max wait for tx visibility")
@@ -153,11 +153,14 @@ func main() {
 	if *feeSat <= 0 {
 		die("-fee-sat must be > 0")
 	}
-	if strings.TrimSpace(*maxBurnBTC) == "" {
-		die("-max-burn-btc must be non-empty")
-	}
 	if *fundSat <= *feeSat {
 		die("-fund-sat (%d) must be greater than -fee-sat (%d)", *fundSat, *feeSat)
+	}
+	if strings.TrimSpace(*maxBurnBTC) == "" {
+		// Compute dynamically with 10% safety margin so the flag works for any c* size.
+		maxBurnFloat := float64(*fundSat-*feeSat) / 1e8 * 1.1
+		s := strconv.FormatFloat(maxBurnFloat, 'f', 8, 64)
+		maxBurnBTC = &s
 	}
 
 	cli := &rpcCLI{binPath: *bitcoinCLI, network: *network, wallet: *wallet}

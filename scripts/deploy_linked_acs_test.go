@@ -263,7 +263,11 @@ func TestLinkedACSRejectsReplayAcrossDifferentOutpoint(t *testing.T) {
 	}
 }
 
-func TestLinkedACSRejectsReplayAcrossDifferentStateSameOutpoint(t *testing.T) {
+// TestLinkedACSWitnessScriptCommitmentBinding verifies that a witness pre-signed
+// for state j's Taproot script commitment cannot satisfy state j+1's script
+// commitment, even when both states share the same outpoint. This tests
+// witness binding to the tapscript hash, not Bitcoin's double-spend prevention.
+func TestLinkedACSWitnessScriptCommitmentBinding(t *testing.T) {
 	fundValueSat := int64(10000)
 	feeSat := int64(1000)
 

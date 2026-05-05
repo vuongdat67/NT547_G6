@@ -1,12 +1,17 @@
 // Package channel contains coalition-aware CRAB-He analysis helpers.
 //
+// NOTE: This diagnostic predates the censorship-based Lemma (Coalition
+// censorship probability) in the paper. It is retained for backward-
+// compatibility of artifact outputs only. The paper's theorem-level coalition
+// security claim is now the censorship-probability bound ρ_C^κ (He-HTLC
+// κ-window), not the budget-splitting analysis computed here.
+//
 // This file provides an INTERPRETIVE DIAGNOSTIC for coalition-sized
 // attacker groups, borrowing the He-HTLC standalone coalition-scaling floor
-// (k * v_col) rather
-// than the composed CRAB-He single-miner floor c* used in Theorem 2 of the
-// paper. The diagnostic exists to make artifact outputs readable against
-// the original He-HTLC coalition convention; it is NOT a replacement for
-// the composed single-miner security proof in Theorem 2.
+// (k * v_col) rather than the composed CRAB-He single-miner floor c* used
+// in Theorem 2 of the paper. The diagnostic exists to make artifact outputs
+// readable against the original He-HTLC coalition convention; it is NOT a
+// replacement for the composed single-miner security proof in Theorem 2.
 //
 // If you are looking for the CRAB-He composed security bound, see the
 // single-miner CLBAAnalysis in params.go (BRLowerBoundLinked and

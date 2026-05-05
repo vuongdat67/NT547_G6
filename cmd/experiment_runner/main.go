@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"time"
@@ -54,6 +55,22 @@ type multiHopRow struct {
 	OverheadSat int64 `json:"overheadAboveCRABByzSat"`
 }
 
+type kappaWindowRow struct {
+	RhoH              float64 `json:"rhoH"`
+	Kappa             int     `json:"kappa"`
+	Trials            int     `json:"trials"`
+	AnalyticalProb    float64 `json:"analyticalProb"`
+	SimulatedProb     float64 `json:"simulatedProb"`
+	AbsDiffPct        float64 `json:"absDiffPct"`
+}
+
+type kappaWindowReport struct {
+	Seed        int64            `json:"seed"`
+	Trials      int              `json:"trials"`
+	GeneratedAt string           `json:"generatedAtUtc"`
+	Rows        []kappaWindowRow `json:"rows"`
+}
+
 type telemetry struct {
 	RegtestBlocksObserved           int64   `json:"regtestBlocksObserved"`
 	SignetBlocksObserved            int64   `json:"signetBlocksObserved"`
@@ -89,6 +106,7 @@ func main() {
 	baselinePipelines := buildBaselinePipelines(configs)
 
 	multiHop := buildMultiHopTable(defaultVSat, 0.05, 0.025)
+	kappaReport := buildKappaWindowReport(42, 100_000)
 	tel := collectTelemetry()
 
 	rep := experimentReport{
@@ -106,6 +124,7 @@ func main() {
 	csvPath := filepath.Join("artifacts", "experiments", "parameter_sweep.csv")
 	multiHopPath := filepath.Join("artifacts", "experiments", "multi_hop_table.csv")
 	baselinePipelinesPath := filepath.Join("artifacts", "experiments", "baseline_pipelines.json")
+	kappaSimPath := filepath.Join("artifacts", "kappa_window_sim.json")
 
 	b, err := json.MarshalIndent(rep, "", "  ")
 	must(err)
@@ -113,12 +132,14 @@ func main() {
 	must(writeSweepCSV(csvPath, sweepRows))
 	must(writeMultiHopCSV(multiHopPath, multiHop))
 	must(writeJSON(baselinePipelinesPath, baselinePipelines))
+	must(writeJSON(kappaSimPath, kappaReport))
 
 	fmt.Println("Generated experiment artifacts:")
 	fmt.Println(" -", jsonPath)
 	fmt.Println(" -", csvPath)
 	fmt.Println(" -", multiHopPath)
 	fmt.Println(" -", baselinePipelinesPath)
+	fmt.Println(" -", kappaSimPath)
 	fmt.Printf("Done in %.2f ms\n", float64(time.Since(startAll).Microseconds())/1000.0)
 }
 
@@ -371,6 +392,48 @@ func writeMultiHopCSV(path string, rows []multiHopRow) error {
 		}
 	}
 	return w.Error()
+}
+
+func buildKappaWindowReport(seed int64, trials int) kappaWindowReport {
+	rng := rand.New(rand.NewSource(seed))
+	rhoHValues := []float64{0.30, 0.40, 0.50}
+	kappaValues := []int{3, 5, 7}
+
+	rows := make([]kappaWindowRow, 0, len(rhoHValues)*len(kappaValues))
+	for _, rhoH := range rhoHValues {
+		for _, kappa := range kappaValues {
+			analytical := 1.0 - math.Pow(1.0-rhoH, float64(kappa))
+			simulated := simulateKappaWindow(rhoH, kappa, trials, rng)
+			absDiff := math.Abs(simulated-analytical) / analytical * 100.0
+			rows = append(rows, kappaWindowRow{
+				RhoH:           rhoH,
+				Kappa:          kappa,
+				Trials:         trials,
+				AnalyticalProb: analytical,
+				SimulatedProb:  simulated,
+				AbsDiffPct:     absDiff,
+			})
+		}
+	}
+	return kappaWindowReport{
+		Seed:        seed,
+		Trials:      trials,
+		GeneratedAt: time.Now().UTC().Format(time.RFC3339),
+		Rows:        rows,
+	}
+}
+
+func simulateKappaWindow(rhoH float64, kappa, trials int, rng *rand.Rand) float64 {
+	successes := 0
+	for i := 0; i < trials; i++ {
+		for j := 0; j < kappa; j++ {
+			if rng.Float64() < rhoH {
+				successes++
+				break
+			}
+		}
+	}
+	return float64(successes) / float64(trials)
 }
 
 func writeJSON(path string, v any) error {

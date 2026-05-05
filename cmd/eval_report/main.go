@@ -315,6 +315,7 @@ func toMarkdown(r report) string {
 	sb.WriteString(fmt.Sprintf("- c_star_sat: %s\n", r.CLBASummary.CStarSat))
 
 	sb.WriteString("\n## 4) Coalition Summary\n\n")
+	sb.WriteString("> **DIAGNOSTIC ONLY** — values in this section are interpretive support under the He-HTLC SDRBA standalone assumptions and are NOT claimed as composed-model theorems. Do not cite these rows as security proofs for CRAB-He coalition resistance; see Lemma (Coalition censorship probability) in the paper for the theorem-level statement.\n\n")
 	sb.WriteString(fmt.Sprintf("- fee_sat: %d\n", r.CoalitionSummary.FeeSat))
 	sb.WriteString(fmt.Sprintf("- model_note: %s\n", r.CoalitionSummary.ModelNote))
 	sb.WriteString(fmt.Sprintf("- k_max: %d\n", r.CoalitionSummary.KMax))

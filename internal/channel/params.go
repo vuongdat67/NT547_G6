@@ -110,15 +110,20 @@ func NewHTLCSecrets(preA, preB []byte) *HTLCSecrets {
 	return &HTLCSecrets{PreA: preA, PreB: preB, HashPreA: hA[:], HashPreB: hB[:]}
 }
 
+// CLBAAnalysis holds parameters for CLBA feasibility checks.
+// LambdaI is stored as audit metadata only. Under SDRBA convention the
+// per-miner mining-power factor cancels from all threshold inequalities, so
+// LambdaI does not appear in BRLowerBound*, BRUpperBound*, or Width*.
+// It is retained solely for report traceability.
 type CLBAAnalysis struct {
 	Params      *Params
-	LambdaI     float64
+	LambdaI     float64 // metadata only; does not affect threshold computations
 	CollateralC *big.Int
 }
 
 func NewCLBAAnalysis(p *Params, lambdaI float64, c *big.Int) (*CLBAAnalysis, error) {
 	if lambdaI >= 0.5 || lambdaI <= 0 {
-		return nil, fmt.Errorf("lambda_i must be in (0, 0.5), got %f", lambdaI)
+		return nil, fmt.Errorf("lambda_i must be in (0, 0.5), got %f; note: lambda_i is metadata only under SDRBA and does not affect threshold computations", lambdaI)
 	}
 	return &CLBAAnalysis{Params: p, LambdaI: lambdaI, CollateralC: c}, nil
 }
