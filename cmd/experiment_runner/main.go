@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	defaultVSat         int64 = 2_000_000
-	epsilonSat          int64 = 1_000
+	defaultVSat int64 = 2_000_000
+	epsilonSat  int64 = 1_000
 )
 
 type gridConfig = experiments.Config
@@ -56,12 +56,12 @@ type multiHopRow struct {
 }
 
 type kappaWindowRow struct {
-	RhoH              float64 `json:"rhoH"`
-	Kappa             int     `json:"kappa"`
-	Trials            int     `json:"trials"`
-	AnalyticalProb    float64 `json:"analyticalProb"`
-	SimulatedProb     float64 `json:"simulatedProb"`
-	AbsDiffPct        float64 `json:"absDiffPct"`
+	RhoH           float64 `json:"rhoH"`
+	Kappa          int     `json:"kappa"`
+	Trials         int     `json:"trials"`
+	AnalyticalProb float64 `json:"analyticalProb"`
+	SimulatedProb  float64 `json:"simulatedProb"`
+	AbsDiffPct     float64 `json:"absDiffPct"`
 }
 
 type kappaWindowReport struct {
@@ -86,13 +86,14 @@ type telemetry struct {
 }
 
 type experimentReport struct {
-	GeneratedAtUTC    string                 `json:"generatedAtUtc"`
-	Source            string                 `json:"source"`
-	GridCount         int                    `json:"gridCount"`
-	SweepRows         []sweepRow             `json:"sweepRows"`
-	MultiHopRows      []multiHopRow          `json:"multiHopRows"`
-	BaselinePipelines []experiments.Pipeline `json:"baselinePipelines"`
-	Telemetry         telemetry              `json:"telemetry"`
+	GeneratedAtUTC    string                           `json:"generatedAtUtc"`
+	Source            string                           `json:"source"`
+	GridCount         int                              `json:"gridCount"`
+	SweepRows         []sweepRow                       `json:"sweepRows"`
+	MultiHopRows      []multiHopRow                    `json:"multiHopRows"`
+	AttackTimeline    experiments.AttackTimelineReport `json:"attackTimeline"`
+	BaselinePipelines []experiments.Pipeline           `json:"baselinePipelines"`
+	Telemetry         telemetry                        `json:"telemetry"`
 }
 
 func main() {
@@ -106,6 +107,7 @@ func main() {
 	baselinePipelines := buildBaselinePipelines(configs)
 
 	multiHop := buildMultiHopTable(defaultVSat, 0.05, 0.025)
+	attackTimeline := experiments.BuildAttackTimelineReport()
 	kappaReport := buildKappaWindowReport(42, 100_000)
 	tel := collectTelemetry()
 
@@ -115,6 +117,7 @@ func main() {
 		GridCount:         len(configs),
 		SweepRows:         sweepRows,
 		MultiHopRows:      multiHop,
+		AttackTimeline:    attackTimeline,
 		BaselinePipelines: baselinePipelines,
 		Telemetry:         tel,
 	}
@@ -123,6 +126,8 @@ func main() {
 	jsonPath := filepath.Join("artifacts", "experiments", "experiment_summary.json")
 	csvPath := filepath.Join("artifacts", "experiments", "parameter_sweep.csv")
 	multiHopPath := filepath.Join("artifacts", "experiments", "multi_hop_table.csv")
+	attackTimelineJSONPath := filepath.Join("artifacts", "experiments", "attack_timeline.json")
+	attackTimelineCSVPath := filepath.Join("artifacts", "experiments", "attack_timeline.csv")
 	baselinePipelinesPath := filepath.Join("artifacts", "experiments", "baseline_pipelines.json")
 	kappaSimPath := filepath.Join("artifacts", "kappa_window_sim.json")
 
@@ -131,6 +136,8 @@ func main() {
 	must(os.WriteFile(jsonPath, b, 0o644))
 	must(writeSweepCSV(csvPath, sweepRows))
 	must(writeMultiHopCSV(multiHopPath, multiHop))
+	must(writeJSON(attackTimelineJSONPath, attackTimeline))
+	must(writeAttackTimelineCSV(attackTimelineCSVPath, attackTimeline.Rows))
 	must(writeJSON(baselinePipelinesPath, baselinePipelines))
 	must(writeJSON(kappaSimPath, kappaReport))
 
@@ -138,6 +145,8 @@ func main() {
 	fmt.Println(" -", jsonPath)
 	fmt.Println(" -", csvPath)
 	fmt.Println(" -", multiHopPath)
+	fmt.Println(" -", attackTimelineJSONPath)
+	fmt.Println(" -", attackTimelineCSVPath)
 	fmt.Println(" -", baselinePipelinesPath)
 	fmt.Println(" -", kappaSimPath)
 	fmt.Printf("Done in %.2f ms\n", float64(time.Since(startAll).Microseconds())/1000.0)
@@ -387,6 +396,38 @@ func writeMultiHopCSV(path string, rows []multiHopRow) error {
 			fmt.Sprintf("%d", r.N),
 			fmt.Sprintf("%d", r.CNStarSat),
 			fmt.Sprintf("%d", r.OverheadSat),
+		}); err != nil {
+			return err
+		}
+	}
+	return w.Error()
+}
+
+func writeAttackTimelineCSV(path string, rows []experiments.AttackSummaryRow) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	w := csv.NewWriter(f)
+	defer w.Flush()
+
+	if err := w.Write([]string{
+		"scheme", "miner_lb_sat", "bob_ub_sat", "width_sat",
+		"selected_br_sat", "profitable", "outcome",
+	}); err != nil {
+		return err
+	}
+	for _, r := range rows {
+		if err := w.Write([]string{
+			r.Scheme,
+			fmt.Sprintf("%d", r.MinerLBSat),
+			fmt.Sprintf("%d", r.BobUBSat),
+			fmt.Sprintf("%d", r.WidthSat),
+			fmt.Sprintf("%d", r.SelectedBRSat),
+			fmt.Sprintf("%t", r.Profitable),
+			r.Outcome,
 		}); err != nil {
 			return err
 		}

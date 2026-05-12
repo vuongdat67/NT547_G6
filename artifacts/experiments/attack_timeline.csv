@@ -1,0 +1,3 @@
+scheme,miner_lb_sat,bob_ub_sat,width_sat,selected_br_sat,profitable,outcome
+Naive CRAB+He,3000000,5500000,2500000,4250000,true,profitable CLBA interval exists; stale-state and HTLC-side gains fund the bribe
+CRAB-He,3000000,3000000,0,0,false,no jointly profitable BR exists; dep-B reveals pre_b and triggers fixed linked burn/fee spend

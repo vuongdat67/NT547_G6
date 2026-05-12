@@ -132,6 +132,8 @@ This generates:
 
 - `artifacts/experiments/experiment_summary.json`
 - `artifacts/experiments/parameter_sweep.csv`
+- `artifacts/experiments/attack_timeline.json`
+- `artifacts/experiments/attack_timeline.csv`
 - `artifacts/experiments/multi_hop_table.csv` (includes n=1,3,5,7)
 - `artifacts/experiments/baseline_pipelines.json` (transaction-level MAD-HTLC and He-HTLC standalone paths)
 
@@ -144,6 +146,7 @@ The runner includes explicit baseline adapters in code for:
 - He-HTLC standalone condition margin
 - CRAB collateral-only baseline
 - CRAB-He linked-revocation threshold cases (c* - eps, c*, c* + eps)
+- deterministic CLBA attack-timeline replay for naive CRAB+He vs CRAB-He
 
 ## Repeated On-Chain Grid and Seed Orchestrator
 

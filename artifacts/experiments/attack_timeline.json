@@ -1,0 +1,122 @@
+{
+  "generatedAtUtc": "2026-05-12T14:51:16Z",
+  "profile": {
+    "vSat": 2500000,
+    "vDepSat": 500000,
+    "vColSat": 500000,
+    "baselineCSat": 2500000,
+    "crabHeCStarSat": 3000000,
+    "kappa": 3,
+    "linkedFeeSat": 500000,
+    "linkedBurnSat": 2500000,
+    "regtestCommitVb": 281,
+    "linkedSpendVb": 246
+  },
+  "baselineCrabPlusHe": {
+    "scheme": "Naive CRAB+He",
+    "bobUbSat": 5500000,
+    "minerLbSat": 3000000,
+    "widthSat": 2500000,
+    "selectedBrSat": 4250000,
+    "profitable": true,
+    "bobSurplusSat": 1250000,
+    "minerSurplusSat": 1250000,
+    "outcome": "profitable CLBA interval exists; stale-state and HTLC-side gains fund the bribe",
+    "events": [
+      {
+        "phase": 0,
+        "blockWindow": "off-chain before t_pub",
+        "actor": "Bob",
+        "action": "offers BR to one actively rational miner",
+        "effect": "BR satisfies c+v_col \u003c BR \u003c v+c+v_dep"
+      },
+      {
+        "phase": 1,
+        "blockWindow": "after stale commitment appears",
+        "actor": "Miner",
+        "action": "censors tx_revoke_ACS",
+        "effect": "Alice's Sleepy CRAB punishment path is delayed"
+      },
+      {
+        "phase": 2,
+        "blockWindow": "before HTLC timeout T",
+        "actor": "Miner",
+        "action": "censors Alice's tx_dep_A",
+        "effect": "Alice cannot claim v_dep through the honest HTLC path"
+      },
+      {
+        "phase": 3,
+        "blockWindow": "after timeout T",
+        "actor": "Bob",
+        "action": "spends stale channel state and HTLC timeout paths",
+        "effect": "Bob keeps positive surplus after paying BR"
+      }
+    ]
+  },
+  "crabHe": {
+    "scheme": "CRAB-He",
+    "bobUbSat": 3000000,
+    "minerLbSat": 3000000,
+    "widthSat": 0,
+    "selectedBrSat": 0,
+    "profitable": false,
+    "bobSurplusSat": 0,
+    "minerSurplusSat": 0,
+    "outcome": "no jointly profitable BR exists; dep-B reveals pre_b and triggers fixed linked burn/fee spend",
+    "events": [
+      {
+        "phase": 0,
+        "blockWindow": "off-chain before t_pub",
+        "actor": "Bob",
+        "action": "searches for a profitable BR",
+        "effect": "requires BR \u003c v+v_dep and BR \u003e= c_star, an empty interval"
+      },
+      {
+        "phase": 1,
+        "blockWindow": "if stale commitment is attempted",
+        "actor": "Bob",
+        "action": "must still use dep-B to obtain HTLC-side value",
+        "effect": "pre_b becomes public on chain"
+      },
+      {
+        "phase": 2,
+        "blockWindow": "kappa-window after dep-B",
+        "actor": "Any non-colluding miner",
+        "action": "includes pre-signed linked ACS spend",
+        "effect": "miner earns v_col as fee and c_star-v_col is burned"
+      },
+      {
+        "phase": 3,
+        "blockWindow": "terminal state",
+        "actor": "Bob",
+        "action": "cannot redirect linked output to himself",
+        "effect": "CLBA self-defeats under c_star = v+v_dep"
+      }
+    ]
+  },
+  "rows": [
+    {
+      "scheme": "Naive CRAB+He",
+      "minerLbSat": 3000000,
+      "bobUbSat": 5500000,
+      "widthSat": 2500000,
+      "selectedBrSat": 4250000,
+      "profitable": true,
+      "outcome": "profitable CLBA interval exists; stale-state and HTLC-side gains fund the bribe"
+    },
+    {
+      "scheme": "CRAB-He",
+      "minerLbSat": 3000000,
+      "bobUbSat": 3000000,
+      "widthSat": 0,
+      "selectedBrSat": 0,
+      "profitable": false,
+      "outcome": "no jointly profitable BR exists; dep-B reveals pre_b and triggers fixed linked burn/fee spend"
+    }
+  ],
+  "notes": [
+    "The replay is a deterministic incentive-model simulation, not a mainnet incident claim.",
+    "Baseline width follows W = v + v_dep - v_col.",
+    "CRAB-He width follows W' = v + v_dep - c_star and is zero at c_star = v + v_dep."
+  ]
+}
