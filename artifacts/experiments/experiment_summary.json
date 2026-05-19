@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-12T14:51:16Z",
+  "generatedAtUtc": "2026-05-18T04:12:33Z",
   "source": "crab-he experiment runner (check-list + experiment_guide criteria)",
   "gridCount": 144,
   "sweepRows": [
@@ -27,7 +27,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.50-k3-n3",
@@ -53,7 +53,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.50-k3-n5",
@@ -79,7 +79,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.50-k3-n7",
@@ -105,7 +105,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.50-k5-n1",
@@ -131,7 +131,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.50-k5-n3",
@@ -157,7 +157,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.50-k5-n5",
@@ -182,8 +182,8 @@
       "heStandaloneMarginSat": 5000,
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
-      "elapsedMicros": 669,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "elapsedMicros": 0,
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.50-k5-n7",
@@ -209,7 +209,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.50-k7-n1",
@@ -235,7 +235,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.50-k7-n3",
@@ -261,7 +261,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.50-k7-n5",
@@ -287,7 +287,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.50-k7-n7",
@@ -313,7 +313,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k3-n1",
@@ -339,7 +339,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k3-n3",
@@ -365,7 +365,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k3-n5",
@@ -391,7 +391,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k3-n7",
@@ -417,7 +417,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k5-n1",
@@ -443,7 +443,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k5-n3",
@@ -469,7 +469,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k5-n5",
@@ -495,7 +495,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k5-n7",
@@ -521,7 +521,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k7-n1",
@@ -547,7 +547,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k7-n3",
@@ -573,7 +573,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k7-n5",
@@ -599,7 +599,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col0.75-k7-n7",
@@ -625,7 +625,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k3-n1",
@@ -651,7 +651,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k3-n3",
@@ -677,7 +677,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k3-n5",
@@ -703,7 +703,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k3-n7",
@@ -729,7 +729,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k5-n1",
@@ -755,7 +755,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k5-n3",
@@ -781,7 +781,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k5-n5",
@@ -807,7 +807,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k5-n7",
@@ -833,7 +833,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k7-n1",
@@ -859,7 +859,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k7-n3",
@@ -885,7 +885,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k7-n5",
@@ -911,7 +911,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.010-col1.00-k7-n7",
@@ -937,7 +937,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k3-n1",
@@ -963,7 +963,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k3-n3",
@@ -989,7 +989,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k3-n5",
@@ -1015,7 +1015,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k3-n7",
@@ -1041,7 +1041,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k5-n1",
@@ -1067,7 +1067,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k5-n3",
@@ -1093,7 +1093,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k5-n5",
@@ -1119,7 +1119,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k5-n7",
@@ -1145,7 +1145,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k7-n1",
@@ -1171,7 +1171,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k7-n3",
@@ -1197,7 +1197,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k7-n5",
@@ -1223,7 +1223,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.50-k7-n7",
@@ -1249,7 +1249,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k3-n1",
@@ -1275,7 +1275,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k3-n3",
@@ -1301,7 +1301,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k3-n5",
@@ -1327,7 +1327,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k3-n7",
@@ -1353,7 +1353,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k5-n1",
@@ -1379,7 +1379,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k5-n3",
@@ -1405,7 +1405,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k5-n5",
@@ -1431,7 +1431,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k5-n7",
@@ -1457,7 +1457,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k7-n1",
@@ -1483,7 +1483,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k7-n3",
@@ -1509,7 +1509,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k7-n5",
@@ -1535,7 +1535,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col0.75-k7-n7",
@@ -1561,7 +1561,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k3-n1",
@@ -1587,7 +1587,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k3-n3",
@@ -1613,7 +1613,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k3-n5",
@@ -1639,7 +1639,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k3-n7",
@@ -1665,7 +1665,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k5-n1",
@@ -1691,7 +1691,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k5-n3",
@@ -1717,7 +1717,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k5-n5",
@@ -1743,7 +1743,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k5-n7",
@@ -1769,7 +1769,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k7-n1",
@@ -1795,7 +1795,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k7-n3",
@@ -1821,7 +1821,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k7-n5",
@@ -1847,7 +1847,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.025-col1.00-k7-n7",
@@ -1873,7 +1873,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k3-n1",
@@ -1899,7 +1899,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k3-n3",
@@ -1925,7 +1925,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k3-n5",
@@ -1951,7 +1951,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k3-n7",
@@ -1977,7 +1977,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k5-n1",
@@ -2003,7 +2003,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k5-n3",
@@ -2029,7 +2029,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k5-n5",
@@ -2055,7 +2055,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k5-n7",
@@ -2081,7 +2081,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k7-n1",
@@ -2107,7 +2107,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k7-n3",
@@ -2133,7 +2133,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k7-n5",
@@ -2159,7 +2159,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.50-k7-n7",
@@ -2185,7 +2185,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k3-n1",
@@ -2211,7 +2211,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k3-n3",
@@ -2237,7 +2237,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k3-n5",
@@ -2263,7 +2263,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k3-n7",
@@ -2289,7 +2289,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k5-n1",
@@ -2315,7 +2315,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k5-n3",
@@ -2341,7 +2341,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k5-n5",
@@ -2367,7 +2367,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k5-n7",
@@ -2393,7 +2393,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k7-n1",
@@ -2419,7 +2419,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k7-n3",
@@ -2445,7 +2445,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k7-n5",
@@ -2471,7 +2471,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col0.75-k7-n7",
@@ -2497,7 +2497,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k3-n1",
@@ -2523,7 +2523,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k3-n3",
@@ -2549,7 +2549,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k3-n5",
@@ -2575,7 +2575,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k3-n7",
@@ -2601,7 +2601,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k5-n1",
@@ -2627,7 +2627,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k5-n3",
@@ -2653,7 +2653,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k5-n5",
@@ -2679,7 +2679,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k5-n7",
@@ -2705,7 +2705,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k7-n1",
@@ -2731,7 +2731,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k7-n3",
@@ -2757,7 +2757,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k7-n5",
@@ -2783,7 +2783,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.050-col1.00-k7-n7",
@@ -2809,7 +2809,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k3-n1",
@@ -2835,7 +2835,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k3-n3",
@@ -2861,7 +2861,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k3-n5",
@@ -2887,7 +2887,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k3-n7",
@@ -2913,7 +2913,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k5-n1",
@@ -2939,7 +2939,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k5-n3",
@@ -2965,7 +2965,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k5-n5",
@@ -2991,7 +2991,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k5-n7",
@@ -3017,7 +3017,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k7-n1",
@@ -3043,7 +3043,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k7-n3",
@@ -3069,7 +3069,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k7-n5",
@@ -3095,7 +3095,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.50-k7-n7",
@@ -3121,7 +3121,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k3-n1",
@@ -3147,7 +3147,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k3-n3",
@@ -3173,7 +3173,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k3-n5",
@@ -3199,7 +3199,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k3-n7",
@@ -3225,7 +3225,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k5-n1",
@@ -3251,7 +3251,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k5-n3",
@@ -3277,7 +3277,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k5-n5",
@@ -3303,7 +3303,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k5-n7",
@@ -3329,7 +3329,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k7-n1",
@@ -3355,7 +3355,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k7-n3",
@@ -3381,7 +3381,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k7-n5",
@@ -3407,7 +3407,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col0.75-k7-n7",
@@ -3433,7 +3433,7 @@
       "activeMinerCoverageMAD": true,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k3-n1",
@@ -3459,7 +3459,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k3-n3",
@@ -3485,7 +3485,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k3-n5",
@@ -3511,7 +3511,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k3-n7",
@@ -3537,7 +3537,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k5-n1",
@@ -3563,7 +3563,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k5-n3",
@@ -3589,7 +3589,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k5-n5",
@@ -3615,7 +3615,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k5-n7",
@@ -3641,7 +3641,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k7-n1",
@@ -3667,7 +3667,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k7-n3",
@@ -3693,7 +3693,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k7-n5",
@@ -3719,7 +3719,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     },
     {
       "configId": "dep0.100-col1.00-k7-n7",
@@ -3745,7 +3745,7 @@
       "activeMinerCoverageMAD": false,
       "notes": "CRAB widths are recomputed explicitly from UB(v+c'+v_dep)-LB(c'+v_col) for each c' multiplier; standalone MAD/He baselines are computed through tx-level pipelines",
       "elapsedMicros": 0,
-      "generatedAtUtc": "2026-05-12T14:51:16Z"
+      "generatedAtUtc": "2026-05-18T04:12:33Z"
     }
   ],
   "multiHopRows": [
@@ -3770,8 +3770,101 @@
       "overheadAboveCRABByzSat": 700000
     }
   ],
+  "attackDecisions": {
+    "generatedAtUtc": "2026-05-18T04:12:33Z",
+    "scope": "deterministic SDRBA-style payoff mock; no production miner bribery marketplace is implemented",
+    "profile": {
+      "vSat": 2500000,
+      "vDepSat": 500000,
+      "vColSat": 500000,
+      "cSat": 2500000,
+      "cStarSat": 3000000
+    },
+    "decisions": [
+      {
+        "scheme": "Naive CRAB+He",
+        "offeredBrSat": 4250000,
+        "bobUbSat": 5500000,
+        "minerLbSat": 3000000,
+        "widthSat": 2500000,
+        "minerAccepts": true,
+        "bobProfits": true,
+        "jointlyProfitable": true,
+        "bobSurplusSat": 1250000,
+        "minerSurplusSat": 1250000,
+        "decisionRule": "BR \u003e= c+v_col and BR \u003c v+c+v_dep",
+        "reason": "valid BR interval exists",
+        "sideDealDescription": "Bob offers BR to one actively rational miner to censor CRAB revocation and HTLC honest paths."
+      },
+      {
+        "scheme": "Collateral-only c'=2c",
+        "offeredBrSat": 6750000,
+        "bobUbSat": 8000000,
+        "minerLbSat": 5500000,
+        "widthSat": 2500000,
+        "minerAccepts": true,
+        "bobProfits": true,
+        "jointlyProfitable": true,
+        "bobSurplusSat": 1250000,
+        "minerSurplusSat": 1250000,
+        "decisionRule": "BR \u003e= c+v_col and BR \u003c v+c+v_dep",
+        "reason": "valid BR interval exists",
+        "sideDealDescription": "Bob offers BR to one actively rational miner to censor CRAB revocation and HTLC honest paths."
+      },
+      {
+        "scheme": "CRAB-He c*=v+v_dep-eps",
+        "offeredBrSat": 2999500,
+        "bobUbSat": 3000000,
+        "minerLbSat": 2999000,
+        "widthSat": 1000,
+        "minerAccepts": true,
+        "bobProfits": true,
+        "jointlyProfitable": true,
+        "bobSurplusSat": 500,
+        "minerSurplusSat": 500,
+        "decisionRule": "BR \u003e= c and BR \u003c v+v_dep",
+        "reason": "valid BR interval exists",
+        "sideDealDescription": "Bob offers BR, but dep-B reveals pre_b and linked ACS removes c from Bob's transferable budget."
+      },
+      {
+        "scheme": "CRAB-He c*=v+v_dep",
+        "offeredBrSat": 0,
+        "bobUbSat": 3000000,
+        "minerLbSat": 3000000,
+        "widthSat": 0,
+        "minerAccepts": false,
+        "bobProfits": false,
+        "jointlyProfitable": false,
+        "bobSurplusSat": 0,
+        "minerSurplusSat": 0,
+        "decisionRule": "BR \u003e= c and BR \u003c v+v_dep",
+        "reason": "no jointly profitable BR interval",
+        "sideDealDescription": "Bob offers BR, but dep-B reveals pre_b and linked ACS removes c from Bob's transferable budget."
+      },
+      {
+        "scheme": "CRAB-He c*=v+v_dep+eps",
+        "offeredBrSat": 0,
+        "bobUbSat": 3000000,
+        "minerLbSat": 3001000,
+        "widthSat": -1000,
+        "minerAccepts": false,
+        "bobProfits": false,
+        "jointlyProfitable": false,
+        "bobSurplusSat": 0,
+        "minerSurplusSat": 0,
+        "decisionRule": "BR \u003e= c and BR \u003c v+v_dep",
+        "reason": "no jointly profitable BR interval",
+        "sideDealDescription": "Bob offers BR, but dep-B reveals pre_b and linked ACS removes c from Bob's transferable budget."
+      }
+    ],
+    "notes": [
+      "Baseline uses Bob-UB = v+c+v_dep and Miner-LB = c+v_col.",
+      "Collateral-only inflation preserves width because c' appears on both sides.",
+      "CRAB-He uses Bob-UB = v+v_dep and Miner-LB = c; at c=v+v_dep the bribe interval is empty."
+    ]
+  },
   "attackTimeline": {
-    "generatedAtUtc": "2026-05-12T14:51:16Z",
+    "generatedAtUtc": "2026-05-18T04:12:33Z",
     "profile": {
       "vSat": 2500000,
       "vDepSat": 500000,
@@ -15994,13 +16087,13 @@
     "regtestBlocksObserved": 0,
     "signetBlocksObserved": 0,
     "witnessGenerationIterations": 20000,
-    "witnessGenerationTotalMs": 13.554,
-    "witnessGenerationAvgMicros": 0.6777,
+    "witnessGenerationTotalMs": 12.094,
+    "witnessGenerationAvgMicros": 0.6047,
     "scriptValidationIterations": 20000,
-    "scriptValidationTotalMs": 3.029,
-    "scriptValidationAvgMicros": 0.15145,
+    "scriptValidationTotalMs": 3.043,
+    "scriptValidationAvgMicros": 0.15215,
     "linkedACSRegtestArtifactPresent": true,
     "linkedACSSignetArtifactPresent": true,
-    "generatedAtUtc": "2026-05-12T14:51:16Z"
+    "generatedAtUtc": "2026-05-18T04:12:33Z"
   }
 }

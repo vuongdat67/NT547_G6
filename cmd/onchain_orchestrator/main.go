@@ -25,19 +25,19 @@ type deployArtifact struct {
 }
 
 type runResult struct {
-	ConfigID     string `json:"configId"`
-	Seed         int    `json:"seed"`
-	Network      string `json:"network"`
-	Success      bool   `json:"success"`
-	RetryAttempts int   `json:"retryAttempts"`
-	RetryPolicyHits int `json:"retryPolicyHits"`
-	DurationMs   int64  `json:"durationMs"`
-	ArtifactPath string `json:"artifactPath"`
-	FundTxID     string `json:"fundTxid,omitempty"`
-	SpendTxID    string `json:"spendTxid,omitempty"`
-	Command      string `json:"command"`
-	DryRun       bool   `json:"dryRun"`
-	Error        string `json:"error,omitempty"`
+	ConfigID        string `json:"configId"`
+	Seed            int    `json:"seed"`
+	Network         string `json:"network"`
+	Success         bool   `json:"success"`
+	RetryAttempts   int    `json:"retryAttempts"`
+	RetryPolicyHits int    `json:"retryPolicyHits"`
+	DurationMs      int64  `json:"durationMs"`
+	ArtifactPath    string `json:"artifactPath"`
+	FundTxID        string `json:"fundTxid,omitempty"`
+	SpendTxID       string `json:"spendTxid,omitempty"`
+	Command         string `json:"command"`
+	DryRun          bool   `json:"dryRun"`
+	Error           string `json:"error,omitempty"`
 }
 
 type networkSummary struct {
@@ -136,16 +136,16 @@ func main() {
 
 				if *dryRun {
 					results = append(results, runResult{
-						ConfigID:     cfg.ID,
-						Seed:         seed,
-						Network:      network,
-						Success:      true,
-						RetryAttempts: 0,
+						ConfigID:        cfg.ID,
+						Seed:            seed,
+						Network:         network,
+						Success:         true,
+						RetryAttempts:   0,
 						RetryPolicyHits: 0,
-						DurationMs:   time.Since(start).Milliseconds(),
-						ArtifactPath: artifactPath,
-						Command:      commandDisplay,
-						DryRun:       true,
+						DurationMs:      time.Since(start).Milliseconds(),
+						ArtifactPath:    artifactPath,
+						Command:         commandDisplay,
+						DryRun:          true,
 					})
 					continue
 				}
@@ -153,17 +153,17 @@ func main() {
 				out, err, attemptsUsed, policyHits := runDeployWithRetry(args, *retryAttempts, *retryDelayMs)
 				if err != nil {
 					r := runResult{
-						ConfigID:     cfg.ID,
-						Seed:         seed,
-						Network:      network,
-						Success:      false,
-						RetryAttempts: attemptsUsed,
+						ConfigID:        cfg.ID,
+						Seed:            seed,
+						Network:         network,
+						Success:         false,
+						RetryAttempts:   attemptsUsed,
 						RetryPolicyHits: policyHits,
-						DurationMs:   time.Since(start).Milliseconds(),
-						ArtifactPath: artifactPath,
-						Command:      commandDisplay,
-						DryRun:       false,
-						Error:        strings.TrimSpace(string(out)),
+						DurationMs:      time.Since(start).Milliseconds(),
+						ArtifactPath:    artifactPath,
+						Command:         commandDisplay,
+						DryRun:          false,
+						Error:           strings.TrimSpace(string(out)),
 					}
 					results = append(results, r)
 					if !*continueOnError {
@@ -194,18 +194,18 @@ func main() {
 				}
 
 				results = append(results, runResult{
-					ConfigID:     cfg.ID,
-					Seed:         seed,
-					Network:      network,
-					Success:      true,
-					RetryAttempts: attemptsUsed,
+					ConfigID:        cfg.ID,
+					Seed:            seed,
+					Network:         network,
+					Success:         true,
+					RetryAttempts:   attemptsUsed,
 					RetryPolicyHits: policyHits,
-					DurationMs:   time.Since(start).Milliseconds(),
-					ArtifactPath: artifactPath,
-					FundTxID:     artifact.FundTxID,
-					SpendTxID:    artifact.SpendTxID,
-					Command:      commandDisplay,
-					DryRun:       false,
+					DurationMs:      time.Since(start).Milliseconds(),
+					ArtifactPath:    artifactPath,
+					FundTxID:        artifact.FundTxID,
+					SpendTxID:       artifact.SpendTxID,
+					Command:         commandDisplay,
+					DryRun:          false,
 				})
 			}
 		}

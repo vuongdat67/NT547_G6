@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/crab-he/internal/attack"
 	"github.com/crab-he/internal/experiments"
 )
 
@@ -91,6 +92,7 @@ type experimentReport struct {
 	GridCount         int                              `json:"gridCount"`
 	SweepRows         []sweepRow                       `json:"sweepRows"`
 	MultiHopRows      []multiHopRow                    `json:"multiHopRows"`
+	AttackDecisions   attack.DecisionReport            `json:"attackDecisions"`
 	AttackTimeline    experiments.AttackTimelineReport `json:"attackTimeline"`
 	BaselinePipelines []experiments.Pipeline           `json:"baselinePipelines"`
 	Telemetry         telemetry                        `json:"telemetry"`
@@ -107,6 +109,7 @@ func main() {
 	baselinePipelines := buildBaselinePipelines(configs)
 
 	multiHop := buildMultiHopTable(defaultVSat, 0.05, 0.025)
+	attackDecisions := attack.BuildDecisionReport()
 	attackTimeline := experiments.BuildAttackTimelineReport()
 	kappaReport := buildKappaWindowReport(42, 100_000)
 	tel := collectTelemetry()
@@ -117,6 +120,7 @@ func main() {
 		GridCount:         len(configs),
 		SweepRows:         sweepRows,
 		MultiHopRows:      multiHop,
+		AttackDecisions:   attackDecisions,
 		AttackTimeline:    attackTimeline,
 		BaselinePipelines: baselinePipelines,
 		Telemetry:         tel,
@@ -126,29 +130,35 @@ func main() {
 	jsonPath := filepath.Join("artifacts", "experiments", "experiment_summary.json")
 	csvPath := filepath.Join("artifacts", "experiments", "parameter_sweep.csv")
 	multiHopPath := filepath.Join("artifacts", "experiments", "multi_hop_table.csv")
+	attackDecisionsPath := filepath.Join("artifacts", "experiments", "attack_decisions.json")
 	attackTimelineJSONPath := filepath.Join("artifacts", "experiments", "attack_timeline.json")
 	attackTimelineCSVPath := filepath.Join("artifacts", "experiments", "attack_timeline.csv")
 	baselinePipelinesPath := filepath.Join("artifacts", "experiments", "baseline_pipelines.json")
 	kappaSimPath := filepath.Join("artifacts", "kappa_window_sim.json")
+	kappaCSVPath := filepath.Join("artifacts", "experiments", "kappa_window_table.csv")
 
 	b, err := json.MarshalIndent(rep, "", "  ")
 	must(err)
 	must(os.WriteFile(jsonPath, b, 0o644))
 	must(writeSweepCSV(csvPath, sweepRows))
 	must(writeMultiHopCSV(multiHopPath, multiHop))
+	must(writeJSON(attackDecisionsPath, attackDecisions))
 	must(writeJSON(attackTimelineJSONPath, attackTimeline))
 	must(writeAttackTimelineCSV(attackTimelineCSVPath, attackTimeline.Rows))
 	must(writeJSON(baselinePipelinesPath, baselinePipelines))
 	must(writeJSON(kappaSimPath, kappaReport))
+	must(writeKappaWindowCSV(kappaCSVPath, kappaReport.Rows))
 
 	fmt.Println("Generated experiment artifacts:")
 	fmt.Println(" -", jsonPath)
 	fmt.Println(" -", csvPath)
 	fmt.Println(" -", multiHopPath)
+	fmt.Println(" -", attackDecisionsPath)
 	fmt.Println(" -", attackTimelineJSONPath)
 	fmt.Println(" -", attackTimelineCSVPath)
 	fmt.Println(" -", baselinePipelinesPath)
 	fmt.Println(" -", kappaSimPath)
+	fmt.Println(" -", kappaCSVPath)
 	fmt.Printf("Done in %.2f ms\n", float64(time.Since(startAll).Microseconds())/1000.0)
 }
 
@@ -428,6 +438,36 @@ func writeAttackTimelineCSV(path string, rows []experiments.AttackSummaryRow) er
 			fmt.Sprintf("%d", r.SelectedBRSat),
 			fmt.Sprintf("%t", r.Profitable),
 			r.Outcome,
+		}); err != nil {
+			return err
+		}
+	}
+	return w.Error()
+}
+
+func writeKappaWindowCSV(path string, rows []kappaWindowRow) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	w := csv.NewWriter(f)
+	defer w.Flush()
+
+	if err := w.Write([]string{
+		"rho_h", "kappa", "trials", "analytical_prob", "simulated_prob", "abs_diff_pct",
+	}); err != nil {
+		return err
+	}
+	for _, r := range rows {
+		if err := w.Write([]string{
+			fmt.Sprintf("%.2f", r.RhoH),
+			fmt.Sprintf("%d", r.Kappa),
+			fmt.Sprintf("%d", r.Trials),
+			fmt.Sprintf("%.6f", r.AnalyticalProb),
+			fmt.Sprintf("%.6f", r.SimulatedProb),
+			fmt.Sprintf("%.4f", r.AbsDiffPct),
 		}); err != nil {
 			return err
 		}

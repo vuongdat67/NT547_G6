@@ -12,8 +12,8 @@ func main() {
 	fmt.Println("=== CRAB-He Coalition Derived Comparison ===")
 	fmt.Println()
 
-	v := big.NewInt(2_000_000)
-	vDep := big.NewInt(1_000_000)
+	v := big.NewInt(2_500_000)
+	vDep := big.NewInt(500_000)
 	vCol := big.NewInt(500_000)
 	delta := big.NewInt(1_000)
 	feeSat := int64(1_000)

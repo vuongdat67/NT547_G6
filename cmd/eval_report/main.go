@@ -120,8 +120,8 @@ func main() {
 }
 
 func defaultParams() (*channel.Params, error) {
-	v := big.NewInt(2_000_000)
-	vDep := big.NewInt(1_000_000)
+	v := big.NewInt(2_500_000)
+	vDep := big.NewInt(500_000)
 	vCol := big.NewInt(500_000)
 	delta := big.NewInt(1_000)
 

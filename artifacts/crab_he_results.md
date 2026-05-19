@@ -1,6 +1,6 @@
 # CRAB-He Evaluation Results (Generated)
 
-Generated at: 2026-04-09T10:35:31Z
+Generated at: 2026-05-18T04:12:33Z
 
 Reference BTC price for fee conversion: $26,900/BTC (aligned with CRAB).
 
@@ -45,6 +45,8 @@ Formula: vbytes = ceil(weight / 4), weight = base*3 + total, witness = total - b
 - c_star_sat: 3000000
 
 ## 4) Coalition Summary
+
+> **DIAGNOSTIC ONLY** — values in this section are interpretive support under the He-HTLC SDRBA standalone assumptions and are NOT claimed as composed-model theorems. Do not cite these rows as security proofs for CRAB-He coalition resistance; see Lemma (Coalition censorship probability) in the paper for the theorem-level statement.
 
 - fee_sat: 1000
 - model_note: derived comparison under He-HTLC SDRBA assumptions (k*v_col threshold); this section is interpretive support, not an independent theorem claim

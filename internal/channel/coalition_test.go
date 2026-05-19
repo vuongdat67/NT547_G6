@@ -9,8 +9,8 @@ import (
 
 func testParams(t *testing.T) *channel.Params {
 	t.Helper()
-	v := big.NewInt(2_000_000)
-	vDep := big.NewInt(1_000_000)
+	v := big.NewInt(2_500_000)
+	vDep := big.NewInt(500_000)
 	vCol := big.NewInt(500_000)
 	delta := big.NewInt(1_000)
 	p, err := channel.NewParams(v, vDep, vCol, delta, 144, 288, 6, 3)

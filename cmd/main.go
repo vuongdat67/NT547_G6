@@ -18,11 +18,9 @@ func main() {
 	fmt.Println()
 
 	fmt.Println("--- Step 1: Parameter Setup ---")
-	// v := big.NewInt(200_000_000)
-	// vDep := big.NewInt(100_000_000)
-	// vCol := big.NewInt(50_000_000)
-	v := big.NewInt(2_000_000)
-	vDep := big.NewInt(1_000_000)
+	// Analytical profile used by the paper tables and experiment artifacts.
+	v := big.NewInt(2_500_000)
+	vDep := big.NewInt(500_000)
 	vCol := big.NewInt(500_000)
 	delta := big.NewInt(1_000)
 

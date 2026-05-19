@@ -139,7 +139,9 @@ func (a *CLBAAnalysis) BRUpperBound() *big.Int {
 }
 
 // Width returns baseline CLBA width under the non-linked CRAB composition model:
-//   W = (v + c + v_dep) - (c + v_col) = v + v_dep - v_col.
+//
+//	W = (v + c + v_dep) - (c + v_col) = v + v_dep - v_col.
+//
 // This quantity keeps v_col because miner honest-path utility includes col-M.
 func (a *CLBAAnalysis) Width() *big.Int {
 	w := new(big.Int).Add(a.Params.V, a.Params.VDep)
@@ -164,7 +166,9 @@ func (a *CLBAAnalysis) BRUpperBoundLinked() *big.Int {
 }
 
 // WidthLinked returns BR range width in linked-ACS model:
-//   W' = (v + v_dep) - c.
+//
+//	W' = (v + v_dep) - c.
+//
 // Semantic shift from Width(): v_col disappears because miner indifference is
 // evaluated at attacker-favorable linked-fee capture (pi=1), where v_col terms
 // cancel symmetrically in the linked model.
