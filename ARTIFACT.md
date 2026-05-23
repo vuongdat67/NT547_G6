@@ -38,6 +38,19 @@ Key invariant:
 - `c* = v + v_dep = 3,000,000`.
 - At `c*`, `Miner-LB = Bob-UB = 3,000,000`, so no jointly profitable `BR` exists.
 
+## Claim 3b: Parallel Independent Swaps Scale Linearly
+
+Evidence:
+
+- `artifacts/experiments/parallel_swaps_table.csv`
+- `artifacts/experiments/multi_hop_table.csv` (legacy alias only)
+- `artifacts/publication/table_parallel_swaps.tex`
+
+Key invariant:
+
+- For `n` independent standalone HTLC instances, `c*_n = v + n*v_dep`.
+- This is not a routed-Lightning multi-hop claim.
+
 ## Claim 4: Linked ACS Is Script-Feasible
 
 Evidence:
@@ -70,6 +83,15 @@ Key invariant:
 
 - 5 fee levels x 3 runs x 2 networks = 30 accepted runs.
 
+## What This Code Proves
+
+The code proves:
+
+- payoff/SDRBA-style accept-reject decisions for a side deal,
+- deterministic CLBA replay under those payoff inequalities,
+- linked Taproot ACS script feasibility on regtest and signet,
+- local artifact consistency through `go run ./cmd/verify_artifacts`.
+
 ## Non-Claims
 
 The artifact does not claim:
@@ -79,4 +101,3 @@ The artifact does not claim:
 - a confirmed CLBA mainnet incident,
 - a full routed-Lightning HTLC model,
 - a theorem-level multi-miner coalition game.
-

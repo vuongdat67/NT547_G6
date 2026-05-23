@@ -162,7 +162,7 @@ func printEvaluationTable(p *channel.Params, commitNoHTLCSize, commitWithHTLCSiz
 	fmt.Println()
 
 	fmt.Println("(Single deterministic pass; no duplicated rows)")
-	fmt.Println("n-hop collateral c*_n = v + n*v_dep:")
+	fmt.Println("parallel-swap collateral c*_n = v + n*v_dep:")
 	for n := 1; n <= 7; n++ {
 		cN := sat(p.V) + int64(n)*sat(p.VDep)
 		pct := float64(cN-sat(p.V)) * 100 / float64(sat(p.V))
@@ -171,7 +171,7 @@ func printEvaluationTable(p *channel.Params, commitNoHTLCSize, commitWithHTLCSiz
 
 	// Practical Lightning-like scenario (small HTLC relative to channel capacity).
 	fmt.Println()
-	fmt.Println("n-hop practical example (v_dep=5% of v):")
+	fmt.Println("parallel-swap practical example (v_dep=5% of v):")
 	vPrac := sat(p.V)
 	vDepPrac := vPrac / 20 // 5%
 	for n := 1; n <= 7; n++ {

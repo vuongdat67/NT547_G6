@@ -146,7 +146,8 @@ This generates:
 - `artifacts/experiments/attack_decisions.json` (SDRBA-style payoff mock: Bob offer, miner accept/reject)
 - `artifacts/experiments/attack_timeline.json`
 - `artifacts/experiments/attack_timeline.csv`
-- `artifacts/experiments/multi_hop_table.csv` (includes n=1,3,5,7)
+- `artifacts/experiments/parallel_swaps_table.csv` (includes n=1,3,5,7)
+- `artifacts/experiments/multi_hop_table.csv` (legacy alias; semantically this is parallel-swap data)
 - `artifacts/experiments/kappa_window_table.csv`
 - `artifacts/experiments/baseline_pipelines.json` (transaction-level MAD-HTLC and He-HTLC standalone paths)
 
@@ -177,6 +178,23 @@ powershell -ExecutionPolicy Bypass -File .\scripts\ci_local.ps1
 ```
 
 See `ARTIFACT.md` for the claim-to-evidence map used by the paper/proposal.
+
+## What This Code Proves / Does Not Prove
+
+Proves:
+
+- SDRBA-style payoff decision: Bob offers `BR`, miner accepts/rejects by utility.
+- Deterministic CLBA replay: baseline has a positive interval; CRAB-He closes it at `c*`.
+- Linked Taproot ACS script feasibility on regtest and signet.
+- Artifact consistency via `go run ./cmd/verify_artifacts`.
+
+Does not prove or claim:
+
+- a production miner bribery marketplace,
+- a modified Bitcoin miner client that performs real censorship,
+- a confirmed CLBA mainnet incident,
+- a full routed-Lightning HTLC model,
+- a theorem-level multi-miner coalition game.
 
 ## Repeated On-Chain Grid and Seed Orchestrator
 
@@ -216,8 +234,10 @@ go run ./cmd/publish_results
 
 Outputs:
 
-- `artifacts/publication/table_multi_hop.tex`
-- `artifacts/publication/fig_multi_hop_cnstar.svg`
+- `artifacts/publication/table_parallel_swaps.tex`
+- `artifacts/publication/fig_parallel_swaps_cnstar.svg`
+- `artifacts/publication/table_multi_hop.tex` (legacy alias)
+- `artifacts/publication/fig_multi_hop_cnstar.svg` (legacy alias)
 - `artifacts/publication/publication_manifest.json`
 
 Note: obsolete publication artifacts (`table_main_results.tex`, `table_seed_stats.tex`,

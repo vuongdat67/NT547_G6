@@ -34,9 +34,13 @@ func main() {
 	must(os.MkdirAll(*outDir, 0o755))
 	removeObsoleteOutputs(*outDir)
 
-	must(os.WriteFile(filepath.Join(*outDir, "table_multi_hop.tex"), []byte(buildMultiHopTex(exp.MultiHopRows)), 0o644))
+	table := []byte(buildMultiHopTex(exp.MultiHopRows))
+	must(os.WriteFile(filepath.Join(*outDir, "table_parallel_swaps.tex"), table, 0o644))
+	must(os.WriteFile(filepath.Join(*outDir, "table_multi_hop.tex"), table, 0o644))
 
-	must(os.WriteFile(filepath.Join(*outDir, "fig_multi_hop_cnstar.svg"), []byte(drawMultiHopSVG(exp.MultiHopRows)), 0o644))
+	fig := []byte(drawMultiHopSVG(exp.MultiHopRows))
+	must(os.WriteFile(filepath.Join(*outDir, "fig_parallel_swaps_cnstar.svg"), fig, 0o644))
+	must(os.WriteFile(filepath.Join(*outDir, "fig_multi_hop_cnstar.svg"), fig, 0o644))
 
 	manifest := map[string]any{
 		"generatedAtUtc": time.Now().UTC().Format(time.RFC3339),
@@ -77,8 +81,8 @@ func buildMultiHopTex(rows []multiHopRow) string {
 
 	b := &strings.Builder{}
 	b.WriteString("\\begin{table}[t]\n")
-	b.WriteString("\\caption{Multi-hop collateral threshold from generated artifacts.}\n")
-	b.WriteString("\\label{tab:pub_multi_hop}\n")
+	b.WriteString("\\caption{Collateral threshold for $n$ independent parallel swaps from generated artifacts.}\n")
+	b.WriteString("\\label{tab:pub_parallel_swaps}\n")
 	b.WriteString("\\centering\n")
 	b.WriteString("\\begin{tabular}{rrr}\n")
 	b.WriteString("\\toprule\n")
@@ -95,7 +99,7 @@ func buildMultiHopTex(rows []multiHopRow) string {
 
 func drawMultiHopSVG(rows []multiHopRow) string {
 	if len(rows) == 0 {
-		return emptySVG("No multi-hop data")
+		return emptySVG("No parallel-swap data")
 	}
 	copyRows := make([]multiHopRow, len(rows))
 	copy(copyRows, rows)
@@ -142,12 +146,12 @@ func drawMultiHopSVG(rows []multiHopRow) string {
 
 	return fmt.Sprintf(`<svg xmlns="http://www.w3.org/2000/svg" width="%.0f" height="%.0f" viewBox="0 0 %.0f %.0f">
 <rect width="100%%" height="100%%" fill="#ffffff"/>
-<text x="%.0f" y="32" font-size="26" font-family="Times New Roman" fill="#111">Multi-hop Collateral Threshold</text>
+<text x="%.0f" y="32" font-size="26" font-family="Times New Roman" fill="#111">Parallel-Swap Collateral Threshold</text>
 <line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#333" stroke-width="2"/>
 <line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#333" stroke-width="2"/>
 <polyline fill="none" stroke="#1f77b4" stroke-width="3" points="%s"/>
 %s
-<text x="%.1f" y="%.1f" font-size="18" text-anchor="middle" font-family="Times New Roman">Hop count n</text>
+<text x="%.1f" y="%.1f" font-size="18" text-anchor="middle" font-family="Times New Roman">Number of independent swaps n</text>
 <text transform="translate(28,%.1f) rotate(-90)" font-size="18" text-anchor="middle" font-family="Times New Roman">c_n^* (sat)</text>
 </svg>`,
 		width, height, width, height,

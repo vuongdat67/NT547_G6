@@ -16,6 +16,7 @@ func main() {
 	checkExists(filepath.Join(base, "parameter_sweep.csv"))
 	checkExists(filepath.Join(base, "baseline_pipelines.json"))
 	checkExists(filepath.Join(base, "kappa_window_table.csv"))
+	checkExists(filepath.Join(base, "parallel_swaps_table.csv"))
 	checkExists(filepath.Join("scripts", "regtest_fee_profiles.ps1"))
 	checkExists(filepath.Join("scripts", "signet_fee_profiles.ps1"))
 	checkExists(filepath.Join("artifacts", "linked_acs_regtest.json"))
@@ -39,6 +40,7 @@ func main() {
 
 	checkCSVNonEmpty(filepath.Join(base, "parameter_sweep.csv"))
 	checkCSVNonEmpty(filepath.Join(base, "kappa_window_table.csv"))
+	checkCSVNonEmpty(filepath.Join(base, "parallel_swaps_table.csv"))
 	checkFeeProfile(filepath.Join("artifacts", "onchain", "regtest", "fee_profiles", "fee_profile_summary.csv"))
 	checkFeeProfile(filepath.Join("artifacts", "onchain", "signet", "fee_profiles", "fee_profile_summary.csv"))
 	checkCSVNonEmpty(filepath.Join("artifacts", "onchain", "regtest", "fee_profiles", "fee_profile_txids.csv"))
