@@ -11,14 +11,15 @@ import (
 	"time"
 )
 
-type multiHopRow struct {
+type parallelSwapRow struct {
 	N           int   `json:"n"`
 	CNStarSat   int64 `json:"cNStarSat"`
 	OverheadSat int64 `json:"overheadAboveCRABByzSat"`
 }
 
 type experimentSummary struct {
-	MultiHopRows []multiHopRow `json:"multiHopRows"`
+	ParallelSwapRows []parallelSwapRow `json:"parallelSwapRows"`
+	MultiHopRows     []parallelSwapRow `json:"multiHopRows"` // legacy JSON alias.
 }
 
 func main() {
@@ -34,11 +35,16 @@ func main() {
 	must(os.MkdirAll(*outDir, 0o755))
 	removeObsoleteOutputs(*outDir)
 
-	table := []byte(buildMultiHopTex(exp.MultiHopRows))
+	rows := exp.ParallelSwapRows
+	if len(rows) == 0 {
+		rows = exp.MultiHopRows
+	}
+
+	table := []byte(buildParallelSwapTex(rows))
 	must(os.WriteFile(filepath.Join(*outDir, "table_parallel_swaps.tex"), table, 0o644))
 	must(os.WriteFile(filepath.Join(*outDir, "table_multi_hop.tex"), table, 0o644))
 
-	fig := []byte(drawMultiHopSVG(exp.MultiHopRows))
+	fig := []byte(drawParallelSwapSVG(rows))
 	must(os.WriteFile(filepath.Join(*outDir, "fig_parallel_swaps_cnstar.svg"), fig, 0o644))
 	must(os.WriteFile(filepath.Join(*outDir, "fig_multi_hop_cnstar.svg"), fig, 0o644))
 
@@ -74,8 +80,8 @@ func removeObsoleteOutputs(outDir string) {
 	}
 }
 
-func buildMultiHopTex(rows []multiHopRow) string {
-	copyRows := make([]multiHopRow, len(rows))
+func buildParallelSwapTex(rows []parallelSwapRow) string {
+	copyRows := make([]parallelSwapRow, len(rows))
 	copy(copyRows, rows)
 	sort.Slice(copyRows, func(i, j int) bool { return copyRows[i].N < copyRows[j].N })
 
@@ -97,11 +103,11 @@ func buildMultiHopTex(rows []multiHopRow) string {
 	return b.String()
 }
 
-func drawMultiHopSVG(rows []multiHopRow) string {
+func drawParallelSwapSVG(rows []parallelSwapRow) string {
 	if len(rows) == 0 {
 		return emptySVG("No parallel-swap data")
 	}
-	copyRows := make([]multiHopRow, len(rows))
+	copyRows := make([]parallelSwapRow, len(rows))
 	copy(copyRows, rows)
 	sort.Slice(copyRows, func(i, j int) bool { return copyRows[i].N < copyRows[j].N })
 

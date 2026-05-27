@@ -2,6 +2,16 @@
 
 This file maps the paper/proposal claims to the concrete repository evidence.
 
+For a reviewer-facing Markdown summary generated from current artifacts, run:
+
+```powershell
+go run ./cmd/submission_report
+```
+
+Output:
+
+- `artifacts/submission_report.md`
+
 ## Claim 1: Naive CRAB+He Has Positive CLBA Width
 
 Evidence:

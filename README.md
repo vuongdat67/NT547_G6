@@ -1,6 +1,17 @@
-# CRAB-He: Implementation
+# CRAB-He: Artifact and Proof-of-Concept
 
-Proof-of-concept implementation of CRAB-He protocol.
+This repository contains the CRAB-He proof-of-concept used by the paper:
+
+> CRAB-He: Securing Lightning Payment Channels Against Actively Rational Miners in Composed HTLC Settings
+
+The code supports the paper's artifact-backed claims: CLBA payoff-width analysis,
+collateral-only impossibility checks, deterministic attack replay, Taproot linked
+ACS script feasibility on Bitcoin regtest/signet, and publication table/figure
+generation.
+
+The artifact is intentionally scoped. It does not implement a production miner
+bribery marketplace, modify Bitcoin miner policy, claim a confirmed mainnet
+incident, or model full routed-Lightning HTLCs.
 
 ## Structure
 
@@ -13,6 +24,7 @@ crab-he/
 │   ├── experiment_runner/
 │   ├── onchain_orchestrator/
 │   ├── publish_results/
+│   ├── submission_report/
 │   └── verify_artifacts/
 ├── internal/
 │   ├── attack/
@@ -29,11 +41,38 @@ crab-he/
 └── README.md
 ```
 
-## Run
+## Quick Verification
 
-```bash
+Run the local proof/artifact checks:
+
+```powershell
+go test ./...
+go run ./cmd/verify_artifacts
+```
+
+Generate a reviewer-friendly artifact summary:
+
+```powershell
+go run ./cmd/submission_report
+```
+
+This writes:
+
+`artifacts/submission_report.md`
+
+For a local end-to-end verification pass:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\ci_local.ps1
+```
+
+## Demo Command
+
+```powershell
 go run ./cmd/main.go
 ```
+
+This prints the representative CRAB-He transaction model and threshold values.
 
 ## Regtest TxID Smoke Test
 
@@ -122,18 +161,20 @@ Latest verified evidence (2026-04-08):
 
 ## Coalition Evaluation
 
-To evaluate the coalition extension from `coalition_dev_prompt.md`, run:
+To inspect the diagnostic coalition-size calculations, run:
 
 ```powershell
 go run ./cmd/coalition_eval/main.go
 ```
 
-This prints coalition-size feasibility and required collateral tables derived from the current CRAB-He parameters.
+This prints coalition-size feasibility and required collateral tables derived
+from the current CRAB-He parameters. These outputs are diagnostic support only;
+the paper does not claim a theorem-level multi-miner coalition game.
 
 ## Experiment Guide Runner (Checklist Coverage)
 
 To execute parameter-grid sweeps, baseline adapters, and runtime telemetry from
-`Dung/experiment_guide.md`, run:
+the current experiment guide, run:
 
 ```powershell
 go run ./cmd/experiment_runner
@@ -240,6 +281,12 @@ Outputs:
 - `artifacts/publication/fig_multi_hop_cnstar.svg` (legacy alias)
 - `artifacts/publication/publication_manifest.json`
 
+To generate a Markdown submission summary from the same artifacts:
+
+```powershell
+go run ./cmd/submission_report
+```
+
 Note: obsolete publication artifacts (`table_main_results.tex`, `table_seed_stats.tex`,
 `table_onchain_runs.tex`, `fig_baseline_success.*`, `fig_onchain_success.*`) are removed
 by `cmd/publish_results` to keep paper assets consistent with the current manuscript scope.
@@ -247,7 +294,7 @@ by `cmd/publish_results` to keep paper assets consistent with the current manusc
 ## One-Command Publication + Paper Sync
 
 To regenerate evaluation/experiment/publication artifacts and sync publication tables/images
-into paper folders (`../tex` and `../Dung/paper` by default), run:
+into paper folders (`../tex` and `../tex/13` by default), run:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\publish_sync.ps1
@@ -277,8 +324,10 @@ powershell -ExecutionPolicy Bypass -File .\scripts\publish_sync.ps1 -SvgConverte
 
 If `-SvgConverter texlive` cannot complete SVG conversion (for example missing Inkscape bridge), the script automatically falls back to Chrome/Edge headless when available.
 
-``` go 
-go build ./... 
+## Developer Checks
+
+```powershell
+go build ./...
 go vet ./...
 go build ./scripts/deploy_linked_acs.go
 go run ./scripts/deploy_linked_acs.go -h

@@ -1,6 +1,6 @@
 param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path,
-    [string[]]$PaperDirs = @("..\tex", "..\Dung\paper"),
+    [string[]]$PaperDirs = @("..\tex", "..\tex\13"),
     [ValidateSet("auto", "native", "browser", "texlive", "none")]
     [string]$SvgConverter = "auto",
     [switch]$EnablePdfCrop,

@@ -1,7 +1,7 @@
 param(
     [string]$BitcoinCli = "C:\Program Files\Bitcoin\daemon\bitcoin-cli.exe",
     [string]$WalletName = "hehtlc_research",
-    [int64]$FundSat = 200000,
+    [int64]$FundSat = 3000000,
     [int64[]]$FeeSatProfiles = @(250, 500, 1000, 2500, 5000),
     [int[]]$Seeds = @(1, 2, 3),
     [string]$OutputDir = "artifacts/onchain/signet/fee_profiles"

@@ -50,7 +50,7 @@ type sweepRow struct {
 	GeneratedAtUTC         string `json:"generatedAtUtc"`
 }
 
-type multiHopRow struct {
+type parallelSwapRow struct {
 	N           int   `json:"n"`
 	CNStarSat   int64 `json:"cNStarSat"`
 	OverheadSat int64 `json:"overheadAboveCRABByzSat"`
@@ -91,7 +91,8 @@ type experimentReport struct {
 	Source            string                           `json:"source"`
 	GridCount         int                              `json:"gridCount"`
 	SweepRows         []sweepRow                       `json:"sweepRows"`
-	MultiHopRows      []multiHopRow                    `json:"multiHopRows"`
+	ParallelSwapRows  []parallelSwapRow                `json:"parallelSwapRows"`
+	MultiHopRows      []parallelSwapRow                `json:"multiHopRows"` // legacy JSON alias; semantically parallel swaps.
 	AttackDecisions   attack.DecisionReport            `json:"attackDecisions"`
 	AttackTimeline    experiments.AttackTimelineReport `json:"attackTimeline"`
 	BaselinePipelines []experiments.Pipeline           `json:"baselinePipelines"`
@@ -108,7 +109,7 @@ func main() {
 	}
 	baselinePipelines := buildBaselinePipelines(configs)
 
-	multiHop := buildMultiHopTable(defaultVSat, 0.05, 0.025)
+	parallelSwaps := buildParallelSwapTable(defaultVSat, 0.05, 0.025)
 	attackDecisions := attack.BuildDecisionReport()
 	attackTimeline := experiments.BuildAttackTimelineReport()
 	kappaReport := buildKappaWindowReport(42, 100_000)
@@ -119,7 +120,8 @@ func main() {
 		Source:            "crab-he experiment runner (check-list + experiment_guide criteria)",
 		GridCount:         len(configs),
 		SweepRows:         sweepRows,
-		MultiHopRows:      multiHop,
+		ParallelSwapRows:  parallelSwaps,
+		MultiHopRows:      parallelSwaps,
 		AttackDecisions:   attackDecisions,
 		AttackTimeline:    attackTimeline,
 		BaselinePipelines: baselinePipelines,
@@ -142,8 +144,8 @@ func main() {
 	must(err)
 	must(os.WriteFile(jsonPath, b, 0o644))
 	must(writeSweepCSV(csvPath, sweepRows))
-	must(writeMultiHopCSV(multiHopPath, multiHop))
-	must(writeMultiHopCSV(parallelSwapsPath, multiHop))
+	must(writeParallelSwapCSV(multiHopPath, parallelSwaps))
+	must(writeParallelSwapCSV(parallelSwapsPath, parallelSwaps))
 	must(writeJSON(attackDecisionsPath, attackDecisions))
 	must(writeJSON(attackTimelineJSONPath, attackTimeline))
 	must(writeAttackTimelineCSV(attackTimelineCSVPath, attackTimeline.Rows))
@@ -233,13 +235,13 @@ func crabWidthWithCollateral(vSat, vDepSat, vColSat, cPrimeSat int64) int64 {
 	return ub - lb
 }
 
-func buildMultiHopTable(vSat int64, depRatio float64, colRatio float64) []multiHopRow {
+func buildParallelSwapTable(vSat int64, depRatio float64, colRatio float64) []parallelSwapRow {
 	vDep := int64(math.Round(float64(vSat) * depRatio))
 	vCol := int64(math.Round(float64(vDep) * colRatio))
-	rows := make([]multiHopRow, 0, 4)
+	rows := make([]parallelSwapRow, 0, 4)
 	for _, n := range []int{1, 3, 5, 7} {
 		cN := experiments.CNStar(vSat, vDep, vCol, n)
-		rows = append(rows, multiHopRow{
+		rows = append(rows, parallelSwapRow{
 			N:           n,
 			CNStarSat:   cN,
 			OverheadSat: cN - vSat,
@@ -391,7 +393,7 @@ func writeSweepCSV(path string, rows []sweepRow) error {
 	return w.Error()
 }
 
-func writeMultiHopCSV(path string, rows []multiHopRow) error {
+func writeParallelSwapCSV(path string, rows []parallelSwapRow) error {
 	f, err := os.Create(path)
 	if err != nil {
 		return err
