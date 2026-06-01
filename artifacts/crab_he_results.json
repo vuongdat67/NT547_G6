@@ -1,0 +1,253 @@
+{
+  "generatedAtUtc": "2026-05-19T12:35:18Z",
+  "source": "crab-he local implementation and deployment artifacts",
+  "txTable": [
+    {
+      "name": "tx_fund",
+      "objectType": "channel_tx",
+      "vbytes": 338,
+      "feeUsdBySatPerVB": {
+        "10": 0.90922,
+        "2": 0.181844,
+        "20": 1.81844,
+        "7": 0.636454
+      }
+    },
+    {
+      "name": "tx_commit_A (no HTLC)",
+      "objectType": "channel_tx",
+      "vbytes": 283,
+      "feeUsdBySatPerVB": {
+        "10": 0.76127,
+        "2": 0.152254,
+        "20": 1.52254,
+        "7": 0.532889
+      }
+    },
+    {
+      "name": "tx_commit_A (HTLC+linked ACS)",
+      "objectType": "channel_tx",
+      "vbytes": 281,
+      "feeUsdBySatPerVB": {
+        "10": 0.75589,
+        "2": 0.151178,
+        "20": 1.51178,
+        "7": 0.529123
+      }
+    },
+    {
+      "name": "tx_spend_A",
+      "objectType": "channel_tx",
+      "vbytes": 418,
+      "feeUsdBySatPerVB": {
+        "10": 1.12442,
+        "2": 0.224884,
+        "20": 2.24884,
+        "7": 0.787094
+      }
+    },
+    {
+      "name": "tx_revoke_B",
+      "objectType": "channel_tx",
+      "vbytes": 192,
+      "feeUsdBySatPerVB": {
+        "10": 0.51648,
+        "2": 0.103296,
+        "20": 1.03296,
+        "7": 0.361536
+      }
+    },
+    {
+      "name": "tx_revoke_ACS_std",
+      "objectType": "channel_tx",
+      "vbytes": 192,
+      "feeUsdBySatPerVB": {
+        "10": 0.51648,
+        "2": 0.103296,
+        "20": 1.03296,
+        "7": 0.361536
+      }
+    },
+    {
+      "name": "tx_revoke_ACS_linked",
+      "objectType": "channel_tx",
+      "vbytes": 246,
+      "feeUsdBySatPerVB": {
+        "10": 0.66174,
+        "2": 0.132348,
+        "20": 1.32348,
+        "7": 0.463218
+      }
+    },
+    {
+      "name": "tx_dep_A",
+      "objectType": "htlc_tx",
+      "vbytes": 190,
+      "feeUsdBySatPerVB": {
+        "10": 0.5111,
+        "2": 0.10222,
+        "20": 1.0222,
+        "7": 0.35777
+      }
+    },
+    {
+      "name": "tx_dep_B",
+      "objectType": "htlc_tx",
+      "vbytes": 172,
+      "feeUsdBySatPerVB": {
+        "10": 0.46268,
+        "2": 0.092536,
+        "20": 0.92536,
+        "7": 0.323876
+      }
+    },
+    {
+      "name": "tx_col_B",
+      "objectType": "htlc_tx",
+      "vbytes": 152,
+      "feeUsdBySatPerVB": {
+        "10": 0.40888,
+        "2": 0.081776,
+        "20": 0.81776,
+        "7": 0.286216
+      }
+    },
+    {
+      "name": "tx_col_M",
+      "objectType": "htlc_tx",
+      "vbytes": 168,
+      "feeUsdBySatPerVB": {
+        "10": 0.45192,
+        "2": 0.090384,
+        "20": 0.90384,
+        "7": 0.316344
+      }
+    }
+  ],
+  "txSizeEvidence": [
+    {
+      "name": "tx_commit_A (no HTLC)",
+      "baseBytes": 227,
+      "witnessBytes": 224,
+      "totalBytes": 451,
+      "weight": 1132,
+      "vbytes": 283,
+      "inputCount": 1,
+      "outputCount": 3,
+      "witnessItems": 4,
+      "txHex": "0100000000010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff03d012130000000000232102466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27ac90d94000000000004e632102466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27ac67029000b27521034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aaac68c0c62d000000000024a8203eb1bd439947eb762998e566ccc2e099c791118b2f40579cc4f7da2b5061b7f98851040049303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030304931313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131475221034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa2102466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f2752ae00000000"
+    },
+    {
+      "name": "tx_commit_A (HTLC+linked ACS)",
+      "baseBytes": 225,
+      "witnessBytes": 224,
+      "totalBytes": 449,
+      "weight": 1124,
+      "vbytes": 281,
+      "inputCount": 1,
+      "outputCount": 3,
+      "witnessItems": 4,
+      "txHex": "0100000000010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff03d012130000000000232102466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27ac90d94000000000004e632102466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27ac67029000b27521034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aaac68c0c62d000000000022512070bda62dd5669ebf9442a714cbcb34f425f0edcf14a07b826019ba81929baabc040049303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030304931313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131475221034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa2102466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f2752ae00000000"
+    }
+  ],
+  "linkedDeployments": [
+    {
+      "network": "regtest",
+      "wallet": "hehtlc_research",
+      "linkedACSAddress": "bcrt1prylu0syefure83pwvkcghwg7fa2mse6cmdx66srrlwpqz59sfjqspej2v6",
+      "fundTxid": "6aceae598d61ae2256508a4bdafc43568c77045f04f91fcca147c6423563038e",
+      "fundVout": 0,
+      "fundValueSat": 3000000,
+      "spendTxid": "5a64ec6a227bd6dc481e37e764d17712314933978bb7cdb9569adbdaff134245",
+      "spendValueSat": 2500000,
+      "feeSat": 500000,
+      "witnessOrder": "\u003csig_B\u003e \u003csig_A\u003e \u003cpre_b\u003e \u003cr^j_a\u003e \u003clinkedLeafScript\u003e \u003ccontrolBlock\u003e",
+      "createdAtUtc": "2026-04-08T12:25:56Z"
+    },
+    {
+      "network": "signet",
+      "wallet": "hehtlc_research",
+      "linkedACSAddress": "tb1pt0msd9g3urre3f2xxun3tdlvvcj9evc6ksd242sdy0lcagtuf2psjnz90e",
+      "fundTxid": "d77febbc5f3778d089955541bfa881d86d1db7ec0720a5ef6d71c0eaa598deaa",
+      "fundVout": 0,
+      "fundValueSat": 3000000,
+      "spendTxid": "e9b820874ff5aa2f3b5da2e0f8a8283d2091482731fa4a7279b8703aee80074f",
+      "spendValueSat": 2500000,
+      "feeSat": 500000,
+      "witnessOrder": "\u003csig_B\u003e \u003csig_A\u003e \u003cpre_b\u003e \u003cr^j_a\u003e \u003clinkedLeafScript\u003e \u003ccontrolBlock\u003e",
+      "createdAtUtc": "2026-04-08T13:55:45Z"
+    }
+  ],
+  "clbaSummary": {
+    "crabRationalWidthSat": "2500000",
+    "crabByzantineWidthSat": "2500000",
+    "crabHeWidthSat": "0",
+    "crabHeInfeasible": true,
+    "cStarSat": "3000000"
+  },
+  "coalitionSummary": {
+    "kMax": 6,
+    "singleMinerCStar": "3000000",
+    "coalitionRows": [
+      {
+        "k": 1,
+        "bobUbSat": "3000000",
+        "minerLbSat": "500000",
+        "widthSat": "2500000",
+        "cStarKSat": "3000000",
+        "clbaFeasible": true
+      },
+      {
+        "k": 2,
+        "bobUbSat": "3000000",
+        "minerLbSat": "1000000",
+        "widthSat": "2000000",
+        "cStarKSat": "2500000",
+        "clbaFeasible": true
+      },
+      {
+        "k": 3,
+        "bobUbSat": "3000000",
+        "minerLbSat": "1500000",
+        "widthSat": "1500000",
+        "cStarKSat": "2000000",
+        "clbaFeasible": true
+      },
+      {
+        "k": 4,
+        "bobUbSat": "3000000",
+        "minerLbSat": "2000000",
+        "widthSat": "1000000",
+        "cStarKSat": "1500000",
+        "clbaFeasible": true
+      },
+      {
+        "k": 5,
+        "bobUbSat": "3000000",
+        "minerLbSat": "2500000",
+        "widthSat": "500000",
+        "cStarKSat": "1000000",
+        "clbaFeasible": true
+      },
+      {
+        "k": 6,
+        "bobUbSat": "3000000",
+        "minerLbSat": "3000000",
+        "widthSat": "0",
+        "cStarKSat": "500000",
+        "clbaFeasible": false
+      },
+      {
+        "k": 7,
+        "bobUbSat": "3000000",
+        "minerLbSat": "3500000",
+        "widthSat": "-500000",
+        "cStarKSat": "0",
+        "clbaFeasible": false
+      }
+    ],
+    "singleMinerDominates": true,
+    "feeSat": 1000,
+    "modelNote": "derived comparison under He-HTLC SDRBA assumptions (k*v_col threshold); this section is interpretive support, not an independent theorem claim"
+  }
+}

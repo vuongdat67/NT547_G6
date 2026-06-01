@@ -1,0 +1,92 @@
+[
+  {
+    "feeSat": 250,
+    "seed": 1,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_250_seed_1.json"
+  },
+  {
+    "feeSat": 250,
+    "seed": 2,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_250_seed_2.json"
+  },
+  {
+    "feeSat": 250,
+    "seed": 3,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_250_seed_3.json"
+  },
+  {
+    "feeSat": 500,
+    "seed": 1,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_500_seed_1.json"
+  },
+  {
+    "feeSat": 500,
+    "seed": 2,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_500_seed_2.json"
+  },
+  {
+    "feeSat": 500,
+    "seed": 3,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_500_seed_3.json"
+  },
+  {
+    "feeSat": 1000,
+    "seed": 1,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_1000_seed_1.json"
+  },
+  {
+    "feeSat": 1000,
+    "seed": 2,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_1000_seed_2.json"
+  },
+  {
+    "feeSat": 1000,
+    "seed": 3,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_1000_seed_3.json"
+  },
+  {
+    "feeSat": 2500,
+    "seed": 1,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_2500_seed_1.json"
+  },
+  {
+    "feeSat": 2500,
+    "seed": 2,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_2500_seed_2.json"
+  },
+  {
+    "feeSat": 2500,
+    "seed": 3,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_2500_seed_3.json"
+  },
+  {
+    "feeSat": 5000,
+    "seed": 1,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_5000_seed_1.json"
+  },
+  {
+    "feeSat": 5000,
+    "seed": 2,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_5000_seed_2.json"
+  },
+  {
+    "feeSat": 5000,
+    "seed": 3,
+    "success": true,
+    "artifact": "artifacts\\onchain\\signet\\fee_profiles\\fee_5000_seed_3.json"
+  }
+]

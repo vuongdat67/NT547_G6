@@ -1,0 +1,79 @@
+{
+  "seed": 42,
+  "trials": 100000,
+  "generatedAtUtc": "2026-05-25T08:26:41Z",
+  "rows": [
+    {
+      "rhoH": 0.3,
+      "kappa": 3,
+      "trials": 100000,
+      "analyticalProb": 0.657,
+      "simulatedProb": 0.65667,
+      "absDiffPct": 0.05022831050229109
+    },
+    {
+      "rhoH": 0.3,
+      "kappa": 5,
+      "trials": 100000,
+      "analyticalProb": 0.8319300000000001,
+      "simulatedProb": 0.82817,
+      "absDiffPct": 0.4519611024966158
+    },
+    {
+      "rhoH": 0.3,
+      "kappa": 7,
+      "trials": 100000,
+      "analyticalProb": 0.9176457,
+      "simulatedProb": 0.91831,
+      "absDiffPct": 0.07239177386217263
+    },
+    {
+      "rhoH": 0.4,
+      "kappa": 3,
+      "trials": 100000,
+      "analyticalProb": 0.784,
+      "simulatedProb": 0.78386,
+      "absDiffPct": 0.017857142857146555
+    },
+    {
+      "rhoH": 0.4,
+      "kappa": 5,
+      "trials": 100000,
+      "analyticalProb": 0.92224,
+      "simulatedProb": 0.92329,
+      "absDiffPct": 0.11385322692575754
+    },
+    {
+      "rhoH": 0.4,
+      "kappa": 7,
+      "trials": 100000,
+      "analyticalProb": 0.9720064,
+      "simulatedProb": 0.97177,
+      "absDiffPct": 0.02432082751718769
+    },
+    {
+      "rhoH": 0.5,
+      "kappa": 3,
+      "trials": 100000,
+      "analyticalProb": 0.875,
+      "simulatedProb": 0.87516,
+      "absDiffPct": 0.018285714285719883
+    },
+    {
+      "rhoH": 0.5,
+      "kappa": 5,
+      "trials": 100000,
+      "analyticalProb": 0.96875,
+      "simulatedProb": 0.9683,
+      "absDiffPct": 0.04645161290322069
+    },
+    {
+      "rhoH": 0.5,
+      "kappa": 7,
+      "trials": 100000,
+      "analyticalProb": 0.9921875,
+      "simulatedProb": 0.99202,
+      "absDiffPct": 0.016881889763778225
+    }
+  ]
+}
